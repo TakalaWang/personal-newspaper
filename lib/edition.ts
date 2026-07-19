@@ -2,12 +2,14 @@ export type StoryLabel = "fact" | "inference";
 
 export type EditionPage = {
   id: string;
+  section: string;
   html: string;
   css?: string;
 };
 
 export type EditionStory = {
   id: string;
+  pageId: string;
   headline?: string;
   label: StoryLabel;
   sourceIds: string[];
@@ -54,7 +56,11 @@ export function validateEditionBundle(value: unknown): EditionBundle {
 
   const pages = pageList(bundle.pages);
   const sources = sourceList(bundle.sources);
-  const stories = storyList(bundle.stories, new Set(sources.map((source) => source.id)));
+  const stories = storyList(
+    bundle.stories,
+    new Set(sources.map((source) => source.id)),
+    new Set(pages.map((page) => page.id)),
+  );
   assertStoryPlacement(pages, stories);
 
   return { id, date, language, masthead, pages, stories, sources };
@@ -71,11 +77,12 @@ function pageList(value: unknown): EditionPage[] {
     if (ids.has(id)) fail(`duplicate page id: ${id}`);
     ids.add(id);
 
+    const section = text(input.section, `pages[${index}].section`);
     const html = text(input.html, `pages[${index}].html`);
     const css = input.css === undefined ? undefined : text(input.css, `pages[${index}].css`);
     assertSafeMarkup(html, `pages[${index}].html`);
     if (css !== undefined) assertSafeCss(css, `pages[${index}].css`);
-    return css === undefined ? { id, html } : { id, html, css };
+    return css === undefined ? { id, section, html } : { id, section, html, css };
   });
 }
 
@@ -104,7 +111,7 @@ function sourceList(value: unknown): EditionSource[] {
   });
 }
 
-function storyList(value: unknown, sourceIds: Set<string>): EditionStory[] {
+function storyList(value: unknown, sourceIds: Set<string>, pageIds: Set<string>): EditionStory[] {
   const stories = list(value, "stories");
   if (stories.length === 0) fail("stories must not be empty");
 
@@ -114,6 +121,8 @@ function storyList(value: unknown, sourceIds: Set<string>): EditionStory[] {
     const id = identifier(input.id, `stories[${index}].id`);
     if (ids.has(id)) fail(`duplicate story id: ${id}`);
     ids.add(id);
+    const pageId = identifier(input.pageId, `stories[${index}].pageId`);
+    if (!pageIds.has(pageId)) fail(`stories[${index}].pageId references an unknown page`);
 
     if (input.label !== "fact" && input.label !== "inference") {
       fail(`stories[${index}].label must be \"fact\" or \"inference\"`);
@@ -135,19 +144,20 @@ function storyList(value: unknown, sourceIds: Set<string>): EditionStory[] {
 
     const headline = input.headline === undefined ? undefined : text(input.headline, `stories[${index}].headline`);
     return headline === undefined
-      ? { id, label: input.label, sourceIds: sourceIdsForStory }
-      : { id, headline, label: input.label, sourceIds: sourceIdsForStory };
+      ? { id, pageId, label: input.label, sourceIds: sourceIdsForStory }
+      : { id, pageId, headline, label: input.label, sourceIds: sourceIdsForStory };
   });
 }
 
 function assertStoryPlacement(pages: EditionPage[], stories: EditionStory[]) {
-  const placements = new Map<string, number>();
+  const placements = new Map<string, { count: number; pageId: string }>();
   for (const page of pages) {
     for (const tag of openingTags(tagsOnly(page.html))) {
       const attribute = tag[0].match(STORY_ATTRIBUTE);
       if (!attribute) continue;
       const storyId = decodeEntities(attribute[1] ?? attribute[2] ?? attribute[3]);
-      placements.set(storyId, (placements.get(storyId) ?? 0) + 1);
+      const placement = placements.get(storyId);
+      placements.set(storyId, { count: (placement?.count ?? 0) + 1, pageId: page.id });
     }
   }
 
@@ -156,8 +166,10 @@ function assertStoryPlacement(pages: EditionPage[], stories: EditionStory[]) {
     if (!knownStoryIds.has(storyId)) fail(`element references unknown story id: ${storyId}`);
   }
   for (const story of stories) {
-    const count = placements.get(story.id) ?? 0;
+    const placement = placements.get(story.id);
+    const count = placement?.count ?? 0;
     if (count !== 1) fail(`story ${story.id} must appear exactly once; found ${count} times`);
+    if (placement?.pageId !== story.pageId) fail(`story ${story.id} must appear on page ${story.pageId}`);
   }
 }
 

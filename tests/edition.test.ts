@@ -10,12 +10,13 @@ const validBundle = {
   pages: [
     {
       id: "front-page",
+      section: "科技",
       html: '<article data-story-id="ai-policy"><h1>AI policy shifts</h1></article>',
       css: ".lead { color: #111; }",
     },
   ],
   stories: [
-    { id: "ai-policy", label: "fact", sourceIds: ["reuters-ai"] },
+    { id: "ai-policy", pageId: "front-page", label: "fact", sourceIds: ["reuters-ai"] },
   ],
   sources: [
     {
@@ -36,6 +37,17 @@ function bundleWith(
 
 test("accepts a complete multi-page edition bundle", () => {
   assert.deepEqual(validateEditionBundle(validBundle), validBundle);
+});
+
+test("requires section pages and maps each story to its printed page", () => {
+  assert.throws(
+    () => validateEditionBundle({ ...validBundle, pages: [{ ...validBundle.pages[0], section: "" }] }),
+    /section/i,
+  );
+  assert.throws(
+    () => validateEditionBundle({ ...validBundle, stories: [{ ...validBundle.stories[0], pageId: "culture" }] }),
+    /pageId/i,
+  );
 });
 
 test("rejects executable HTML and unsafe CSS", () => {

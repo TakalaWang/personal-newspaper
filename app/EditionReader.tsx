@@ -22,7 +22,9 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   const [pending, setPending] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shares, setShares] = useState<Share[]>([]);
+  const [activeStoryId, setActiveStoryId] = useState<string | null>(null);
   const page = bundle.pages[pageIndex];
+  const pageStories = bundle.stories.filter((story) => story.pageId === page.id);
 
   useEffect(() => {
     if (!owner) return;
@@ -94,6 +96,12 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     }
   }
 
+  function openStory(story: EditionStory) {
+    const nextPageIndex = bundle.pages.findIndex((candidate) => candidate.id === story.pageId);
+    if (nextPageIndex !== -1) setPageIndex(nextPageIndex);
+    setActiveStoryId(story.id);
+  }
+
   return (
     <section className="edition-reader" aria-label={`${bundle.masthead}, ${bundle.date}`}>
       {owner ? (
@@ -118,36 +126,37 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
             aria-current={index === pageIndex ? "page" : undefined}
             className={index === pageIndex ? "page-tab is-current" : "page-tab"}
             key={candidate.id}
-            onClick={() => setPageIndex(index)}
+            onClick={() => {
+              setPageIndex(index);
+              setActiveStoryId(null);
+            }}
             type="button"
           >
-            {index + 1}
+            <span>{candidate.section}</span>
+            <small>{index + 1}</small>
           </button>
         ))}
       </nav>
 
-      <div className="edition-layout">
+      <div className="edition-spread">
         <iframe
           className="edition-frame"
-          key={page.id}
+          key={`${page.id}:${activeStoryId ?? "all"}`}
           sandbox=""
-          srcDoc={pageDocument(page, bundle)}
-          title={`${bundle.masthead}: page ${pageIndex + 1}`}
+          srcDoc={pageDocument(page, bundle, activeStoryId)}
+          title={`${bundle.masthead}: ${page.section}`}
         />
-        <aside className="reading-rail" aria-label="Story notes and sources">
-          <p className="rail-heading">Reader’s margin</p>
-          {bundle.stories.map((story) => (
-            <StoryRail
-              key={story.id}
-              owner={owner}
-              pending={pending}
-              sources={bundle.sources}
-              story={story}
-              onReact={react}
-            />
-          ))}
-          <p aria-live="polite" className="reader-message">{message}</p>
-        </aside>
+        <StoryDispatch
+          activeStoryId={activeStoryId}
+          owner={owner}
+          page={page}
+          pending={pending}
+          sources={bundle.sources}
+          stories={pageStories}
+          onOpen={openStory}
+          onReact={react}
+        />
+        <p aria-live="polite" className="reader-message">{message}</p>
       </div>
     </section>
   );
@@ -190,46 +199,63 @@ async function loadShares(): Promise<Share[]> {
   return result.shares ?? [];
 }
 
-function StoryRail({
+function StoryDispatch({
+  activeStoryId,
   owner,
+  page,
   pending,
   sources,
-  story,
+  stories,
+  onOpen,
   onReact,
 }: {
+  activeStoryId: string | null;
   owner: boolean;
+  page: EditionPage;
   pending: string | null;
   sources: EditionBundle["sources"];
-  story: EditionStory;
+  stories: EditionStory[];
+  onOpen: (story: EditionStory) => void;
   onReact: (action: ReactionAction, storyId: string) => Promise<void>;
 }) {
-  const storySources = story.sourceIds
-    .map((sourceId) => sources.find((source) => source.id === sourceId))
-    .filter((source): source is EditionBundle["sources"][number] => Boolean(source));
-  const headline = story.headline ?? story.id.replaceAll(/[-_]/g, " ");
-
   return (
-    <article className="rail-story">
-      <div className="story-label" data-label={story.label}>
-        {story.label === "fact" ? "Fact" : "Inference"}
+    <section className="edition-dispatch" aria-label={`${page.section} stories`}>
+      <div className="dispatch-heading">
+        <p>本版索引</p>
+        <h2>{page.section}</h2>
       </div>
-      <h2>{headline}</h2>
-      <div className="story-sources">
-        <span>Sources</span>
-        {storySources.map((source) => (
-          <a href={source.url} key={source.id} rel="noreferrer" target="_blank">
-            {source.id}
-          </a>
-        ))}
+      <div className="story-board">
+        {stories.map((story) => {
+          const storySources = story.sourceIds
+            .map((sourceId) => sources.find((source) => source.id === sourceId))
+            .filter((source): source is EditionBundle["sources"][number] => Boolean(source));
+          const headline = story.headline ?? story.id.replaceAll(/[-_]/g, " ");
+          return (
+            <article className={activeStoryId === story.id ? "story-card is-active" : "story-card"} key={story.id}>
+              <button className="story-jump" onClick={() => onOpen(story)} type="button">
+                <span className="story-label" data-label={story.label}>{story.label === "fact" ? "報導" : "推論"}</span>
+                <h3>{headline}</h3>
+                <span className="story-page">前往 {page.section}</span>
+              </button>
+              <div className="story-card-foot">
+                <div className="story-sources" aria-label="Sources">
+                  {storySources.map((source) => (
+                    <a href={source.url} key={source.id} rel="noreferrer" target="_blank">來源</a>
+                  ))}
+                </div>
+                {owner ? (
+                  <div className="reaction-actions" aria-label={`Feedback for ${headline}`}>
+                    <ReactionButton action="love" label="♡ 更多" pending={pending} storyId={story.id} onReact={onReact} />
+                    <ReactionButton action="less" label="⊘ 少一些" pending={pending} storyId={story.id} onReact={onReact} />
+                    <ReactionButton action="follow" label="＋ 追蹤" pending={pending} storyId={story.id} onReact={onReact} />
+                  </div>
+                ) : null}
+              </div>
+            </article>
+          );
+        })}
       </div>
-      {owner ? (
-        <div className="reaction-actions" aria-label={`Feedback for ${headline}`}>
-          <ReactionButton action="love" label="Love" pending={pending} storyId={story.id} onReact={onReact} />
-          <ReactionButton action="less" label="Less" pending={pending} storyId={story.id} onReact={onReact} />
-          <ReactionButton action="follow" label="Follow" pending={pending} storyId={story.id} onReact={onReact} />
-        </div>
-      ) : null}
-    </article>
+    </section>
   );
 }
 
@@ -253,13 +279,14 @@ function ReactionButton({
   );
 }
 
-function pageDocument(page: EditionPage, bundle: EditionBundle): string {
+function pageDocument(page: EditionPage, bundle: EditionBundle, activeStoryId: string | null): string {
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
     :root { color: oklch(16% 0.01 260); background: oklch(100% 0 0); font-family: "Noto Serif TC", "Source Han Serif TC", Georgia, serif; }
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100vh; padding: clamp(1.25rem, 3vw, 3.5rem); overflow-wrap: anywhere; }
     img, svg, video { max-width: 100%; height: auto; }
     a { color: inherit; }
+    ${activeStoryId ? `[data-story-id="${escapeAttribute(activeStoryId)}"] { outline: 3px solid oklch(62% 0.1 80); outline-offset: 8px; }` : ""}
     ${page.css ?? ""}
   </style></head><body>${page.html}</body></html>`;
 }

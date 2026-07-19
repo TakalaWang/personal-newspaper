@@ -54,3 +54,12 @@ test("ships the private reader instead of the starter preview", async () => {
     access(new URL("app/_sites-preview", templateRoot)),
   );
 });
+
+test("uses sectioned newspaper navigation with story-level feedback", async () => {
+  const reader = await readFile(new URL("../app/EditionReader.tsx", import.meta.url), "utf8");
+
+  assert.match(reader, /page\.section/);
+  assert.match(reader, /story\.pageId/);
+  assert.match(reader, /edition-dispatch/);
+  assert.doesNotMatch(reader, /reading-rail/);
+});

@@ -13,8 +13,8 @@ const bundle = {
   date: "2026-07-19",
   language: "zh-Hant-TW",
   masthead: "光譜日報",
-  pages: [{ id: "front", html: '<article data-story-id="lead">Briefing</article>' }],
-  stories: [{ id: "lead", label: "fact", sourceIds: ["source"] }],
+  pages: [{ id: "front", section: "Front page", html: '<article data-story-id="lead">Briefing</article>' }],
+  stories: [{ id: "lead", pageId: "front", label: "fact", sourceIds: ["source"] }],
   sources: [{ id: "source", url: "https://example.com/source" }],
 };
 

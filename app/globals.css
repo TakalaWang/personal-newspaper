@@ -11,6 +11,7 @@
   --space-gutter: 1rem;
   --space-wide: 1.5rem;
   --space-sheet: 3rem;
+  --reader-width: min(80rem, calc(100vw - 2rem));
   --font-news: "Songti TC", "STSong", "PMingLiU", "Noto Serif TC", serif;
   --font-ui: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
   color: var(--ink);
@@ -67,7 +68,7 @@ a:focus-visible {
 
 .edition-stage {
   position: relative;
-  width: min(80rem, calc(100% - 2rem));
+  width: var(--reader-width);
   margin: 0 auto;
 }
 
@@ -111,7 +112,7 @@ a:focus-visible {
   z-index: 10;
   inset-block: 0;
   display: flex;
-  width: 3.5rem;
+  width: calc((100vw - var(--reader-width)) / 2);
   min-height: 2.75rem;
   flex-direction: column;
   padding: 0;
@@ -119,12 +120,12 @@ a:focus-visible {
   background: transparent;
   cursor: pointer;
   opacity: 0;
-  transition: color 120ms ease, opacity 180ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: color 120ms ease, opacity 180ms ease;
   touch-action: manipulation;
 }
 
-.page-turn-previous { left: 0; transform: translateX(-0.75rem); }
-.page-turn-next { right: 0; transform: translateX(0.75rem); }
+.page-turn-previous { left: calc((100vw - var(--reader-width)) / -2); }
+.page-turn-next { right: calc((100vw - var(--reader-width)) / -2); }
 
 .page-turn-control {
   position: sticky;
@@ -135,6 +136,7 @@ a:focus-visible {
   align-items: center;
   gap: var(--space-tight);
   margin: 0 auto;
+  pointer-events: none;
 }
 
 .page-turn-control b {
@@ -159,14 +161,14 @@ a:focus-visible {
 }
 
 .page-turn:hover:not(:disabled),
-.page-turn:focus-visible { color: var(--press-red); opacity: 1; transform: translateX(0); }
+.page-turn:focus-visible { color: var(--press-red); opacity: 1; }
 .page-turn:focus-visible { outline: 0; }
 .page-turn:focus-visible .page-turn-control { outline: 3px solid var(--press-red); outline-offset: 3px; }
 .page-turn:disabled { pointer-events: none; opacity: 0; }
 
 .reader-furniture {
   display: flex;
-  width: min(80rem, calc(100% - 2rem));
+  width: var(--reader-width);
   min-height: 2.75rem;
   align-items: center;
   justify-content: flex-end;
@@ -250,7 +252,7 @@ a:focus-visible {
 }
 
 .reader-message {
-  width: min(80rem, calc(100% - 2rem));
+  width: var(--reader-width);
   min-height: 1.2em;
   margin: var(--space-tight) auto 0;
   color: var(--muted);

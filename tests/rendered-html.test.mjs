@@ -47,8 +47,13 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.match(reader, /sandbox="allow-scripts"/);
   assert.match(reader, /api\/reactions/);
   assert.match(reader, /api\/shares/);
-  assert.match(css, /--surface: oklch\(95\.5% 0\.009 82\)/);
-  assert.doesNotMatch(css, /--surface: oklch\(100% 0 0\)/);
+  assert.match(css, /--surface: oklch\(96% 0 0\)/);
+  assert.match(css, /data-theme="salmon"/);
+  assert.match(css, /data-theme="forest"/);
+  assert.match(css, /\.theme-dialog/);
+  assert.match(reader, /personal-newspaper-theme/);
+  assert.match(reader, /經典黑白.*鮭粉財經.*松綠週末/s);
+  assert.match(reader, /themeCss\(theme\)/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 
   await assert.rejects(
@@ -72,4 +77,6 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.doesNotMatch(reader, /閱讀全文 →/);
   assert.doesNotMatch(reader, /edition-dispatch/);
   assert.doesNotMatch(reader, /reading-rail/);
+  assert.match(reader, /<dialog className="theme-dialog"/);
+  assert.match(reader, /localStorage\.setItem\(THEME_STORAGE_KEY/);
 });

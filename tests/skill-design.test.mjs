@@ -86,8 +86,12 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(baseDesign, /consecutive editions/i);
   assert.match(baseDesign, /current live edition/i);
   assert.match(baseDesign, /Random rearrangement/i);
+  assert.match(baseDesign, /independent vertical lanes/i);
+  assert.match(baseDesign, /column-fill: balance/i);
+  assert.match(baseDesign, /semantic variables/i);
   assert.doesNotMatch(baseDesign, /追蹤主題/);
-  assert.match(design, /newsprint.*deep press red/is);
+  assert.match(design, /black-and-white.*salmon.*forest-green/is);
+  assert.match(design, /independent vertical lanes/i);
   assert.doesNotMatch(design, /blue-gray|brass/);
 
   const parsedEvals = JSON.parse(evals);
@@ -107,4 +111,6 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
     assert.match(page.css, /@media\(max-width:479px\)/, `${page.id} needs a phone-only single-column breakpoint`);
     assert.doesNotMatch(page.css, /@media\(max-width:559px\)/, `${page.id} must preserve mixed paths at 560px`);
   }
+  assert.match(parsedTemplate.pages[0].html, /front-main.*front-side/);
+  assert.match(parsedTemplate.pages[0].css, /column-fill:balance/);
 });

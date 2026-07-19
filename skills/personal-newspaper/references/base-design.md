@@ -4,8 +4,9 @@ This is a print grammar, not a fixed template. Picture one reader scanning one c
 
 ## Identity
 
-- Palette: newsprint `oklch(94.5% 0.012 82)`, ink `oklch(18% 0.012 52)`, muted ink `oklch(38% 0.014 52)`, rule `oklch(48% 0.012 52)`, deep press red `oklch(38% 0.13 27)`. Red is the sole spot color and stays below 10% of the sheet.
-- No gradients, tinted cards, blue accents, brass, glass, or decorative shadows inside the sheet.
+- The trusted reader owns the selected press palette. It offers classic neutral black-and-white, salmon financial paper with wine ink, and cool white paper with forest-green spot ink. All three keep body contrast above WCAG AA and spot color below 10% of the sheet.
+- Generated layout rules consume the semantic variables `--paper`, `--ink`, `--muted`, `--hair`, and `--red`. The trusted reader applies their final values after edition CSS, so bundle fallback declarations are never authoritative. `--red` is the historical spot-ink variable and may resolve to black, wine, or green.
+- No gradients, tinted cards, extra accent hues, brass, glass, or decorative shadows inside the sheet.
 - Songti/STSong/PMingLiU-style serif carries headlines and copy. Kaiti/STKaiti is limited to the masthead or one editorial accent. PingFang-style sans carries folios, captions, bylines, labels, and controls.
 - Masthead maximum `62px`, lead headline `48px`, other headlines `32px`; letter spacing never tighter than `-0.035em`. A headline may grow only when its news value and occupied measure justify it; it must not manufacture importance by surrounding itself with empty paper.
 
@@ -32,6 +33,9 @@ This is a print grammar, not a fixed template. Picture one reader scanning one c
 - Editorial coherence outranks density. Combine adjacent low-count sections as a labelled multi-section page or briefs on the front; never add filler merely to reach a count.
 - Do not repeat the same composition on adjacent pages or consecutive editions when the content permits a clearer alternative. Change at least two of: lead position, dominant span, visual position, brief axis, or module count; document an editorially necessary exception instead of manufacturing random difference.
 - Dense does not mean uniform. Interrupt vertical reading with at least one side-by-side path and one cross-column or stacked module; vary headline measure and article depth instead of repeating equal rectangles.
+- Avoid shared fixed grid rows when neighboring packages have materially different copy measures. Prefer independent vertical lanes, then balance story assignments so a following package fills the shorter lane instead of waiting below the taller one.
+- Within a wide package, use two or three readable columns with `column-fill: balance`; let headings, verified figures, quotes, and feedback span columns when they need the full measure. Never squeeze body columns below a readable measure merely to eliminate whitespace.
+- Estimate headline, dek, paragraph, and image measures in the private layout brief. Reject a composition when a cavity created by row alignment is larger than eight lines of neighboring body copy; reassign the next package, change spans, or switch to independent lanes.
 - No unexplained blank block may be larger than a secondary story package. Empty paper must result from an intentional evidence-bearing image or print feature, not fixed height, oversized padding, or a short teaser.
 - At exactly 560px and above, tablets keep mixed paths and at least two distinct article roots share a row. Text columns alone do not count. Only screens narrower than 560px may become one reading column; recompose modules instead of shrinking desktop type.
 
@@ -54,5 +58,5 @@ No navbar, top tab strip, card grid, dashboard rail, detached feedback/source si
 
 - Content: compare every factual claim to the evidence ledger; verify dates, names, quantities, versions, label, and summary/body agreement. Remove claims that are merely plausible.
 - Images: open every asset, confirm provenance and relevance, then read alt text, caption, and credit as a set. No broken or unverified image ships.
-- Silhouette: at desktop and exactly 560px, blur or squint; the lead, secondary packages, evidence-bearing visual, and multiple reading paths remain distinct. Adjacent pages have visibly different silhouettes. Compare against the current live edition and reject an unexplained near-copy. Reject any page whose largest feature is empty space.
+- Silhouette: at desktop and exactly 560px, blur or squint; the lead, secondary packages, evidence-bearing visual, and multiple reading paths remain distinct. Adjacent pages have visibly different silhouettes. Compare against the current live edition and reject an unexplained near-copy. Inspect lane endings and row boundaries; reject any alignment-created cavity larger than eight body lines or any page whose largest feature is empty space.
 - Interaction: confirm the sheet has left/right page turning and no top navbar or on-sheet open button. At phone width confirm no headline or control overflows; open every story by clicking the article body and by keyboard; inspect drop-cap clearance; ensure original sources exist only in the detailed reader. WCAG 2.2 AA, semantic structure, keyboard access, visible focus, useful alt text, and non-color cues are mandatory.

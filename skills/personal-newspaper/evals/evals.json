@@ -26,12 +26,14 @@
     {
       "id": 3,
       "prompt": "Redesign an edition with nine verified stories across technology, culture, and sports so it feels like a paper newspaper on desktop and remains composed at exactly 560px and on a phone.",
-      "expected_output": "The agent applies the base-design print grammar, creates subject pages with different silhouettes and irregular hierarchy, keeps article controls inside each package, and verifies all three target widths in a real browser.",
+      "expected_output": "The agent applies the base-design print grammar, creates subject pages with different silhouettes and irregular hierarchy, balances independent lanes so copy does not strand large cavities, preserves the reader-selected press palette, keeps article controls inside each package, and verifies all three target widths in a real browser.",
       "expectations": [
         "Reads references/base-design.md before composing pages",
         "Uses layout-only page HTML with one empty article placement per story",
         "Creates subject pages rather than one page per article",
-        "Shows only love and less controls inside articles and verifies desktop, 560px, and phone"
+        "Shows only love and less controls inside articles and verifies desktop, 560px, and phone",
+        "Uses semantic palette variables and lets the trusted reader apply the selected press theme",
+        "Rejects alignment-created cavities larger than eight lines of neighboring body copy"
       ]
     },
     {

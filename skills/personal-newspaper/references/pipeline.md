@@ -57,11 +57,11 @@ Select only stories that clear the evidence gate. Aim for 70/20/10 core/adjacent
 
 Before writing page HTML or CSS, create a private layout brief from the actual edition:
 
-1. Inventory each subject page's story count, importance, summary and headline measures, useful image availability and aspect ratio, and natural comparisons or chronology.
+1. Inventory each subject page's story count, importance, estimated headline, dek, paragraph, and image measures, useful image availability and aspect ratio, and natural comparisons or chronology.
 2. Inspect the corresponding page in the current live edition and record its silhouette: lead position, dominant span, visual position, brief axis, and module count.
 3. Derive a new composition from today's editorial relationships. Do not begin from the template CSS, a named preset archetype, the previous edition's page HTML, or random variation.
 4. When the content permits, change at least two recorded structural dimensions from the corresponding live page. If repeating a silhouette is genuinely the clearest editorial choice, record the evidence-based reason in the private brief rather than forcing novelty.
-5. Let editorial coherence determine page count, section grouping, and module count. Remove or combine a thin page instead of filling a fixed slot.
+5. Let editorial coherence determine page count, section grouping, and module count. Balance independent vertical lanes when shared grid rows would strand whitespace; reject any alignment-created cavity larger than eight lines of neighboring body copy. Remove or combine a thin page instead of filling a fixed slot.
 
 The stable contract is one complete sheet, safe structural HTML, canonical injected copy, whole-article opening, in-article feedback, page turning, and responsive access. The arrangement inside that sheet is not stable.
 
@@ -73,7 +73,7 @@ The printed summary is a compact report, not a teaser: a reader should understan
 
 ### 7. Page composition
 
-Read [the newspaper base design](base-design.md) completely. Apply it as variable print grammar. Compose one dense complete sheet per subject page with asymmetric multi-column reading paths; reject a navbar, top tabs, landing-page hero, oversized empty field, vertical article stack, or on-sheet read-more button. Page HTML contains structural layout only and exactly one empty `<article data-story-id="…"></article>` placement for every story. The trusted reader supplies folios, canonical copy, whole-article opening, and only the `喜歡`／`不喜歡` controls.
+Read [the newspaper base design](base-design.md) completely. Apply it as variable print grammar. Compose one dense complete sheet per subject page with asymmetric multi-column reading paths; reject a navbar, top tabs, landing-page hero, oversized empty field, vertical article stack, or on-sheet read-more button. Layout rules must consume the reader's semantic palette variables; any bundle fallback values are non-authoritative. Page HTML contains structural layout only and exactly one empty `<article data-story-id="…"></article>` placement for every story. The trusted reader supplies folios, canonical copy, whole-article opening, and only the `喜歡`／`不喜歡` controls.
 
 ### 8. Content, image, security, and visual preflight
 

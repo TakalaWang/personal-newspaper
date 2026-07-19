@@ -16,6 +16,15 @@ type Share = {
   revokedAt: string | null;
 };
 
+const THEMES = [
+  { id: "classic", label: "經典黑白", description: "中性紙白與純黑油墨" },
+  { id: "salmon", label: "鮭粉財經", description: "鮭粉紙張與酒紅油墨" },
+  { id: "forest", label: "松綠週末", description: "冷白紙張與松綠專色" },
+] as const;
+
+type NewspaperTheme = (typeof THEMES)[number]["id"];
+const THEME_STORAGE_KEY = "personal-newspaper-theme";
+
 export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   const [pageIndex, setPageIndex] = useState(0);
   const [message, setMessage] = useState("");
@@ -24,9 +33,11 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   const [shares, setShares] = useState<Share[]>([]);
   const [activeStoryId, setActiveStoryId] = useState<string | null>(null);
   const [pageHeight, setPageHeight] = useState<number | null>(null);
+  const [theme, setTheme] = useState<NewspaperTheme>("classic");
   const pageFrameRef = useRef<HTMLIFrameElement>(null);
   const articleFrameRef = useRef<HTMLIFrameElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const themeDialogRef = useRef<HTMLDialogElement>(null);
   const page = bundle.pages[pageIndex];
   const activeStory = bundle.stories.find((story) => story.id === activeStoryId) ?? null;
 
@@ -39,6 +50,20 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   useEffect(() => {
     if (!owner) return;
     void loadShares().then(setShares).catch(() => undefined);
+  }, [owner]);
+
+  useEffect(() => {
+    if (!owner) return;
+    let savedTheme: NewspaperTheme | undefined;
+    try {
+      savedTheme = THEMES.find(({ id }) => id === localStorage.getItem(THEME_STORAGE_KEY))?.id;
+    } catch {}
+    if (!savedTheme) {
+      if (!themeDialogRef.current?.open) themeDialogRef.current?.showModal();
+      return;
+    }
+    const frame = requestAnimationFrame(() => setTheme(savedTheme));
+    return () => cancelAnimationFrame(frame);
   }, [owner]);
 
   useEffect(() => {
@@ -157,8 +182,19 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     }
   }
 
+  function chooseTheme(value: string) {
+    const selected = THEMES.find(({ id }) => id === value)?.id;
+    if (!selected) return;
+    setTheme(selected);
+    setPageHeight(null);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, selected);
+    } catch {}
+    themeDialogRef.current?.close();
+  }
+
   return (
-    <section className="edition-reader" aria-label={`${bundle.masthead}, ${bundle.date}`}>
+    <section className="edition-reader" data-theme={theme} aria-label={`${bundle.masthead}, ${bundle.date}`}>
       <div className="edition-stage">
         <button
           aria-label="上一版"
@@ -175,7 +211,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
             key={page.id}
             ref={pageFrameRef}
             sandbox="allow-scripts"
-            srcDoc={pageDocument(page, bundle, owner)}
+            srcDoc={pageDocument(page, bundle, owner, theme)}
             style={pageHeight === null ? undefined : { height: `${pageHeight}px` }}
             title={`${bundle.masthead}: ${page.section}`}
           />
@@ -194,6 +230,12 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         <p><strong>{page.section}</strong><span>第 {pageIndex + 1}／{bundle.pages.length} 版・{formatDate(bundle.date, bundle.language)}</span></p>
         {owner ? (
           <div className="reader-utilities">
+            <label className="theme-picker">
+              <span>紙色</span>
+              <select value={theme} onChange={(event) => chooseTheme(event.target.value)}>
+                {THEMES.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
+              </select>
+            </label>
             <button className="quiet-button" type="button" onClick={share} disabled={pending === "share"}>
               {pending === "share" ? "準備中…" : "分享本期"}
             </button>
@@ -211,8 +253,27 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
           frameRef={articleFrameRef}
           owner={owner}
           story={activeStory}
+          theme={theme}
           onClose={() => setActiveStoryId(null)}
         />
+      ) : null}
+      {owner ? (
+        <dialog className="theme-dialog" ref={themeDialogRef} aria-labelledby="theme-dialog-title">
+          <form method="dialog">
+            <p>紙本主題</p>
+            <h2 id="theme-dialog-title">先選一份你想每天打開的報紙</h2>
+            <span>只改變紙色與油墨；版面仍由每天的內容決定。之後可在版尾更換。</span>
+            <div className="theme-options">
+              {THEMES.map((option) => (
+                <button data-theme-option={option.id} key={option.id} onClick={() => chooseTheme(option.id)} type="button">
+                  <i aria-hidden="true" />
+                  <strong>{option.label}</strong>
+                  <small>{option.description}</small>
+                </button>
+              ))}
+            </div>
+          </form>
+        </dialog>
       ) : null}
     </section>
   );
@@ -224,6 +285,7 @@ function StoryDialog({
   frameRef,
   owner,
   story,
+  theme,
   onClose,
 }: {
   bundle: EditionBundle;
@@ -231,6 +293,7 @@ function StoryDialog({
   frameRef: React.RefObject<HTMLIFrameElement | null>;
   owner: boolean;
   story: EditionStory;
+  theme: NewspaperTheme;
   onClose: () => void;
 }) {
   const sources = story.sourceIds
@@ -253,7 +316,7 @@ function StoryDialog({
           className="story-dialog-frame"
           ref={frameRef}
           sandbox="allow-scripts"
-          srcDoc={articleDocument(story, bundle, owner)}
+          srcDoc={articleDocument(story, bundle, owner, theme)}
           title={story.headline}
         />
         <footer className="story-dialog-sources">
@@ -304,44 +367,55 @@ async function loadShares(): Promise<Share[]> {
   return result.shares ?? [];
 }
 
-function pageDocument(page: EditionPage, bundle: EditionBundle, owner: boolean): string {
+function pageDocument(page: EditionPage, bundle: EditionBundle, owner: boolean, theme: NewspaperTheme): string {
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
-    :root { --paper: oklch(95.5% 0.009 82); --ink: oklch(16% 0.01 52); --red: oklch(36% 0.11 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", "Noto Serif TC", serif; }
+    :root { --paper: oklch(96% 0 0); --ink: oklch(16% 0 0); --muted: oklch(34% 0 0); --red: oklch(24% 0 0); --hair: oklch(49% 0 0); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", "Noto Serif TC", serif; }
     * { box-sizing: border-box; }
     body { margin: 0; padding: clamp(1rem, 3vw, 3rem); overflow-wrap: break-word; word-break: normal; }
     img, svg, video { max-width: 100%; height: auto; }
     a { color: inherit; }
     ${trustedPageHeaderCss()}
     ${page.css ?? ""}
+    ${themeCss(theme)}
     ${readerBridgeCss()}
   </style></head><body><main class="paper">${trustedPageHeader(page, bundle)}${page.html}</main>${trustedReaderBridge(owner, bundle.stories, true)}${trustedPageResizeBridge()}</body></html>`;
 }
 
-function articleDocument(story: EditionStory, bundle: EditionBundle, owner: boolean): string {
+function articleDocument(story: EditionStory, bundle: EditionBundle, owner: boolean, theme: NewspaperTheme): string {
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
-    :root { --paper: oklch(95.5% 0.009 82); --ink: oklch(16% 0.01 52); --red: oklch(36% 0.11 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", "Noto Serif TC", serif; }
+    :root { --paper: oklch(96% 0 0); --ink: oklch(16% 0 0); --muted: oklch(34% 0 0); --red: oklch(24% 0 0); --hair: oklch(49% 0 0); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", "Noto Serif TC", serif; }
     * { box-sizing: border-box; }
     body { margin: 0; padding: clamp(1.5rem, 4vw, 3rem); }
     .full-story { max-width: 820px; margin: 0 auto; cursor: default; }
     .full-story .section { margin: 0 0 1rem; border-top: 4px solid var(--red); border-bottom: 1px solid var(--ink); padding: .5rem 0; color: var(--red); font: 700 .75rem/1.3 "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; letter-spacing: .06em; }
     .full-story h1 { max-width: 21ch; margin: 0; font-size: clamp(2.125rem, 5vw, 3rem); letter-spacing: -.025em; line-height: 1.02; text-wrap: balance; }
-    .full-story .dek { max-width: 56ch; margin: 1rem 0; color: oklch(36% 0.012 52); font-size: 1.125rem; font-weight: 700; line-height: 1.4; }
+    .full-story .dek { max-width: 56ch; margin: 1rem 0; color: var(--muted); font-size: 1.125rem; font-weight: 700; line-height: 1.4; }
     .full-story .byline { border-top: 1px solid var(--ink); padding: .5rem 0 1rem; font: 700 .75rem/1.3 "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; letter-spacing: .04em; }
-    .full-story .body { columns: 2; column-gap: 2rem; column-rule: 1px solid oklch(51% 0.01 52); font-size: 1.0625rem; line-height: 1.68; text-align: justify; }
+    .full-story .body { columns: 2; column-gap: 2rem; column-rule: 1px solid var(--hair); font-size: 1.0625rem; line-height: 1.68; text-align: justify; }
     .full-story .body p { margin: 0 0 1.35em; }
     .full-story .body p:first-child::first-letter { float: left; margin: .08em .22em .04em 0; font-size: 3.7em; font-weight: 700; line-height: .8; }
     .full-story .body h2 { break-after: avoid; margin: 1.6em 0 .5em; color: var(--red); font-size: 1.35em; line-height: 1.1; }
     .full-story .body blockquote { column-span: all; margin: 1.6em 0; border-top: 3px solid var(--red); border-bottom: 3px double var(--ink); padding: .8em 0; font-size: 1.3em; font-weight: 700; line-height: 1.28; }
     @media (max-width: 38.75rem) { .full-story .body { columns: 1; } }
+    ${themeCss(theme)}
     ${readerBridgeCss()}
   </style></head><body><article class="full-story" data-story-id="${escapeAttribute(story.id)}"><p class="section">${story.label === "fact" ? "報導" : "分析"}・完整報導</p><h1>${escapeHtml(story.headline)}</h1><p class="dek">${escapeHtml(story.dek)}</p><p class="byline">光譜日報編輯台・${escapeHtml(formatDate(bundle.date, bundle.language))}</p><div class="body">${story.bodyHtml}</div></article>${trustedReaderBridge(owner, [story], false)}</body></html>`;
 }
 
 function readerBridgeCss(): string {
   return `.reader-story { cursor: pointer; position: relative; transition: background-color 120ms ease; }
-    .reader-story:hover { background-color: oklch(91% 0.017 82); }
-    .reader-story:focus-visible { outline: 3px solid oklch(38% 0.13 27); outline-offset: -3px; }
+    .reader-story:hover { background-color: color-mix(in oklch, var(--paper) 91%, var(--red)); }
+    .reader-story:focus-visible { outline: 3px solid var(--red); outline-offset: -3px; }
     reader-controls { display: block !important; clear: both !important; margin-top: 12px !important; }`;
+}
+
+function themeCss(theme: NewspaperTheme): string {
+  const palette = {
+    classic: "--paper:oklch(96% 0 0);--ink:oklch(16% 0 0);--muted:oklch(34% 0 0);--red:oklch(24% 0 0);--hair:oklch(49% 0 0)",
+    salmon: "--paper:oklch(91.5% .045 30);--ink:oklch(18% .015 20);--muted:oklch(34% .03 20);--red:oklch(32% .09 15);--hair:oklch(48% .035 20)",
+    forest: "--paper:oklch(97% .006 155);--ink:oklch(16% .012 155);--muted:oklch(34% .025 155);--red:oklch(31% .07 155);--hair:oklch(48% .02 155)",
+  }[theme];
+  return `:root{${palette};color:var(--ink);background:var(--paper)}`;
 }
 
 function trustedPageHeader(page: EditionPage, bundle: EditionBundle): string {
@@ -353,11 +427,11 @@ function trustedPageHeader(page: EditionPage, bundle: EditionBundle): string {
 
 function trustedPageHeaderCss(): string {
   return `.publication-header{border-top:4px solid var(--ink);border-bottom:3px double var(--ink)}
-    .publication-folio,.publication-index{display:flex;justify-content:space-between;gap:16px;padding:5px 0;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;letter-spacing:.04em}
+    .publication-folio,.publication-index{display:flex;justify-content:space-between;gap:16px;padding:4px 0;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;letter-spacing:.04em}
     .publication-folio{border-bottom:1px solid var(--ink)}
-    .publication-name{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:16px;padding:7px 0 5px}
+    .publication-name{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:16px;padding:8px 0 4px}
     .publication-name h1{margin:0;color:var(--red);font-family:"Kaiti TC","STKaiti","BiauKai","DFKai-SB","Songti TC",serif;font-size:clamp(2.125rem,4.4vw,3.375rem);font-weight:700;letter-spacing:-.03em;line-height:.95}
-    .publication-name p{margin:0 0 2px;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
+    .publication-name p{margin:0 0 4px;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
     .publication-index{border-top:2px solid var(--ink)}
     .publication-index span:last-child{margin-left:auto}
     .publication-header.is-front .publication-name h1{font-size:clamp(2.75rem,5.4vw,3.875rem)}
@@ -371,7 +445,7 @@ function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: 
     const openable = ${openable ? "true" : "false"};
     const summaries = ${inlineScriptJson(summaries)};
     const send = (message) => window.parent.postMessage(message, "*");
-    const controlsMarkup = '<style>:host{all:initial;display:block;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:#211d19}.bar{display:flex;justify-content:flex-end;border-top:1px solid #211d19;border-bottom:1px solid #211d19;padding:4px 0}.actions{display:flex;gap:12px}.action{min-height:44px;appearance:none;border:0;background:transparent;color:#211d19;cursor:pointer;font:700 .8125rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;padding:8px}.action:hover{color:#7d1f25}.action:focus-visible{outline:2px solid #7d1f25;outline-offset:2px}</style><div class="bar"><div class="actions" aria-label="調整明日內容"><button class="action" data-action="love" type="button">♡ 喜歡</button><button class="action" data-action="less" type="button">⊘ 不喜歡</button></div></div>';
+    const controlsMarkup = '<style>:host{all:initial;display:block;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:var(--ink)}.bar{display:flex;justify-content:flex-end;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);padding:4px 0}.actions{display:flex;gap:12px}.action{min-height:44px;appearance:none;border:0;background:transparent;color:var(--ink);cursor:pointer;font:700 .8125rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;padding:8px}.action:hover{color:var(--red)}.action:focus-visible{outline:2px solid var(--red);outline-offset:2px}</style><div class="bar"><div class="actions" aria-label="調整明日內容"><button class="action" data-action="love" type="button">♡ 喜歡</button><button class="action" data-action="less" type="button">⊘ 不喜歡</button></div></div>';
     document.querySelectorAll('[data-story-id]').forEach((article) => {
       const storyId = article.getAttribute('data-story-id');
       if (!storyId || article.dataset.readerEnhanced) return;

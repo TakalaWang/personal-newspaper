@@ -8,6 +8,13 @@
       "when": 1784441549450,
       "tag": "0000_nebulous_miek",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1784443892667,
+      "tag": "0001_worthless_moon_knight",
+      "breakpoints": true
     }
   ]
 }

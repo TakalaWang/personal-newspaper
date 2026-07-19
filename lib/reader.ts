@@ -9,6 +9,11 @@ export type ShareRecord = {
   revokedAt: Date | null;
 };
 
+type StoredShare = ShareRecord & {
+  id: number;
+  createdAt: Date | null;
+};
+
 export function isSameOriginRequest(request: Request): boolean {
   const origin = request.headers.get("origin");
   return origin === new URL(request.url).origin;
@@ -40,6 +45,22 @@ export function createShareToken(): string {
 
 export function resolveShare<T extends ShareRecord>(shares: T[], tokenHash: string): T | undefined {
   return shares.find((share) => share.tokenHash === tokenHash && share.revokedAt === null);
+}
+
+export function shareSummary(share: StoredShare) {
+  return {
+    id: share.id,
+    editionId: share.editionId,
+    createdAt: share.createdAt,
+    revokedAt: share.revokedAt,
+  };
+}
+
+export function parseShareId(value: unknown): number {
+  if (!isRecord(value) || Object.keys(value).length !== 1 || typeof value.shareId !== "number" || !Number.isSafeInteger(value.shareId) || value.shareId < 1) {
+    fail("shareId must be a positive integer");
+  }
+  return value.shareId;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

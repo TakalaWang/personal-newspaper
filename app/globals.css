@@ -90,6 +90,23 @@ a:focus-visible {
   gap: 8px;
 }
 
+.share-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.share-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--blue-gray);
+  font-size: 0.76rem;
+}
+
 .quiet-button,
 .reaction-actions button,
 .page-tab {

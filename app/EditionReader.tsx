@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { EditionBundle, EditionPage, EditionStory } from "@/lib/edition";
 import type { ReactionAction } from "@/lib/reader";
 
@@ -9,13 +9,25 @@ type EditionReaderProps = {
   owner?: boolean;
 };
 
+type Share = {
+  id: number;
+  editionId: string;
+  createdAt: string | null;
+  revokedAt: string | null;
+};
+
 export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   const [pageIndex, setPageIndex] = useState(0);
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState<string | null>(null);
-  const [shareToken, setShareToken] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shares, setShares] = useState<Share[]>([]);
   const page = bundle.pages[pageIndex];
+
+  useEffect(() => {
+    if (!owner) return;
+    void loadShares().then(setShares).catch(() => undefined);
+  }, [owner]);
 
   async function react(action: ReactionAction, storyId: string) {
     setPending(`${action}:${storyId}`);
@@ -47,8 +59,8 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         setMessage(result.error ?? "Unable to create a share link.");
         return;
       }
-      setShareToken(result.token);
       setShareUrl(result.url);
+      setShares(await loadShares());
       try {
         await navigator.clipboard?.writeText(result.url);
         setMessage("Share link copied. It shows this edition only.");
@@ -62,19 +74,17 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     }
   }
 
-  async function revokeShare() {
-    if (!shareToken) return;
-    setPending("revoke");
+  async function revokeShare(shareId: number) {
+    setPending(`revoke:${shareId}`);
     try {
       const response = await fetch("/api/shares", {
         method: "DELETE",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ token: shareToken }),
+        body: JSON.stringify({ shareId }),
       });
       const result = (await response.json()) as { message?: string; error?: string };
       if (response.ok) {
-        setShareToken(null);
-        setShareUrl(null);
+        setShares(await loadShares());
       }
       setMessage(result.message ?? result.error ?? "Unable to revoke the share link.");
     } catch {
@@ -96,13 +106,9 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
             <button className="quiet-button" type="button" onClick={share} disabled={pending === "share"}>
               {pending === "share" ? "Preparing…" : "Share edition"}
             </button>
-            {shareToken ? (
-              <button className="quiet-button" type="button" onClick={revokeShare} disabled={pending === "revoke"}>
-                Revoke link
-              </button>
-            ) : null}
             {shareUrl ? <a className="quiet-button share-link" href={shareUrl} rel="noreferrer" target="_blank">Open link</a> : null}
           </div>
+          <ShareList shares={shares} editionId={bundle.id} pending={pending} onRevoke={revokeShare} />
         </header>
       ) : null}
 
@@ -145,6 +151,43 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
       </div>
     </section>
   );
+}
+
+function ShareList({
+  shares,
+  editionId,
+  pending,
+  onRevoke,
+}: {
+  shares: Share[];
+  editionId: string;
+  pending: string | null;
+  onRevoke: (shareId: number) => Promise<void>;
+}) {
+  const editionShares = shares.filter((share) => share.editionId === editionId);
+  if (editionShares.length === 0) return null;
+
+  return (
+    <ul className="share-list" aria-label="Share links for this edition">
+      {editionShares.map((share) => (
+        <li key={share.id}>
+          <span>{share.revokedAt ? "Revoked" : "Active"}</span>
+          {share.revokedAt ? null : (
+            <button className="quiet-button" disabled={pending === `revoke:${share.id}`} onClick={() => onRevoke(share.id)} type="button">
+              {pending === `revoke:${share.id}` ? "Revoking…" : "Revoke"}
+            </button>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+async function loadShares(): Promise<Share[]> {
+  const response = await fetch("/api/shares");
+  if (!response.ok) throw new Error("Unable to load share links");
+  const result = (await response.json()) as { shares?: Share[] };
+  return result.shares ?? [];
 }
 
 function StoryRail({

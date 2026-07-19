@@ -43,5 +43,6 @@ export const shares = sqliteTable("shares", {
   editionId: text("edition_id")
     .notNull()
     .references(() => editions.id),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }),
   revokedAt: integer("revoked_at", { mode: "timestamp_ms" }),
 });

@@ -1,0 +1,1 @@
+ALTER TABLE `shares` ADD `created_at` integer;

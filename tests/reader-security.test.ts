@@ -3,8 +3,10 @@ import test from "node:test";
 import {
   hashShareToken,
   isSameOriginRequest,
+  parseShareId,
   parseReaction,
   resolveShare,
+  shareSummary,
 } from "../lib/reader.ts";
 
 test("share tokens are stored as stable SHA-256 hashes", async () => {
@@ -47,4 +49,14 @@ test("public sharing resolves only a live matching capability", () => {
   assert.equal(resolveShare(shares, "live")?.editionId, "daily-1");
   assert.equal(resolveShare(shares, "revoked"), undefined);
   assert.equal(resolveShare(shares, "missing"), undefined);
+});
+
+test("persisted share rows expose safe metadata and revoke by row id", () => {
+  const createdAt = new Date("2026-07-19T00:00:00.000Z");
+  assert.deepEqual(
+    shareSummary({ id: 9, editionId: "daily-1", tokenHash: "never-return-this", createdAt, revokedAt: null }),
+    { id: 9, editionId: "daily-1", createdAt, revokedAt: null },
+  );
+  assert.equal(parseShareId({ shareId: 9 }), 9);
+  assert.throws(() => parseShareId({ shareId: 0 }), /shareId/i);
 });

@@ -8,6 +8,7 @@ export type EditionPage = {
 
 export type EditionStory = {
   id: string;
+  headline?: string;
   label: StoryLabel;
   sourceIds: string[];
 };
@@ -132,7 +133,10 @@ function storyList(value: unknown, sourceIds: Set<string>): EditionStory[] {
       }
     }
 
-    return { id, label: input.label, sourceIds: sourceIdsForStory };
+    const headline = input.headline === undefined ? undefined : text(input.headline, `stories[${index}].headline`);
+    return headline === undefined
+      ? { id, label: input.label, sourceIds: sourceIdsForStory }
+      : { id, headline, label: input.label, sourceIds: sourceIdsForStory };
   });
 }
 

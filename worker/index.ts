@@ -12,6 +12,7 @@ interface Env {
       value: string,
       options?: { httpMetadata?: { contentType: string } },
     ): Promise<unknown>;
+    get(key: string): Promise<{ text(): Promise<string> } | null>;
   };
   AUTOMATION_TOKEN: string;
   IMAGES: {

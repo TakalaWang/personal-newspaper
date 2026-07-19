@@ -4,7 +4,7 @@ This is a print grammar, not a fixed template. Picture one reader scanning one c
 
 ## Identity
 
-- The trusted reader owns the selected press palette. It offers gray-white newsprint with dark red spot ink, salmon financial paper with wine ink, and blue-gray evening paper with navy ink. All three keep body contrast above WCAG AA and spot color below 10% of the sheet.
+- The trusted reader owns the selected press palette. It offers natural newsprint with dark red spot ink, salmon financial paper with wine ink, and modern white paper with navy spot ink. All three keep body contrast above WCAG AA and spot color below 10% of the sheet.
 - Generated layout rules consume the semantic variables `--paper`, `--ink`, `--muted`, `--hair`, and `--red`. The trusted reader applies their final values after edition CSS, so bundle fallback declarations are never authoritative. `--red` is the historical spot-ink variable and may resolve to black, wine, or green.
 - No gradients, tinted cards, extra accent hues, brass, glass, or decorative shadows inside the sheet.
 - Songti/STSong/PMingLiU-style serif carries headlines and copy. Kaiti/STKaiti is limited to the masthead or one editorial accent. PingFang-style sans carries folios, captions, bylines, labels, and controls.
@@ -48,7 +48,7 @@ This is a print grammar, not a fixed template. Picture one reader scanning one c
 - Original source links appear only in the detailed reader footer from `sourceIds`. Bundle page, summary, and body HTML contain no links. Page HTML contains no remote assets or duplicate canonical story text.
 - Make the entire article root the opening affordance with keyboard equivalence and visible focus. Never render `閱讀全文`, `Read more`, chevrons, or button-like jump lines on the sheet. The printed summary must earn the click through substance, not a teaser CTA.
 - Keep feedback within each article package. The reader injects only `喜歡` and `不喜歡` as a compact final rule inside the article; bundle HTML never recreates controls. Original-source actions exist only after the detailed article opens.
-- Images must be explanatory or evidence-bearing, not decorative filler. Every verified HTTPS image needs a manifest entry with source id, creator, publication date, useful alt text, caption, credit, and usage basis. Put it in `summaryHtml` when needed for scanning and in `bodyHtml` when the detailed explanation depends on it; repeating an essential figure is allowed.
+- Images must be explanatory or evidence-bearing, not decorative filler. Preserve the original color of every image: never apply grayscale, duotone, tint, blend, contrast, or opacity filters unless the verified source itself is monochrome and color carries no information. Every verified HTTPS image needs a manifest entry with source id, creator, publication date, useful alt text, caption, credit, and usage basis. Put it in `summaryHtml` when needed for scanning and in `bodyHtml` when the detailed explanation depends on it; repeating an essential figure is allowed.
 - Avoid identical tag–headline–paragraph cards and repeated tiny uppercase tracked eyebrows. Same-sized modules with four-sided borders and equal padding are cards even when their border is a `1px` hairline.
 
 ## Refusals
@@ -58,6 +58,6 @@ No navbar, top tab strip, card grid, dashboard rail, detached feedback/source si
 ## Preflight
 
 - Content: compare every factual claim to the evidence ledger; verify dates, names, quantities, versions, label, and summary/body agreement. Remove claims that are merely plausible.
-- Images: open every asset, confirm provenance and relevance, then read alt text, caption, and credit as a set. No broken or unverified image ships.
+- Images: open every asset, confirm provenance and relevance, then read alt text, caption, and credit as a set. Confirm its rendered pixels preserve the verified original color and do not hide color-coded evidence. No broken, filtered, or unverified image ships.
 - Silhouette: at desktop and exactly 560px, blur or squint; the lead, secondary packages, evidence-bearing visual, and multiple reading paths remain distinct. Adjacent pages have visibly different silhouettes. Compare against the current live edition and reject an unexplained near-copy. Inspect lane endings and row boundaries; reject any alignment-created cavity larger than four body lines, lane endings that differ by more than four body lines when enough verified copy exists, or any page whose largest feature is empty space.
 - Interaction: confirm the sheet has full-height left/right hover and focus targets labelled 上一頁／下一頁, touch affordances, arrow-key page turning, directional paper-turn motion, and a reduced-motion alternative. Confirm there is no top navbar or on-sheet open button. At phone width confirm no headline or control overflows; open every story by clicking the article body and by keyboard; inspect drop-cap clearance; ensure original sources exist only in the detailed reader. WCAG 2.2 AA, semantic structure, keyboard access, visible focus, useful alt text, and non-color cues are mandatory.

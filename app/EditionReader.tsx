@@ -17,9 +17,9 @@ type Share = {
 };
 
 const THEMES = [
-  { id: "classic", label: "灰白晨報", description: "灰白新聞紙、近黑油墨與暗紅重點" },
+  { id: "classic", label: "經典新聞紙", description: "自然灰白紙、近黑油墨與暗紅重點" },
   { id: "salmon", label: "鮭色財經", description: "傳統鮭色新聞紙與深酒紅油墨" },
-  { id: "evening", label: "藍灰晚報", description: "藍灰新聞紙與沉穩海軍藍油墨" },
+  { id: "modern", label: "現代白報", description: "中性白紙、近黑油墨與深藍重點" },
 ] as const;
 
 type NewspaperTheme = (typeof THEMES)[number]["id"];
@@ -114,9 +114,9 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
 
   useEffect(() => {
     const storyIds = new Set(bundle.stories.map((story) => story.id));
+    const pageWindow = pageFrameRef.current?.contentWindow;
+    const articleWindow = articleFrameRef.current?.contentWindow;
     const receiveReaderMessage = (event: MessageEvent) => {
-      const pageWindow = pageFrameRef.current?.contentWindow;
-      const articleWindow = articleFrameRef.current?.contentWindow;
       if (event.source !== pageWindow && event.source !== articleWindow) return;
 
       try {
@@ -228,6 +228,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
             className="edition-frame"
             ref={pageFrameRef}
             sandbox="allow-scripts"
+            onLoad={() => pageFrameRef.current?.contentWindow?.postMessage({ type: "measure-page" }, "*")}
             srcDoc={pageDocument(page, bundle, owner, theme)}
             style={pageHeight === null ? undefined : { height: `${pageHeight}px` }}
             title={`${bundle.masthead}: ${page.section}`}
@@ -243,9 +244,8 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
           <span className="page-turn-control"><b aria-hidden="true">→</b><small>下一頁</small></span>
         </button>
       </div>
-      <footer className="reader-furniture">
-        <p><strong>{page.section}</strong><span>第 {pageIndex + 1}／{bundle.pages.length} 版・{formatDate(bundle.date, bundle.language)}</span></p>
-        {owner ? (
+      {owner ? (
+        <footer className="reader-furniture">
           <div className="reader-utilities">
             <label className="theme-picker">
               <span>紙色</span>
@@ -253,15 +253,15 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
                 {THEMES.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
               </select>
             </label>
-            <button className="quiet-button" type="button" onClick={share} disabled={pending === "share"}>
+            <button className="share-action" type="button" onClick={share} disabled={pending === "share"}>
               {pending === "share" ? "準備中…" : "分享本期"}
             </button>
             {shareUrl ? <a className="quiet-button share-link" href={shareUrl} rel="noreferrer" target="_blank">開啟分享頁</a> : null}
           </div>
-        ) : null}
-        {owner ? <ShareList shares={shares} editionId={bundle.id} pending={pending} onRevoke={revokeShare} /> : null}
-      </footer>
-      <p aria-live="polite" className="reader-message">{message}</p>
+          <ShareList shares={shares} editionId={bundle.id} pending={pending} onRevoke={revokeShare} />
+        </footer>
+      ) : null}
+      {message ? <p aria-live="polite" className="reader-message">{message}</p> : null}
 
       {activeStory ? (
         <StoryDialog
@@ -429,9 +429,9 @@ function readerBridgeCss(): string {
 
 function themeCss(theme: NewspaperTheme): string {
   const palette = {
-    classic: "--paper:oklch(94.8% .006 85);--ink:oklch(18% .008 70);--muted:oklch(34% .012 70);--red:oklch(34% .085 28);--hair:oklch(52% .014 70)",
+    classic: "--paper:oklch(95% .006 88);--ink:oklch(18% .006 70);--muted:oklch(34% .01 70);--red:oklch(33% .075 27);--hair:oklch(52% .012 70)",
     salmon: "--paper:oklch(90.5% .042 40);--ink:oklch(18% .012 30);--muted:oklch(33% .025 30);--red:oklch(31% .082 20);--hair:oklch(49% .035 30)",
-    evening: "--paper:oklch(94.5% .008 245);--ink:oklch(17% .014 250);--muted:oklch(33% .025 250);--red:oklch(30% .075 250);--hair:oklch(49% .025 250)",
+    modern: "--paper:oklch(98% 0 0);--ink:oklch(16% 0 0);--muted:oklch(32% .008 250);--red:oklch(30% .06 250);--hair:oklch(52% .012 250)",
   }[theme];
   return `:root{${palette};color:var(--ink);background:var(--paper)}`;
 }
@@ -440,7 +440,7 @@ function trustedPageHeader(page: EditionPage, bundle: EditionBundle): string {
   const pageNumber = bundle.pages.findIndex((candidate) => candidate.id === page.id) + 1;
   const storyCount = bundle.stories.filter((story) => story.pageId === page.id).length;
   const title = pageNumber === 1 ? bundle.masthead : page.section;
-  return `<header class="publication-header${pageNumber === 1 ? " is-front" : ""}"><div class="publication-folio"><span>${escapeHtml(bundle.masthead)}・個人早報</span><span>${escapeHtml(formatDate(bundle.date, bundle.language))}・第 ${pageNumber} 版</span></div><div class="publication-name"><h1>${escapeHtml(title)}</h1><p>${pageNumber === 1 ? "每日只留下值得讀的事" : escapeHtml(bundle.masthead)}</p></div><div class="publication-index"><span>${escapeHtml(page.section)}</span><span>${storyCount} 篇</span><span>點選任一新聞區塊開啟完整報導</span></div></header>`;
+  return `<header class="publication-header${pageNumber === 1 ? " is-front" : ""}"><div class="publication-folio"><span>${escapeHtml(bundle.masthead)}・個人早報</span><span>${escapeHtml(formatDate(bundle.date, bundle.language))}・第 ${pageNumber} 版</span></div><div class="publication-name"><h1>${escapeHtml(title)}</h1><p>${pageNumber === 1 ? "每日只留下值得讀的事" : escapeHtml(bundle.masthead)}</p></div><div class="publication-index"><span>${escapeHtml(page.section)}</span><span>${storyCount} 篇</span></div></header>`;
 }
 
 function trustedPageHeaderCss(): string {
@@ -451,7 +451,6 @@ function trustedPageHeaderCss(): string {
     .publication-name h1{margin:0;color:var(--red);font-family:"Kaiti TC","STKaiti","BiauKai","DFKai-SB","Songti TC",serif;font-size:clamp(2.125rem,4.4vw,3.375rem);font-weight:700;letter-spacing:-.03em;line-height:.95}
     .publication-name p{margin:0 0 4px;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
     .publication-index{border-top:2px solid var(--ink)}
-    .publication-index span:last-child{margin-left:auto}
     .publication-header.is-front .publication-name h1{font-size:clamp(2.75rem,5.4vw,3.875rem)}
     @media(max-width:559px){.publication-folio,.publication-index{flex-wrap:wrap}.publication-index span:last-child{display:none}.publication-name{grid-template-columns:1fr}.publication-name p{display:none}.publication-header.is-front .publication-name h1{font-size:3rem}}`;
 }

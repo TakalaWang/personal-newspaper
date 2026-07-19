@@ -90,7 +90,7 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(baseDesign, /column-fill: balance/i);
   assert.match(baseDesign, /semantic variables/i);
   assert.doesNotMatch(baseDesign, /追蹤主題/);
-  assert.match(design, /newsprint.*salmon.*blue-gray/is);
+  assert.match(design, /newsprint.*salmon.*modern white/is);
   assert.match(design, /independent vertical lanes/i);
   assert.doesNotMatch(design, /brass/);
 
@@ -115,4 +115,6 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(parsedTemplate.pages[0].css, /column-fill:balance/);
   assert.match(parsedTemplate.pages[1].html, /tech-main.*tech-rail/);
   assert.match(baseDesign, /lane endings.*four body lines/is);
+  assert.match(baseDesign, /preserve.*original color/is);
+  assert.doesNotMatch(template, /grayscale\(/i);
 });

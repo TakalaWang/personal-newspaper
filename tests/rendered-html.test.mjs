@@ -47,12 +47,12 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.match(reader, /sandbox="allow-scripts"/);
   assert.match(reader, /api\/reactions/);
   assert.match(reader, /api\/shares/);
-  assert.match(css, /--surface: oklch\(94\.8% 0\.006 85\)/);
+  assert.match(css, /--surface: oklch\(95% 0\.006 88\)/);
   assert.match(css, /data-theme="salmon"/);
-  assert.match(css, /data-theme="evening"/);
+  assert.match(css, /data-theme="modern"/);
   assert.match(css, /\.theme-dialog/);
   assert.match(reader, /personal-newspaper-theme/);
-  assert.match(reader, /灰白晨報.*鮭色財經.*藍灰晚報/s);
+  assert.match(reader, /經典新聞紙.*鮭色財經.*現代白報/s);
   assert.match(reader, /themeCss\(theme\)/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 
@@ -74,6 +74,10 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.match(reader, /onAnimationEnd=/);
   assert.match(reader, /document\.body\.getBoundingClientRect\(\)\.height/);
   assert.match(reader, /measure-page/);
+  assert.match(reader, /onLoad=/);
+  assert.match(reader, /className="share-action"/);
+  assert.doesNotMatch(reader, /點選任一新聞區塊開啟完整報導/);
+  assert.doesNotMatch(reader, /第 \{pageIndex \+ 1\}／\{bundle\.pages\.length\} 版/);
   assert.doesNotMatch(reader, /document\.documentElement\.scrollHeight/);
   assert.doesNotMatch(reader, /useState\(1120\)/);
   assert.doesNotMatch(reader, /className="edition-pages"/);

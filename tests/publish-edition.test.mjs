@@ -18,6 +18,13 @@ const bundle = {
   sources: [{ id: "source", url: "https://example.com/source" }],
 };
 
+test("accepts pnpm's leading argument separator", async () => {
+  const result = await runArgs(["--", "--help"]);
+
+  assert.equal(result.code, 0);
+  assert.match(result.stdout, /pnpm edition:publish/);
+});
+
 test("publishes a bundle to a local agent endpoint without exposing the token", async () => {
   const received = requestOnce((request, response, body) => {
     assert.equal(request.method, "POST");
@@ -97,8 +104,14 @@ async function readBody(request) {
 }
 
 async function run(file, url, token) {
+  return runArgs(["--file", file, "--url", url], { AUTOMATION_TOKEN: token });
+}
+
+async function runArgs(args, environment = {}) {
   return new Promise((resolve) => {
-    const child = spawn(process.execPath, [fileURLToPath(cli), "--file", file, "--url", url, "--token", token]);
+    const child = spawn(process.execPath, [fileURLToPath(cli), ...args], {
+      env: { ...process.env, ...environment },
+    });
     let stdout = "";
     let stderr = "";
     child.stdout.on("data", (chunk) => { stdout += chunk; });

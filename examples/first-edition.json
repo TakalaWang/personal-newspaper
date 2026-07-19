@@ -1,0 +1,57 @@
+{
+  "id": "2026-07-19-first-edition",
+  "date": "2026-07-19",
+  "language": "zh-Hant-TW",
+  "masthead": "光譜日報",
+  "pages": [
+    {
+      "id": "front-page",
+      "css": "body{margin:0;background:#fff;color:#101820;font-family:Georgia,'Noto Serif TC',serif}.page{max-width:980px;margin:0 auto;padding:38px 34px 48px}.kicker{font:700 12px/1.2 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#3a5f7d}.masthead{border-top:5px solid #101820;border-bottom:1px solid #101820;margin:18px 0 26px;padding:12px 0 10px;display:flex;justify-content:space-between;gap:20px;align-items:baseline}.masthead h1{font-size:clamp(38px,8vw,82px);letter-spacing:-.06em;margin:0}.date{font:600 13px/1.4 Arial,sans-serif;text-align:right}.lead{display:grid;grid-template-columns:minmax(0,2fr) minmax(180px,1fr);gap:34px}.lead h2{font-size:clamp(36px,5vw,64px);line-height:.98;letter-spacing:-.05em;margin:0 0 17px}.summary{font-size:20px;line-height:1.45;max-width:34em}.rail{border-left:1px solid #b8c2c9;padding-left:20px}.rail h3{font:700 12px/1.2 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;margin:0 0 10px}.rail p{font-size:16px;line-height:1.45}.label{display:inline-block;background:#d6b569;color:#101820;border-radius:999px;font:700 10px/1 Arial,sans-serif;letter-spacing:.08em;padding:5px 7px;text-transform:uppercase}.byline{font:600 13px/1.5 Arial,sans-serif;color:#52606d}.note{border-top:1px solid #101820;margin-top:32px;padding-top:14px;font:14px/1.5 Arial,sans-serif;color:#52606d}a{color:#234b6c} @media(max-width:650px){.page{padding:24px 18px}.lead{grid-template-columns:1fr}.rail{border-left:0;border-top:1px solid #b8c2c9;padding:16px 0 0}.date{text-align:left}}",
+      "html": "<main class=\"page\"><div class=\"kicker\">個人版・首期</div><header class=\"masthead\"><h1>光譜日報</h1><div class=\"date\">2026.07.19<br>臺北・每日版</div></header><section class=\"lead\"><article data-story-id=\"research-loop\"><span class=\"label\">Fact</span><h2>讓研究有節奏，而不是只有資訊流</h2><p class=\"summary\">今天的起點不是追更多消息，而是把每一則值得留下的訊號，變成可驗證、可回看的工作線索。</p><p class=\"byline\">編輯部筆記・以公開來源為基礎的原創整理</p><p>OpenAI 將 Codex Security 描述為先建立專案脈絡、再驗證潛在問題並提出修補的工作流程。這提醒我們：高訊號的代理工作，靠的是先定義問題與證據，再輸出結論。</p><p><a href=\"https://openai.com/index/codex-security-now-in-research-preview/\">閱讀原始來源</a></p></article><aside class=\"rail\"><h3>今天的閱讀契約</h3><p>每篇會標明「事實」或「推論」，並保留來源。按下喜歡、少一點或追蹤，影響下一期，不回寫今天的版面。</p><p><strong>本期主題</strong><br>AI・產品・研究方法</p></aside></section><footer class=\"note\">本期是啟用版：以可驗證來源與短篇原創編輯，建立第一份個人閱讀基線。</footer></main>"
+    },
+    {
+      "id": "deep-read",
+      "css": "body{margin:0;background:#f8f8f5;color:#101820;font-family:Georgia,'Noto Serif TC',serif}.page{max-width:900px;margin:0 auto;padding:44px 34px}.section{font:700 12px/1 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#3a5f7d}.rule{border:0;border-top:1px solid #101820;margin:14px 0 28px}h2{font-size:clamp(34px,5vw,60px);line-height:1.02;letter-spacing:-.045em;max-width:12em;margin:0 0 24px}.columns{columns:2 260px;column-gap:36px;font-size:18px;line-height:1.6}.columns p:first-child:first-letter{float:left;font-size:4.3em;line-height:.74;padding:8px 8px 0 0;color:#3a5f7d}.pull{break-inside:avoid;border-top:3px solid #d6b569;border-bottom:1px solid #a4afb6;font-size:24px;line-height:1.25;margin:20px 0;padding:18px 0}.label{font:700 10px/1 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#3a5f7d}a{color:#234b6c}@media(max-width:600px){.page{padding:28px 18px}}",
+      "html": "<main class=\"page\"><div class=\"section\">深讀・代理工作的邊界</div><hr class=\"rule\"><article data-story-id=\"sandbox-boundary\"><div class=\"label\">Fact</div><h2>安全邊界不是代理能力的阻力</h2><div class=\"columns\"><p>一個願意替你探索世界的代理，也必須清楚知道自己不能越過哪些邊界。OpenAI 關於 Windows sandbox 的工程文章，把可用性與隔離性放在同一個設計問題裡：權限越少的環境可能更安全，卻也可能限制工作；反之亦然。</p><p>這份日報採取相同但更窄的原則：研究與編輯可以每日變動，閱讀器與內容驗證規則則維持穩定。每期內容是隔離的靜態頁面，不能執行腳本；每一則故事都要有可查核的 HTTPS 來源。</p><aside class=\"pull\">把自由留給版面與觀點，把約束留給資料、權限與來源。</aside><p>這不是要把閱讀變得僵硬，而是讓個人化有一條可信的回溯路徑：哪一段是報導，哪一段是分析，哪一個點擊會改變明天的選題，都能被區分。</p><p><a href=\"https://openai.com/index/building-codex-windows-sandbox/\">閱讀原始來源</a></p></div></article></main>"
+    },
+    {
+      "id": "editorial-note",
+      "css": "body{margin:0;background:#101820;color:#f8f8f5;font-family:Georgia,'Noto Serif TC',serif}.page{max-width:900px;margin:0 auto;padding:44px 34px}.eyebrow{font:700 12px/1 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#d6b569}.grid{display:grid;grid-template-columns:1.4fr .6fr;gap:40px;align-items:end}h2{font-size:clamp(36px,6vw,72px);line-height:.98;letter-spacing:-.055em;margin:18px 0}.copy{font-size:19px;line-height:1.55}.side{border-left:1px solid #697780;padding-left:20px;font:15px/1.55 Arial,sans-serif;color:#d5dde1}.side strong{color:#d6b569}.label{font:700 10px/1 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#d6b569}a{color:#d6e6ef}@media(max-width:650px){.page{padding:30px 18px}.grid{grid-template-columns:1fr}.side{border-left:0;border-top:1px solid #697780;padding:16px 0 0}}",
+      "html": "<main class=\"page\"><div class=\"eyebrow\">編輯觀察・下一期的變因</div><div class=\"grid\"><article data-story-id=\"feedback-contract\"><div class=\"label\">Inference</div><h2>個人化不是猜中你，而是記住你改變了什麼</h2><div class=\"copy\"><p>若一份報紙每天都不同，最重要的不是演算法把人釘在既有喜好，而是它能否把一次明確的回應，轉成下一次可感知的編輯選擇。</p><p>因此，這份日報把回饋設計成「喜歡、少一點、追蹤」三種低摩擦訊號，並刻意只作用於下一期。這是一個產品推論：延遲生效能讓當日版本仍是一份完整、可分享的作品，也讓使用者看得到偏好的因果關係。</p><p>這個選擇受到 Codex 以可檢驗步驟處理複雜工作、並保留人類檢閱節點的產品思路啟發；它不是該來源對個人化新聞的直接主張。</p><p><a href=\"https://help.openai.com/en/articles/11096431\">閱讀原始來源</a></p></div></article><aside class=\"side\"><strong>明日會怎麼變？</strong><br>第一期建立基線。從下一期開始，已回饋的故事會調整題材比重、深讀長度與驚喜欄位；沒有回饋時，維持核心／相鄰／意外的比例。</aside></div></main>"
+    }
+  ],
+  "stories": [
+    {
+      "id": "research-loop",
+      "headline": "讓研究有節奏，而不是只有資訊流",
+      "label": "fact",
+      "sourceIds": ["codex-security"]
+    },
+    {
+      "id": "sandbox-boundary",
+      "headline": "安全邊界不是代理能力的阻力",
+      "label": "fact",
+      "sourceIds": ["windows-sandbox"]
+    },
+    {
+      "id": "feedback-contract",
+      "headline": "個人化不是猜中你，而是記住你改變了什麼",
+      "label": "inference",
+      "sourceIds": ["codex-cli"]
+    }
+  ],
+  "sources": [
+    {
+      "id": "codex-security",
+      "url": "https://openai.com/index/codex-security-now-in-research-preview/"
+    },
+    {
+      "id": "windows-sandbox",
+      "url": "https://openai.com/index/building-codex-windows-sandbox/"
+    },
+    {
+      "id": "codex-cli",
+      "url": "https://help.openai.com/en/articles/11096431"
+    }
+  ]
+}

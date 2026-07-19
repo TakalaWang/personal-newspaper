@@ -33,7 +33,7 @@ Then run **Publish now** and create or update exactly one daily Codex Automation
 5. Validate those constraints before publishing. Write the bundle to a local JSON file, then run:
 
    ```bash
-   pnpm edition:publish -- --file edition.json --url "$PAPER_URL" --token "$AUTOMATION_TOKEN"
+   pnpm edition:publish -- --file edition.json --url "$PAPER_URL"
    ```
 
    A failed publication leaves the previous edition live. Do not invent a fallback edition or retry with a different id.

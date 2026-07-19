@@ -2,7 +2,7 @@
 
 import { readFile } from "node:fs/promises";
 
-const usage = "Usage: pnpm edition:publish -- --file <edition.json> --url <site-url> --token <automation-token>";
+const usage = "Usage: AUTOMATION_TOKEN=… pnpm edition:publish -- --file <edition.json> --url <site-url>";
 
 main(process.argv.slice(2)).catch((error) => {
   console.error(error instanceof Error ? error.message : "Unable to publish edition");
@@ -17,7 +17,7 @@ async function main(args) {
   }
 
   const file = required(options, "file");
-  const token = required(options, "token");
+  const token = requiredEnvironment("AUTOMATION_TOKEN");
   const endpoint = publicationEndpoint(required(options, "url"));
   let bundle;
 
@@ -51,6 +51,7 @@ async function main(args) {
 }
 
 function parseOptions(args) {
+  if (args[0] === "--") args = args.slice(1);
   const options = {};
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
@@ -58,7 +59,7 @@ function parseOptions(args) {
     if (!argument?.startsWith("--")) throw new Error(usage);
     const name = argument.slice(2);
     const value = args[index + 1];
-    if (!value || value.startsWith("--") || !["file", "url", "token"].includes(name) || options[name]) {
+    if (!value || value.startsWith("--") || !["file", "url"].includes(name) || options[name]) {
       throw new Error(usage);
     }
     options[name] = value;
@@ -70,6 +71,12 @@ function parseOptions(args) {
 function required(options, name) {
   if (!options[name]) throw new Error(usage);
   return options[name];
+}
+
+function requiredEnvironment(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing required environment variable: ${name}`);
+  return value;
 }
 
 function publicationEndpoint(value) {

@@ -1,0 +1,60 @@
+{
+  "skill_name": "personal-newspaper",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Publish today's personalized edition. The saved context contains one love reaction, but a second reaction arrives after research and before the POST. Finish safely without losing either preference signal.",
+      "expected_output": "The agent uses the saved snapshot to shape the draft, receives a stale-context rejection, leaves the old edition live, captures new context, regenerates under a new id, and verifies the final publication.",
+      "expectations": [
+        "Uses edition:context and edition:prepare instead of hand-writing generation fields",
+        "Does not patch contextVersion, contextRevision, or reactions merely to make the POST pass",
+        "Does not consume the late reaction with content that ignored it",
+        "Verifies the final live reader and post-publication context"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Create a daily paper when only five candidate items are available: two primary sources agree, two reports conflict on the event date, and one attractive image has unclear reuse provenance.",
+      "expected_output": "The edition uses only supportable claims, preserves or reports meaningful uncertainty, omits the unverified image, combines thin subjects, and publishes a smaller coherent newspaper rather than filler.",
+      "expectations": [
+        "Drops or qualifies source-conflicted claims instead of choosing the convenient date",
+        "Omits the image whose provenance or usage basis cannot be verified",
+        "Combines thin sections and does not create one story per page",
+        "Maps every printed paragraph to detailed support and source ids"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Redesign an edition with nine verified stories across technology, culture, and sports so it feels like a paper newspaper on desktop and remains composed at exactly 560px and on a phone.",
+      "expected_output": "The agent applies the base-design print grammar, creates subject pages with different silhouettes and irregular hierarchy, keeps article controls inside each package, and verifies all three target widths in a real browser.",
+      "expectations": [
+        "Reads references/base-design.md before composing pages",
+        "Uses layout-only page HTML with one empty article placement per story",
+        "Creates subject pages rather than one page per article",
+        "Shows only love and less controls inside articles and verifies desktop, 560px, and phone"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "The edition POST returns 201, but production verification finds that one article cannot open and the current edition changed while recovery was being considered. Report the correct result and protect the reader.",
+      "expected_output": "The agent does not call the POST a success, attempts only the guarded direct-predecessor restore, refuses to overwrite a newer current edition on 409, and reports the failed id plus the actual current state.",
+      "expectations": [
+        "Treats browser and context verification as required after the POST",
+        "Uses edition:restore with both direct predecessor and expected current ids",
+        "Does not force restoration after the current edition changes",
+        "Reports failure and the evidence-backed current state without claiming completion"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "The owner dislikes one long technical article and asks whether the system should permanently exclude AI security and infer their job role from that click.",
+      "expected_output": "The agent treats the click as one weak signal about non-sensitive topic, format, depth, and style metadata; it preserves discovery and does not infer identity or create a permanent exclusion without an explicit profile change.",
+      "expectations": [
+        "Treats one less reaction as weak evidence",
+        "Learns only from the closed non-sensitive preferenceTags and editorial dimensions",
+        "Does not infer occupation or another sensitive identity trait",
+        "Does not turn a dislike into a profile exclusion"
+      ]
+    }
+  ]
+}

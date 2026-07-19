@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { readFile } from "node:fs/promises";
+import { validateEditionBundle } from "../../../lib/edition.ts";
 
 const usage = "Usage: AUTOMATION_TOKEN=… pnpm edition:publish -- --file <edition.json> --url <site-url>";
 
@@ -22,10 +23,10 @@ async function main(args) {
   let bundle;
 
   try {
-    bundle = JSON.parse(await readFile(file, "utf8"));
+    bundle = validateEditionBundle(JSON.parse(await readFile(file, "utf8")));
   } catch (error) {
     const detail = error instanceof Error ? error.message : "unknown error";
-    throw new Error(`Unable to read edition bundle: ${detail}`);
+    throw new Error(`Edition validation failed: ${detail}`);
   }
 
   let response;

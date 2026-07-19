@@ -15,6 +15,7 @@ const PROFILE_FIELDS = new Set([
   "publicationTime",
   "preferences",
 ]);
+const EDITION_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
 
 export function isAuthorizedAgentRequest(
   request: Request,
@@ -48,6 +49,23 @@ export function parseProfileUpdate(value: unknown): ProfileUpdate {
   if (!isRecord(value.preferences)) fail("preferences must be an object");
 
   return { ownerEmail, masthead, language, timezone, publicationTime, preferences: value.preferences };
+}
+
+export function parseEditionRestore(value: unknown): { targetEditionId: string; expectedCurrentEditionId: string } {
+  if (!isRecord(value)) fail("restore body must be an object");
+  for (const key of Object.keys(value)) {
+    if (key !== "targetEditionId" && key !== "expectedCurrentEditionId") fail(`unexpected field: ${key}`);
+  }
+  const targetEditionId = editionId(value.targetEditionId, "targetEditionId");
+  const expectedCurrentEditionId = editionId(value.expectedCurrentEditionId, "expectedCurrentEditionId");
+  if (targetEditionId === expectedCurrentEditionId) fail("targetEditionId must differ from expectedCurrentEditionId");
+  return { targetEditionId, expectedCurrentEditionId };
+}
+
+function editionId(value: unknown, name: string): string {
+  const id = nonEmpty(value, name);
+  if (!EDITION_ID.test(id)) fail(`${name} must be a valid identifier`);
+  return id;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

@@ -1,6 +1,6 @@
 # Design Constitution
 
-The canonical daily-edition grammar is [skills/personal-newspaper/BASE_DESIGN.md](skills/personal-newspaper/BASE_DESIGN.md).
+The canonical daily-edition grammar is [skills/personal-newspaper/references/base-design.md](skills/personal-newspaper/references/base-design.md).
 
 The product presents neutral newsprint, dark ink, hairline rules, and deep press red as its only spot color. Songti-style serif carries the newspaper; Kaiti is reserved for the masthead or one accent; sans-serif carries metadata and controls.
 

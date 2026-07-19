@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { EditionBundle, EditionPage, EditionStory } from "@/lib/edition";
+import { escapeHtml, renderStorySummary, type EditionBundle, type EditionPage, type EditionStory } from "@/lib/edition";
+import { isPinnedLegacyEdition, type ReadableEditionBundle } from "@/lib/legacy-cutover";
 import { parseReaderMessage, type ReactionAction } from "@/lib/reader";
 
 type EditionReaderProps = {
-  bundle: EditionBundle;
+  bundle: ReadableEditionBundle;
   owner?: boolean;
 };
 
@@ -50,7 +51,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
       const response = await fetch("/api/reactions", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action, storyId }),
+        body: JSON.stringify({ action, storyId, editionId: bundle.id }),
       });
       const result = (await response.json()) as { message?: string; error?: string };
       setMessage(result.message ?? result.error ?? "Unable to save this response.");
@@ -59,7 +60,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     } finally {
       setPending(null);
     }
-  }, []);
+  }, [bundle.id]);
 
   useEffect(() => {
     const storyIds = new Set(bundle.stories.map((story) => story.id));
@@ -203,7 +204,7 @@ function StoryDialog({
   story,
   onClose,
 }: {
-  bundle: EditionBundle;
+  bundle: ReadableEditionBundle;
   closeButtonRef: React.RefObject<HTMLButtonElement | null>;
   frameRef: React.RefObject<HTMLIFrameElement | null>;
   owner: boolean;
@@ -281,19 +282,32 @@ async function loadShares(): Promise<Share[]> {
   return result.shares ?? [];
 }
 
-function pageDocument(page: EditionPage, bundle: EditionBundle, owner: boolean): string {
+function pageDocument(page: EditionPage, bundle: ReadableEditionBundle, owner: boolean): string {
+  if (isPinnedLegacyEdition(bundle)) return legacyPageDocument(page, bundle, owner);
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
-    :root { color: oklch(18% 0.012 52); background: oklch(94.5% 0.012 82); font-family: "Songti TC", "STSong", "PMingLiU", Georgia, serif; }
+    :root { --paper: oklch(94.5% 0.012 82); --ink: oklch(18% 0.012 52); --red: oklch(38% 0.13 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", Georgia, serif; }
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100vh; padding: clamp(1.25rem, 3vw, 3.5rem); overflow-wrap: anywhere; }
     img, svg, video { max-width: 100%; height: auto; }
     a { color: inherit; }
+    ${trustedPageHeaderCss()}
     ${page.css ?? ""}
     ${readerBridgeCss()}
-  </style></head><body>${page.html}${trustedReaderBridge(owner)}</body></html>`;
+  </style></head><body><main class="paper">${trustedPageHeader(page, bundle)}${page.html}</main>${trustedReaderBridge(owner, bundle.stories)}</body></html>`;
 }
 
-function articleDocument(story: EditionStory, bundle: EditionBundle, owner: boolean): string {
+function legacyPageDocument(page: EditionPage, bundle: ReadableEditionBundle, owner: boolean): string {
+  return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
+    :root { --paper: oklch(94.5% 0.012 82); --ink: oklch(18% 0.012 52); --red: oklch(38% 0.13 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", Georgia, serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; padding: clamp(1.25rem, 3vw, 3.5rem); overflow-wrap: anywhere; }
+    img, svg, video { max-width: 100%; height: auto; }
+    ${page.css ?? ""}
+    ${readerBridgeCss()}
+  </style></head><body>${page.html}${trustedReaderBridge(owner, bundle.stories)}</body></html>`;
+}
+
+function articleDocument(story: EditionStory, bundle: ReadableEditionBundle, owner: boolean): string {
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
     :root { --paper: oklch(94.5% 0.012 82); --ink: oklch(18% 0.012 52); --red: oklch(38% 0.13 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", Georgia, serif; }
     * { box-sizing: border-box; }
@@ -310,7 +324,7 @@ function articleDocument(story: EditionStory, bundle: EditionBundle, owner: bool
     .full-story .body blockquote { column-span: all; margin: 1.6em 0; border-top: 3px solid var(--red); border-bottom: 3px double var(--ink); padding: .8em 0; font-size: 1.3em; font-weight: 700; line-height: 1.28; }
     @media (max-width: 620px) { .full-story .body { columns: 1; } }
     ${readerBridgeCss()}
-  </style></head><body><article class="full-story" data-story-id="${escapeAttribute(story.id)}"><p class="section">${story.label === "fact" ? "報導" : "分析"}・${escapeHtml(bundle.masthead)}</p><h1>${escapeHtml(story.headline)}</h1><p class="dek">${escapeHtml(story.dek)}</p><p class="byline">光譜日報編輯台・${escapeHtml(formatDate(bundle.date, bundle.language))}</p><div class="body">${story.bodyHtml}</div></article>${trustedReaderBridge(owner)}</body></html>`;
+  </style></head><body><article class="full-story" data-story-id="${escapeAttribute(story.id)}"><p class="section">${story.label === "fact" ? "報導" : "分析"}・${escapeHtml(bundle.masthead)}</p><h1>${escapeHtml(story.headline)}</h1><p class="dek">${escapeHtml(story.dek)}</p><p class="byline">光譜日報編輯台・${escapeHtml(formatDate(bundle.date, bundle.language))}</p><div class="body">${story.bodyHtml}</div></article>${trustedReaderBridge(owner, [story])}</body></html>`;
 }
 
 function readerBridgeCss(): string {
@@ -320,17 +334,41 @@ function readerBridgeCss(): string {
     reader-controls { display: block !important; clear: both !important; margin-top: 14px !important; }`;
 }
 
-function trustedReaderBridge(owner: boolean): string {
+function trustedPageHeader(page: EditionPage, bundle: EditionBundle): string {
+  const pageNumber = bundle.pages.findIndex((candidate) => candidate.id === page.id) + 1;
+  const storyCount = bundle.stories.filter((story) => story.pageId === page.id).length;
+  const title = pageNumber === 1 ? bundle.masthead : page.section;
+  return `<header class="publication-header${pageNumber === 1 ? " is-front" : ""}"><div class="publication-folio"><span>${escapeHtml(bundle.masthead)}・${escapeHtml(page.section)}</span><span>第 ${pageNumber} 版・${escapeHtml(formatDate(bundle.date, bundle.language))}</span></div><h1>${escapeHtml(title)}</h1><p><span>${escapeHtml(page.section)}</span><span>${storyCount} 篇・每篇可展開全文</span></p></header>`;
+}
+
+function trustedPageHeaderCss(): string {
+  return `.publication-header{border-top:4px solid var(--red);border-bottom:3px double var(--ink)}
+    .publication-folio,.publication-header>p{display:flex;justify-content:space-between;gap:16px;padding:6px 0;font:800 10px/1.35 "PingFang TC",sans-serif}
+    .publication-folio{border-bottom:1px solid var(--ink)}
+    .publication-header h1{margin:8px 0 6px;color:var(--red);font-family:"Kaiti TC","STKaiti","Songti TC",serif;font-size:clamp(46px,6vw,76px);font-weight:900;letter-spacing:-.035em;line-height:.92}
+    .publication-header>p{margin:0;border-top:3px solid var(--ink)}
+    .publication-header.is-front h1{text-align:center;font-size:clamp(54px,7vw,84px)}
+    @media(max-width:559px){.publication-folio,.publication-header>p{flex-wrap:wrap}.publication-header h1,.publication-header.is-front h1{font-size:50px}}`;
+}
+
+function trustedReaderBridge(owner: boolean, stories: EditionStory[]): string {
+  const summaries = Object.fromEntries(stories.map((story) => [story.id, renderStorySummary(story)]));
   return `<script>(() => {
     const owner = ${owner ? "true" : "false"};
+    const summaries = ${inlineScriptJson(summaries)};
     const send = (message) => window.parent.postMessage(message, "*");
-    const controlsMarkup = '<style>:host{all:initial;display:block;font-family:"PingFang TC",sans-serif;color:#211d19}.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid #211d19;border-bottom:1px solid #211d19;padding:6px 0}.open,.action{appearance:none;border:0;background:transparent;color:#211d19;cursor:pointer;font:800 11px/1.2 "PingFang TC",sans-serif;letter-spacing:.02em;padding:5px 2px}.open{text-decoration:underline;text-underline-offset:3px}.actions{display:flex;gap:13px}.action:hover,.open:hover{color:#7d1f25}.action:focus-visible,.open:focus-visible{outline:2px solid #7d1f25;outline-offset:2px}</style><div class="bar"><button class="open" type="button">閱讀全文 →</button>' + (owner ? '<div class="actions" aria-label="調整明日內容"><button class="action" data-action="love" type="button">♡ 喜歡</button><button class="action" data-action="less" type="button">⊘ 不喜歡</button><button class="action" data-action="follow" type="button">＋ 追蹤主題</button></div>' : '') + '</div>';
+    const controlsMarkup = '<style>:host{all:initial;display:block;font-family:"PingFang TC",sans-serif;color:#211d19}.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid #211d19;border-bottom:1px solid #211d19;padding:6px 0}.open,.action{appearance:none;border:0;background:transparent;color:#211d19;cursor:pointer;font:800 11px/1.2 "PingFang TC",sans-serif;letter-spacing:.02em;padding:5px 2px}.open{text-decoration:underline;text-underline-offset:3px}.actions{display:flex;gap:13px}.action:hover,.open:hover{color:#7d1f25}.action:focus-visible,.open:focus-visible{outline:2px solid #7d1f25;outline-offset:2px}</style><div class="bar"><button class="open" type="button">閱讀全文 →</button>' + (owner ? '<div class="actions" aria-label="調整明日內容"><button class="action" data-action="love" type="button">♡ 喜歡</button><button class="action" data-action="less" type="button">⊘ 不喜歡</button></div>' : '') + '</div>';
     document.querySelectorAll('[data-story-id]').forEach((article) => {
       const storyId = article.getAttribute('data-story-id');
       if (!storyId || article.dataset.readerEnhanced) return;
       article.dataset.readerEnhanced = 'true';
       article.classList.add('reader-story');
       article.tabIndex = 0;
+      if (article.childElementCount === 0) {
+        const summary = summaries[storyId];
+        if (!summary) throw new Error('Missing canonical story summary');
+        article.insertAdjacentHTML('afterbegin', summary);
+      }
       const headline = article.querySelector('h1,h2,h3')?.textContent?.trim();
       article.setAttribute('aria-label', headline ? '閱讀全文：' + headline : '閱讀全文');
       const host = document.createElement('reader-controls');
@@ -368,8 +406,13 @@ function formatDate(date: string, language: string): string {
   );
 }
 
-function escapeHtml(value: string): string {
-  return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+function inlineScriptJson(value: unknown): string {
+  return JSON.stringify(value)
+    .replaceAll("&", "\\u0026")
+    .replaceAll("<", "\\u003c")
+    .replaceAll(">", "\\u003e")
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
 }
 
 function escapeAttribute(value: string): string {

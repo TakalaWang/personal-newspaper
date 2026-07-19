@@ -1,0 +1,40 @@
+# Newspaper base design
+
+This is a print grammar, not a fixed template. Picture one reader scanning a full broadsheet at a desk in daylight: importance must be visible through scale, position, column width, imagery, and rules before the text is read.
+
+## Identity
+
+- Palette: newsprint `oklch(94.5% 0.012 82)`, ink `oklch(18% 0.012 52)`, muted ink `oklch(38% 0.014 52)`, rule `oklch(48% 0.012 52)`, deep press red `oklch(38% 0.13 27)`. Red is the sole spot color and stays below 10% of the sheet.
+- No gradients, tinted cards, blue accents, brass, glass, or decorative shadows inside the sheet.
+- Songti/STSong/PMingLiU-style serif carries headlines and copy. Kaiti/STKaiti is limited to the masthead or one editorial accent. PingFang-style sans carries folios, captions, bylines, labels, and controls.
+- Masthead maximum `82px`, lead headline `64px`, other headlines `36px`; letter spacing never tighter than `-0.035em`.
+
+## Composition
+
+- Build every desktop page on a 6–12 column modular grid with shared horizontal and vertical alignments. Use hairlines, not boxes. Body copy is `15–18px` with `1.55–1.75` line height in readable narrow columns.
+- Front page: a central lead or off-centre lead with narrow side reports, plus a horizontal skyline, brief row, evidence-bearing visual, quote, or data strip. Aim for 4–7 verified story packages; reduce page count before shipping a sparse page.
+- Section page: choose an L-shaped lead with a two-row side column, image-led grid with briefs beneath, 9/3 feature with an internal 8/4 split, or dense brief grid anchored by one dominant package. A 9/3 feature is not a wide hero plus utility sidebar: the lead needs an internal cross-column visual, quote, or module, while the narrow zone carries either one substantive counterpoint or two briefs.
+- Editorial coherence outranks density. Combine adjacent low-count sections as a labelled multi-section page or briefs on the front; never add filler merely to reach a count.
+- Do not repeat the same composition on adjacent pages. Change at least two of: lead position, dominant span, visual position, brief axis, or module count.
+- At exactly 560px and above, tablets keep mixed paths and at least two distinct article roots share a row. Text columns alone do not count. Only screens narrower than 560px may become one reading column; recompose modules instead of shrinking desktop type.
+
+## Canonical news packages
+
+- Page HTML owns composition only: use structural wrappers and empty `article` placements, with no visible text, CSS-generated text, or remote assets. Every placement carries `data-story-id`. The trusted reader supplies the folio/masthead and injects `kicker`, headline, dek, `summaryHtml`, jump line, and feedback from the canonical story.
+- `summaryHtml` must make the news understandable before opening: state what happened or what the argument is, the decisive evidence, why it matters, and material uncertainty. It is a précis, not a teaser. Every summary paragraph has a unique `data-claim-id` and a complete matching claim entry.
+- The detailed `bodyHtml` expands the same thesis and facts with mechanism, chronology, evidence, context, limits, and implications. It must not become a different story. For each summary claim, one detailed paragraph repeats the exact printed claim under the same `data-claim-id` before elaboration; `claims` bind both full texts to `sourceIds`.
+- Original source links appear only in the detailed reader footer from `sourceIds`. Bundle page, summary, and body HTML contain no links. Page HTML contains no remote assets or duplicate canonical story text.
+- Keep feedback within each article package. The reader injects only `喜歡` and `不喜歡`; bundle HTML never recreates controls.
+- Images must be explanatory or evidence-bearing, not decorative filler. Every verified HTTPS image needs a manifest entry with source id, creator, publication date, useful alt text, caption, credit, and usage basis. Put it in `summaryHtml` when needed for scanning and in `bodyHtml` when the detailed explanation depends on it; repeating an essential figure is allowed.
+- Avoid identical tag–headline–paragraph cards and repeated tiny uppercase tracked eyebrows. Same-sized modules with four-sided borders and equal padding are cards even when their border is a `1px` hairline.
+
+## Refusals
+
+No card grid, dashboard rail, detached feedback/source sidebar, giant landing-page hero, full-page vertical stack, rounded rectangles, decorative motion, or one story per page except a genuine long-form insert.
+
+## Preflight
+
+- Content: compare every factual claim to the evidence ledger; verify dates, names, quantities, versions, label, and summary/body agreement. Remove claims that are merely plausible.
+- Images: open every asset, confirm provenance and relevance, then read alt text, caption, and credit as a set. No broken or unverified image ships.
+- Silhouette: at desktop and exactly 560px, blur or squint; the lead, secondary packages, evidence-bearing visual, and multiple reading paths remain distinct. Adjacent pages have visibly different silhouettes.
+- Interaction: at phone width confirm no headline or control overflows; open every story; ensure sources exist only in the detailed reader. WCAG 2.2 AA, semantic structure, keyboard access, visible focus, useful alt text, and non-color cues are mandatory.

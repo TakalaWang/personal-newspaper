@@ -1,9 +1,18 @@
-import type { EditionBundle } from "./edition";
 import { validateEditionBundle } from "./edition";
+import { normalizeProductionLegacyEdition, type ReadableEditionBundle } from "./legacy-cutover";
 import { getBucket } from "@/db";
 
-export async function getEditionBundle(bundleKey: string): Promise<EditionBundle | null> {
+export async function getEditionBundle(bundleKey: string): Promise<ReadableEditionBundle | null> {
   const object = await getBucket().get(bundleKey);
   if (!object) return null;
-  return validateEditionBundle(JSON.parse(await object.text()));
+  const raw = await object.text();
+  try {
+    return validateEditionBundle(JSON.parse(raw));
+  } catch (validationError) {
+    try {
+      return await normalizeProductionLegacyEdition(raw);
+    } catch {
+      throw validationError;
+    }
+  }
 }

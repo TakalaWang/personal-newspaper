@@ -4,7 +4,7 @@
   --ink: oklch(18% 0.012 52);
   --muted: oklch(38% 0.014 52);
   --rule: oklch(58% 0.012 52);
-  --brass: oklch(39% 0.12 27);
+  --press-red: oklch(39% 0.12 27);
   color: var(--ink);
   background: var(--desk);
   font-family: "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
@@ -28,7 +28,7 @@ button { color: inherit; }
 
 button:focus-visible,
 a:focus-visible {
-  outline: 3px solid var(--brass);
+  outline: 3px solid var(--press-red);
   outline-offset: 3px;
 }
 
@@ -45,7 +45,7 @@ a:focus-visible {
   grid-template-columns: 1fr auto;
   gap: 16px 30px;
   align-items: end;
-  border-top: 3px solid var(--brass);
+  border-top: 3px solid var(--press-red);
   border-bottom: 1px solid var(--ink);
   background: var(--surface);
   padding: 11px 0 9px;
@@ -144,7 +144,7 @@ a:focus-visible {
 }
 
 .page-tab:hover,
-.page-tab.is-current { background: var(--brass); color: var(--surface); }
+.page-tab.is-current { background: var(--press-red); color: var(--surface); }
 
 .page-tab:hover small,
 .page-tab.is-current small { color: var(--surface); }
@@ -192,7 +192,7 @@ a:focus-visible {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
   gap: 20px;
-  border-top: 5px solid var(--brass);
+  border-top: 5px solid var(--press-red);
   border-bottom: 1px solid var(--ink);
   padding: 12px 14px 13px;
 }
@@ -258,7 +258,7 @@ button:disabled { cursor: wait; opacity: 0.58; }
   width: 46px;
   height: 4px;
   margin: 0 0 26px;
-  background: var(--brass);
+  background: var(--press-red);
 }
 
 .onboarding-empty h1,

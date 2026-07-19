@@ -26,16 +26,23 @@ export async function POST(request: Request): Promise<Response> {
     ]);
     if (profile[0]?.ownerEmail !== user.email) return Response.json({ error: "This edition belongs to another reader" }, { status: 403 });
     if (!edition[0]) return Response.json({ error: "There is no current edition" }, { status: 404 });
+    if (edition[0].id !== reaction.editionId) {
+      return Response.json({ error: "That edition is no longer current; reload before reacting" }, { status: 409 });
+    }
 
     const bundle = await getEditionBundle(edition[0].bundleKey);
     if (!bundle || !bundle.stories.some((story) => story.id === reaction.storyId)) {
       return Response.json({ error: "That story is not in the current edition" }, { status: 404 });
     }
+    const createdAt = new Date();
     await db.insert(reactions).values({
       editionId: edition[0].id,
       storyId: reaction.storyId,
       action: reaction.action,
-      createdAt: new Date(),
+      createdAt,
+    }).onConflictDoUpdate({
+      target: [reactions.editionId, reactions.storyId],
+      set: { action: reaction.action, createdAt, consumedAt: null, consumedByEditionId: null },
     });
     return Response.json({ message: "Saved. The next edition will take this into account." }, { status: 201 });
   } catch (error) {

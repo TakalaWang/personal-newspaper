@@ -15,6 +15,20 @@
       "when": 1784443892667,
       "tag": "0001_worthless_moon_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1784472521145,
+      "tag": "0002_glossy_marauders",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1784476215247,
+      "tag": "0003_wonderful_jean_grey",
+      "breakpoints": true
     }
   ]
 }

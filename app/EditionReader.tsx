@@ -283,7 +283,7 @@ async function loadShares(): Promise<Share[]> {
 
 function pageDocument(page: EditionPage, bundle: EditionBundle, owner: boolean): string {
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
-    :root { color: oklch(16% 0.01 260); background: oklch(100% 0 0); font-family: "Noto Serif TC", "Source Han Serif TC", Georgia, serif; }
+    :root { color: oklch(18% 0.012 52); background: oklch(94.5% 0.012 82); font-family: "Songti TC", "STSong", "PMingLiU", Georgia, serif; }
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100vh; padding: clamp(1.25rem, 3vw, 3.5rem); overflow-wrap: anywhere; }
     img, svg, video { max-width: 100%; height: auto; }
@@ -295,35 +295,36 @@ function pageDocument(page: EditionPage, bundle: EditionBundle, owner: boolean):
 
 function articleDocument(story: EditionStory, bundle: EditionBundle, owner: boolean): string {
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
-    :root { color: #111; background: #fdfcf8; font-family: "Noto Serif TC", "Source Han Serif TC", Georgia, serif; }
+    :root { --paper: oklch(94.5% 0.012 82); --ink: oklch(18% 0.012 52); --red: oklch(38% 0.13 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", Georgia, serif; }
     * { box-sizing: border-box; }
-    body { margin: 0; padding: clamp(24px, 5vw, 72px); }
-    .full-story { max-width: 760px; margin: 0 auto; cursor: default; }
-    .full-story .section { margin: 0 0 20px; border-top: 5px solid #111; border-bottom: 1px solid #111; padding: 8px 0; font: 800 12px/1.2 "Avenir Next", "PingFang TC", sans-serif; letter-spacing: .12em; text-transform: uppercase; }
-    .full-story h1 { max-width: 17ch; margin: 0; font-size: clamp(40px, 8vw, 78px); letter-spacing: -.055em; line-height: .97; text-wrap: balance; }
-    .full-story .dek { max-width: 52ch; margin: 18px 0; color: #3d3d3d; font-size: clamp(19px, 2.6vw, 25px); line-height: 1.45; }
-    .full-story .byline { border-top: 1px solid #111; padding: 9px 0 22px; font: 800 11px/1.3 "Avenir Next", "PingFang TC", sans-serif; letter-spacing: .05em; }
-    .full-story .body { font-size: clamp(18px, 2vw, 21px); line-height: 1.82; }
+    body { margin: 0; padding: clamp(20px, 4vw, 52px); }
+    .full-story { max-width: 820px; margin: 0 auto; cursor: default; }
+    .full-story .section { margin: 0 0 16px; border-top: 4px solid var(--red); border-bottom: 1px solid var(--ink); padding: 7px 0; color: var(--red); font: 800 11px/1.2 "PingFang TC", sans-serif; letter-spacing: .08em; }
+    .full-story h1 { max-width: 19ch; margin: 0; font-size: clamp(36px, 7vw, 68px); letter-spacing: -.035em; line-height: 1; text-wrap: balance; }
+    .full-story .dek { max-width: 56ch; margin: 16px 0; color: oklch(38% 0.014 52); font-size: clamp(18px, 2.4vw, 23px); font-weight: 700; line-height: 1.45; }
+    .full-story .byline { border-top: 1px solid var(--ink); padding: 8px 0 18px; font: 800 10px/1.3 "PingFang TC", sans-serif; letter-spacing: .04em; }
+    .full-story .body { columns: 2; column-gap: 32px; column-rule: 1px solid oklch(48% 0.012 52); font-size: clamp(17px, 1.8vw, 20px); line-height: 1.75; text-align: justify; }
     .full-story .body p { margin: 0 0 1.35em; }
     .full-story .body p:first-child::first-letter { float: left; margin: .08em .1em 0 0; font-size: 4.2em; font-weight: 900; line-height: .72; }
-    .full-story .body h2 { margin: 1.8em 0 .5em; font-size: 1.45em; line-height: 1.1; }
-    .full-story .body blockquote { margin: 1.7em 0; border-top: 3px double #111; border-bottom: 3px double #111; padding: .8em 0; font-size: 1.35em; font-weight: 700; line-height: 1.28; }
+    .full-story .body h2 { break-after: avoid; margin: 1.6em 0 .5em; color: var(--red); font-size: 1.35em; line-height: 1.1; }
+    .full-story .body blockquote { column-span: all; margin: 1.6em 0; border-top: 3px solid var(--red); border-bottom: 3px double var(--ink); padding: .8em 0; font-size: 1.3em; font-weight: 700; line-height: 1.28; }
+    @media (max-width: 620px) { .full-story .body { columns: 1; } }
     ${readerBridgeCss()}
   </style></head><body><article class="full-story" data-story-id="${escapeAttribute(story.id)}"><p class="section">${story.label === "fact" ? "報導" : "分析"}・${escapeHtml(bundle.masthead)}</p><h1>${escapeHtml(story.headline)}</h1><p class="dek">${escapeHtml(story.dek)}</p><p class="byline">光譜日報編輯台・${escapeHtml(formatDate(bundle.date, bundle.language))}</p><div class="body">${story.bodyHtml}</div></article>${trustedReaderBridge(owner)}</body></html>`;
 }
 
 function readerBridgeCss(): string {
   return `.reader-story { cursor: pointer; position: relative; transition: background-color 120ms ease; }
-    .reader-story:hover { background-color: #f5f2e9; }
-    .reader-story:focus-visible { outline: 3px solid #a77a23; outline-offset: -3px; }
-    reader-controls { display: block !important; clear: both !important; margin-top: 18px !important; }`;
+    .reader-story:hover { background-color: oklch(91% 0.017 82); }
+    .reader-story:focus-visible { outline: 3px solid oklch(38% 0.13 27); outline-offset: -3px; }
+    reader-controls { display: block !important; clear: both !important; margin-top: 14px !important; }`;
 }
 
 function trustedReaderBridge(owner: boolean): string {
   return `<script>(() => {
     const owner = ${owner ? "true" : "false"};
     const send = (message) => window.parent.postMessage(message, "*");
-    const controlsMarkup = '<style>:host{all:initial;display:block;font-family:"Avenir Next","PingFang TC",sans-serif;color:#111}.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid #111;border-bottom:1px solid #111;padding:7px 0}.open,.action{appearance:none;border:0;background:transparent;color:#111;cursor:pointer;font:800 11px/1.2 "Avenir Next","PingFang TC",sans-serif;letter-spacing:.03em;padding:5px 2px}.open{text-decoration:underline;text-underline-offset:3px}.actions{display:flex;gap:13px}.action:hover,.open:hover{color:#865f16}.action:focus-visible,.open:focus-visible{outline:2px solid #a77a23;outline-offset:2px}</style><div class="bar"><button class="open" type="button">閱讀全文 →</button>' + (owner ? '<div class="actions" aria-label="調整明日內容"><button class="action" data-action="love" type="button">♡ 喜歡</button><button class="action" data-action="less" type="button">⊘ 不喜歡</button><button class="action" data-action="follow" type="button">＋ 追蹤主題</button></div>' : '') + '</div>';
+    const controlsMarkup = '<style>:host{all:initial;display:block;font-family:"PingFang TC",sans-serif;color:#211d19}.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid #211d19;border-bottom:1px solid #211d19;padding:6px 0}.open,.action{appearance:none;border:0;background:transparent;color:#211d19;cursor:pointer;font:800 11px/1.2 "PingFang TC",sans-serif;letter-spacing:.02em;padding:5px 2px}.open{text-decoration:underline;text-underline-offset:3px}.actions{display:flex;gap:13px}.action:hover,.open:hover{color:#7d1f25}.action:focus-visible,.open:focus-visible{outline:2px solid #7d1f25;outline-offset:2px}</style><div class="bar"><button class="open" type="button">閱讀全文 →</button>' + (owner ? '<div class="actions" aria-label="調整明日內容"><button class="action" data-action="love" type="button">♡ 喜歡</button><button class="action" data-action="less" type="button">⊘ 不喜歡</button><button class="action" data-action="follow" type="button">＋ 追蹤主題</button></div>' : '') + '</div>';
     document.querySelectorAll('[data-story-id]').forEach((article) => {
       const storyId = article.getAttribute('data-story-id');
       if (!storyId || article.dataset.readerEnhanced) return;

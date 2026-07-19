@@ -1,18 +1,19 @@
 :root {
-  --surface: oklch(100% 0 0);
-  --ink: oklch(13% 0.006 255);
-  --muted: oklch(37% 0.008 255);
-  --rule: oklch(74% 0.004 255);
-  --brass: oklch(62% 0.1 80);
+  --surface: oklch(94.5% 0.012 82);
+  --desk: oklch(85% 0.009 82);
+  --ink: oklch(18% 0.012 52);
+  --muted: oklch(38% 0.014 52);
+  --rule: oklch(58% 0.012 52);
+  --brass: oklch(39% 0.12 27);
   color: var(--ink);
-  background: var(--surface);
-  font-family: "Noto Sans TC", "Source Han Sans TC", system-ui, sans-serif;
+  background: var(--desk);
+  font-family: "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
 
 html,
-body { background: var(--surface); }
+body { background: var(--desk); }
 
 body {
   min-width: 320px;
@@ -44,8 +45,9 @@ a:focus-visible {
   grid-template-columns: 1fr auto;
   gap: 16px 30px;
   align-items: end;
-  border-top: 5px solid var(--ink);
+  border-top: 3px solid var(--brass);
   border-bottom: 1px solid var(--ink);
+  background: var(--surface);
   padding: 11px 0 9px;
 }
 
@@ -53,8 +55,8 @@ a:focus-visible {
 .public-edition-header p,
 .onboarding-name {
   margin: 0;
-  font-family: "Noto Serif TC", "Source Han Serif TC", Georgia, serif;
-  font-size: clamp(1.7rem, 3vw, 2.7rem);
+  font-family: "Songti TC", "STSong", "Noto Serif TC", serif;
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
   font-weight: 900;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -118,6 +120,7 @@ a:focus-visible {
   gap: 0;
   margin: 0;
   border-bottom: 1px solid var(--ink);
+  background: var(--surface);
 }
 
 .page-tab {
@@ -130,7 +133,7 @@ a:focus-visible {
   cursor: pointer;
   padding: 10px 14px 9px;
   color: var(--muted);
-  font-family: "Noto Serif TC", "Source Han Serif TC", Georgia, serif;
+  font-family: "Songti TC", "STSong", "Noto Serif TC", serif;
   font-weight: 800;
 }
 
@@ -141,19 +144,20 @@ a:focus-visible {
 }
 
 .page-tab:hover,
-.page-tab.is-current { background: var(--ink); color: var(--surface); }
+.page-tab.is-current { background: var(--brass); color: var(--surface); }
 
 .page-tab:hover small,
 .page-tab.is-current small { color: var(--surface); }
 
-.edition-spread { margin-top: 20px; }
+.edition-spread { margin-top: 12px; }
 
 .edition-frame {
   display: block;
   width: 100%;
   min-height: min(88vh, 1220px);
-  border: 1px solid var(--ink);
+  border: 1px solid var(--rule);
   background: var(--surface);
+  box-shadow: 0 6px 20px oklch(20% 0.01 52 / 16%);
 }
 
 .reader-message {
@@ -188,7 +192,7 @@ a:focus-visible {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
   gap: 20px;
-  border-top: 5px solid var(--ink);
+  border-top: 5px solid var(--brass);
   border-bottom: 1px solid var(--ink);
   padding: 12px 14px 13px;
 }
@@ -204,7 +208,7 @@ a:focus-visible {
 .story-dialog-header h2 {
   max-width: 28ch;
   margin: 0;
-  font-family: "Noto Serif TC", "Source Han Serif TC", Georgia, serif;
+  font-family: "Songti TC", "STSong", "Noto Serif TC", serif;
   font-size: clamp(1.1rem, 2vw, 1.5rem);
   letter-spacing: -0.025em;
   line-height: 1.08;
@@ -225,7 +229,7 @@ a:focus-visible {
   width: 100%;
   height: 100%;
   border: 0;
-  background: oklch(99% 0.006 90);
+  background: var(--surface);
 }
 
 .story-dialog-sources {
@@ -254,14 +258,14 @@ button:disabled { cursor: wait; opacity: 0.58; }
   width: 46px;
   height: 4px;
   margin: 0 0 26px;
-  background: var(--ink);
+  background: var(--brass);
 }
 
 .onboarding-empty h1,
 .access-state h1 {
   max-width: 14ch;
   margin: 12px 0;
-  font-family: "Noto Serif TC", "Source Han Serif TC", Georgia, serif;
+  font-family: "Songti TC", "STSong", "Noto Serif TC", serif;
   font-size: clamp(2.25rem, 6vw, 4.8rem);
   font-weight: 900;
   letter-spacing: -0.035em;

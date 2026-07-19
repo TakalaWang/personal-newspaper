@@ -47,7 +47,8 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.match(reader, /sandbox="allow-scripts"/);
   assert.match(reader, /api\/reactions/);
   assert.match(reader, /api\/shares/);
-  assert.match(css, /oklch\(100% 0 0\)/);
+  assert.match(css, /--surface: oklch\(94\.5% 0\.012 82\)/);
+  assert.doesNotMatch(css, /--surface: oklch\(100% 0 0\)/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 
   await assert.rejects(

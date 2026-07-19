@@ -2,11 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { escapeHtml, renderStorySummary, type EditionBundle, type EditionPage, type EditionStory } from "@/lib/edition";
-import { isPinnedLegacyEdition, type ReadableEditionBundle } from "@/lib/legacy-cutover";
 import { parseReaderMessage, type ReactionAction } from "@/lib/reader";
 
 type EditionReaderProps = {
-  bundle: ReadableEditionBundle;
+  bundle: EditionBundle;
   owner?: boolean;
 };
 
@@ -204,7 +203,7 @@ function StoryDialog({
   story,
   onClose,
 }: {
-  bundle: ReadableEditionBundle;
+  bundle: EditionBundle;
   closeButtonRef: React.RefObject<HTMLButtonElement | null>;
   frameRef: React.RefObject<HTMLIFrameElement | null>;
   owner: boolean;
@@ -282,8 +281,7 @@ async function loadShares(): Promise<Share[]> {
   return result.shares ?? [];
 }
 
-function pageDocument(page: EditionPage, bundle: ReadableEditionBundle, owner: boolean): string {
-  if (isPinnedLegacyEdition(bundle)) return legacyPageDocument(page, bundle, owner);
+function pageDocument(page: EditionPage, bundle: EditionBundle, owner: boolean): string {
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
     :root { --paper: oklch(94.5% 0.012 82); --ink: oklch(18% 0.012 52); --red: oklch(38% 0.13 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", Georgia, serif; }
     * { box-sizing: border-box; }
@@ -296,18 +294,7 @@ function pageDocument(page: EditionPage, bundle: ReadableEditionBundle, owner: b
   </style></head><body><main class="paper">${trustedPageHeader(page, bundle)}${page.html}</main>${trustedReaderBridge(owner, bundle.stories)}</body></html>`;
 }
 
-function legacyPageDocument(page: EditionPage, bundle: ReadableEditionBundle, owner: boolean): string {
-  return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
-    :root { --paper: oklch(94.5% 0.012 82); --ink: oklch(18% 0.012 52); --red: oklch(38% 0.13 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", Georgia, serif; }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; padding: clamp(1.25rem, 3vw, 3.5rem); overflow-wrap: anywhere; }
-    img, svg, video { max-width: 100%; height: auto; }
-    ${page.css ?? ""}
-    ${readerBridgeCss()}
-  </style></head><body>${page.html}${trustedReaderBridge(owner, bundle.stories)}</body></html>`;
-}
-
-function articleDocument(story: EditionStory, bundle: ReadableEditionBundle, owner: boolean): string {
+function articleDocument(story: EditionStory, bundle: EditionBundle, owner: boolean): string {
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
     :root { --paper: oklch(94.5% 0.012 82); --ink: oklch(18% 0.012 52); --red: oklch(38% 0.13 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", Georgia, serif; }
     * { box-sizing: border-box; }

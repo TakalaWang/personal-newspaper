@@ -218,20 +218,20 @@ test("consumed reactions retain non-sensitive preference memory", () => {
   });
 });
 
-test("legacy consumed reactions without a consuming edition stay outside preference memory", () => {
-  const legacy = {
+test("reactions without a consuming edition stay outside preference memory", () => {
+  const unbound = {
     id: 1,
-    editionId: "legacy-edition",
-    storyId: "legacy-story",
+    editionId: "previous-edition",
+    storyId: "previous-story",
     action: "love",
     createdAt: new Date("2026-07-18T00:00:00.000Z"),
     consumedAt: new Date("2026-07-19T00:00:00.000Z"),
     consumedByEditionId: null,
   };
-  const current = { ...legacy, consumedByEditionId: "daily-2" };
+  const consumed = { ...unbound, consumedByEditionId: "daily-2" };
 
-  assert.equal(isPreferenceMemoryReaction(legacy), false);
-  assert.equal(isPreferenceMemoryReaction(current), true);
+  assert.equal(isPreferenceMemoryReaction(unbound), false);
+  assert.equal(isPreferenceMemoryReaction(consumed), true);
 });
 
 test("agent context version is deterministic and changes with its exact snapshot", async () => {

@@ -2,6 +2,7 @@ import { and, eq, isNull, or, sql } from "drizzle-orm";
 import { isAuthorizedAgentRequest, parseEditionRestore } from "@/lib/agent";
 import { loadAgentContextState } from "@/lib/agent-context";
 import { validateEditionBundle } from "@/lib/edition";
+import { serializeEditionBundle } from "@/lib/edition-key";
 import { getEditionBundle } from "@/lib/edition-store";
 import { getAutomationToken, getBucket, getDb } from "@/db";
 import { agentState, editions, reactions } from "@/db/schema";
@@ -16,8 +17,8 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: errorMessage(error) }, { status: 400 });
   }
 
-  const bundleKey = `editions/${bundle.id}/bundle.json`;
   try {
+    const { body, bundleKey, contentHash } = await serializeEditionBundle(bundle);
     const db = getDb();
     const reactionIds = bundle.generation.reactions.map((reaction) => reaction.id);
     const [existing, context] = await Promise.all([
@@ -40,7 +41,7 @@ export async function POST(request: Request): Promise<Response> {
       return Response.json({ error: "Reaction snapshot is stale; load context again before publishing" }, { status: 409 });
     }
 
-    await getBucket().put(bundleKey, JSON.stringify(bundle), {
+    await getBucket().put(bundleKey, body, {
       httpMetadata: { contentType: "application/json; charset=utf-8" },
     });
 
@@ -55,6 +56,7 @@ export async function POST(request: Request): Promise<Response> {
       sourceCount: bundle.sources.length,
       reactionCount: bundle.generation.reactions.length,
       contextRevision: bundle.generation.contextRevision,
+      contentHash,
     });
     const edition = {
       id: bundle.id,

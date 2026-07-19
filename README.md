@@ -1,8 +1,7 @@
 # vinext-starter
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+A full-stack site running on [vinext](https://github.com/cloudflare/vinext),
+with Cloudflare D1, R2, and Drizzle.
 
 ## Prerequisites
 
@@ -11,9 +10,9 @@ Drizzle support.
 ## Quick Start
 
 ```bash
-npm install
-npm run dev
-npm run build
+pnpm install
+pnpm dev
+pnpm build
 ```
 
 This starter does not use `wrangler.jsonc`.
@@ -21,10 +20,9 @@ This starter does not use `wrangler.jsonc`.
 ## Included Shape
 
 - edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
+- `.openai/hosting.json` declares the Sites D1 and R2 bindings
 - `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
+- `db/schema.ts` defines the publication profile, editions, reactions, and shares
 - `drizzle.config.ts` supports local migration generation when needed
 
 ## Workspace Auth Headers
@@ -87,10 +85,10 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 
 ## Useful Commands
 
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+- `pnpm dev`: start local development
+- `pnpm build`: verify the vinext build output
+- `pnpm test`: build and run all unit tests
+- `pnpm db:generate`: generate Drizzle migrations after schema changes
 
 ## Learn More
 

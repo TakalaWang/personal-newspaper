@@ -92,4 +92,8 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   const parsedTemplate = JSON.parse(template);
   assert.equal("generation" in parsedTemplate, false);
   assert.doesNotMatch(template, /ctx_0{64}/);
+  for (const page of parsedTemplate.pages) {
+    assert.match(page.css, /@media\(max-width:479px\)/, `${page.id} needs a phone-only single-column breakpoint`);
+    assert.doesNotMatch(page.css, /@media\(max-width:559px\)/, `${page.id} must preserve mixed paths at 560px`);
+  }
 });

@@ -7,7 +7,8 @@ export type ReactionAction = "love" | "less";
 
 export type ReaderMessage =
   | { type: "open"; storyId: string }
-  | { type: "react"; storyId: string; action: ReactionAction };
+  | { type: "react"; storyId: string; action: ReactionAction }
+  | { type: "page-resize"; height: number };
 
 export type ShareRecord = {
   tokenHash: string;
@@ -63,7 +64,14 @@ export function parseReaction(value: unknown): { action: ReactionAction; storyId
 
 export function parseReaderMessage(value: unknown, storyIds: Set<string>): ReaderMessage {
   if (!isRecord(value)) fail("reader message must be an object");
-  if (value.type !== "open" && value.type !== "react") fail("reader message type must be open or react");
+  if (value.type === "page-resize") {
+    if (Object.keys(value).some((key) => key !== "type" && key !== "height")) fail("unexpected field in page resize");
+    if (!Number.isSafeInteger(value.height) || (value.height as number) < 400 || (value.height as number) > 5000) {
+      fail("page height must be an integer between 400 and 5000");
+    }
+    return { type: "page-resize", height: value.height as number };
+  }
+  if (value.type !== "open" && value.type !== "react") fail("reader message type must be open, react, or page-resize");
 
   const allowedKeys = value.type === "open" ? new Set(["type", "storyId"]) : new Set(["type", "storyId", "action"]);
   for (const key of Object.keys(value)) {

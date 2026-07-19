@@ -33,9 +33,15 @@ test("accepts only known iframe story interactions", () => {
     storyId: "ai-policy",
     action: "less",
   });
+  assert.deepEqual(parseReaderMessage({ type: "page-resize", height: 1240 }, storyIds), {
+    type: "page-resize",
+    height: 1240,
+  });
   assert.throws(() => parseReaderMessage({ type: "open", storyId: "missing" }, storyIds), /story/i);
   assert.throws(() => parseReaderMessage({ type: "react", storyId: "ai-policy", action: "follow" }, storyIds), /action/i);
   assert.throws(() => parseReaderMessage({ type: "react", storyId: "ai-policy", action: "delete" }, storyIds), /action/i);
+  assert.throws(() => parseReaderMessage({ type: "page-resize", height: 9000 }, storyIds), /height/i);
+  assert.throws(() => parseReaderMessage({ type: "page-resize", height: 1240, storyId: "ai-policy" }, storyIds), /unexpected/i);
 });
 
 test("share tokens are stored as stable SHA-256 hashes", async () => {

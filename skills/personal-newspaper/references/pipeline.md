@@ -61,7 +61,7 @@ The printed summary is a compact report, not a teaser: a reader should understan
 
 ### 6. Page composition
 
-Read [the newspaper base design](base-design.md) completely. Apply it as variable print grammar. Page HTML contains structural layout only and exactly one empty `<article data-story-id="…"></article>` placement for every story. The trusted reader supplies folios, canonical copy, article opening, and only the `喜歡`／`不喜歡` controls.
+Read [the newspaper base design](base-design.md) completely. Apply it as variable print grammar. Compose one dense complete sheet per subject page with asymmetric multi-column reading paths; reject a navbar, top tabs, landing-page hero, oversized empty field, vertical article stack, or on-sheet read-more button. Page HTML contains structural layout only and exactly one empty `<article data-story-id="…"></article>` placement for every story. The trusted reader supplies folios, canonical copy, whole-article opening, and only the `喜歡`／`不喜歡` controls.
 
 ### 7. Content, image, security, and visual preflight
 
@@ -69,7 +69,7 @@ Prepare and validate the complete bundle before visual review. Validation must e
 
 Open every image and confirm provenance, response MIME, relevance, alt, caption, credit, date, source id, and usage basis. Inline SVG, SVG responses, media, `srcset`, remote page assets, and CSS image fetches are forbidden. A documented image transform is acceptable only after the opened response is verified as a raster MIME type.
 
-Use a real browser at desktop, exactly 560px, and phone widths. Check page silhouettes, hierarchy, reading paths, overflow, keyboard focus, article opening, source-link location, images, and controls. Reject JavaScript, event attributes, forms, frames, embeds, remote CSS, and undeclared fetch surfaces.
+Use a real browser at desktop, exactly 560px, and phone widths. Check the complete-sheet silhouette, left/right and keyboard page turning, hierarchy, density, multiple reading paths, unexplained blank areas, nested scrolling, overflow, keyboard focus, whole-article opening, drop-cap clearance, source-link location, images, and controls. Reject JavaScript, event attributes, forms, frames, embeds, remote CSS, and undeclared fetch surfaces.
 
 ### 8. Prepare and publish
 
@@ -83,6 +83,8 @@ Fetch agent context again and verify the new id, confirmed local date, page/stor
 
 - the printed page explains every story;
 - every article block opens the matching detailed story;
+- no navbar, top tab strip, or on-sheet read-more button appears;
+- left/right controls and arrow keys move through subject pages;
 - detailed copy expands the same claim set;
 - original links appear only in the detailed source footer;
 - images render only where useful;

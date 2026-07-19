@@ -1,5 +1,5 @@
 {
-  "id": "2026-07-19-canonical-v6",
+  "id": "2026-07-19-broadsheet-v7",
   "date": "2026-07-19",
   "language": "zh-Hant-TW",
   "masthead": "光譜日報",
@@ -7,19 +7,19 @@
     {
       "id": "front",
       "section": "今日要聞",
-      "css": ":root{--paper:oklch(94.5% .012 82);--ink:oklch(18% .012 52);--red:oklch(38% .13 27);--hair:oklch(48% .012 52)}body{margin:0;color:var(--ink);background:var(--paper);font-family:'Songti TC','STSong','PMingLiU',Georgia,serif}.paper{max-width:1240px;margin:auto}.skyline{display:grid;grid-template-columns:repeat(3,1fr);border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);padding:8px 0}.skyline div{padding:0 12px;border-right:1px solid var(--hair)}.skyline div:last-child{border-right:0}.skyline b{display:block;color:var(--red);font:800 10px 'PingFang TC',sans-serif}.skyline span{font-size:13px;font-weight:700;line-height:1.25}.edition-line{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;border-bottom:1px solid var(--ink);padding:6px 0;font:700 10px 'PingFang TC',sans-serif}.edition-line span:last-child{text-align:right}.weather{text-align:center}.name{margin:8px 0 5px;color:var(--red);text-align:center;font-family:'Kaiti TC','STKaiti','Songti TC',serif;font-size:clamp(50px,7vw,82px);font-weight:900;letter-spacing:-.035em;line-height:.9}.strap{display:flex;justify-content:space-between;margin:0;border-top:3px solid var(--ink);border-bottom:3px double var(--ink);padding:7px 0;font:800 11px 'PingFang TC',sans-serif}.front-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));align-items:stretch}.story{padding:12px 14px;border-bottom:1px solid var(--ink)}.lead{grid-column:4/10;grid-row:1;border-right:1px solid var(--hair);border-left:1px solid var(--hair)}.brief{grid-column:1/4;grid-row:1;padding-left:0}.note{grid-column:10/13;grid-row:1;padding-right:0}.tag{margin-bottom:6px;color:var(--red);font:800 11px 'PingFang TC',sans-serif}.story h2{margin:0 0 10px;font-size:clamp(24px,2.6vw,34px);letter-spacing:-.025em;line-height:1.06;text-wrap:balance}.lead h2{max-width:15ch;margin:0 auto 10px;text-align:center;font-size:clamp(39px,4.8vw,64px);line-height:1}.dek{margin:0 0 12px;font-size:17px;font-weight:700;line-height:1.45}.lead .dek{text-align:center}.copy{columns:2;column-gap:20px;column-rule:1px solid var(--hair)}.copy p,.brief p,.note p{margin:0 0 10px;font-size:15px;line-height:1.65;text-align:justify}.signal-map{margin:14px 0;border-top:3px solid var(--red);border-bottom:1px solid var(--ink);padding:10px 0}.signal-map figcaption{margin-bottom:8px;font:800 10px 'PingFang TC',sans-serif}.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:6px}.flow strong{text-align:center;font:800 12px 'PingFang TC',sans-serif}.flow b{color:var(--red);font-size:20px}.byline{border-top:1px solid var(--ink);padding-top:6px;font:700 10px 'PingFang TC',sans-serif}.footer{display:flex;justify-content:space-between;border-bottom:4px solid var(--red);padding:8px 0;font:700 10px 'PingFang TC',sans-serif}@media(max-width:880px){.front-grid{grid-template-rows:auto auto}.lead{grid-column:1/13;grid-row:1;border-left:0;border-right:0}.brief{grid-column:1/7;grid-row:2;border-right:1px solid var(--hair)}.note{grid-column:7/13;grid-row:2;padding-left:14px}.name{font-size:58px}}@media(max-width:479px){.skyline{grid-template-columns:1fr}.skyline div{display:none}.skyline div:first-child{display:block;border-right:0}.edition-line{grid-template-columns:1fr 1fr}.weather{display:none}.front-grid{display:block}.story,.lead,.brief,.note{border-right:0;border-left:0;padding:12px 0}.copy{columns:1}.strap{display:block}.strap span{display:block;margin:2px 0}.footer{display:block}}",
-      "html": "<section class=\"front-grid\"><article class=\"story lead\" data-story-id=\"research-loop\"></article><article class=\"story brief\" data-story-id=\"security-loop\"></article><article class=\"story note\" data-story-id=\"feedback-contract\"></article></section>"
+      "css": ":root{--paper:oklch(95.5% .009 82);--ink:oklch(16% .01 52);--red:oklch(36% .11 27);--hair:oklch(51% .01 52)}body{margin:0;color:var(--ink);background:var(--paper);font-family:'Songti TC','STSong','PMingLiU','Noto Serif TC',serif}.paper{max-width:1240px;margin:auto}.front-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));align-items:start;border-bottom:4px solid var(--ink)}.story{padding:8px 12px;border-bottom:1px solid var(--ink)}.lead{grid-column:1/9;grid-row:1/3;padding-left:0;border-right:1px solid var(--hair)}.brief{grid-column:9/13;grid-row:1;padding-right:0}.note{grid-column:9/13;grid-row:2;padding-right:0}.tag{margin:0 0 4px;color:var(--red);font:700 .75rem/1.2 'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif;letter-spacing:.06em}.story h2{margin:0 0 8px;font-size:clamp(1.5rem,2.4vw,2rem);letter-spacing:-.02em;line-height:1.05;text-wrap:balance}.lead h2{max-width:22ch;font-size:clamp(2.25rem,4vw,3rem);line-height:1.02}.dek{margin:0 0 8px;font-size:1rem;font-weight:700;line-height:1.4}.copy{columns:2;column-gap:16px;column-rule:1px solid var(--hair)}.copy p,.brief p,.note p{margin:0 0 8px;font-size:1rem;line-height:1.55;text-align:justify}.signal-map{margin:12px 0;border-top:3px solid var(--red);border-bottom:1px solid var(--ink);padding:8px 0}.signal-map figcaption{margin-bottom:8px;font:700 .75rem/1.2 'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif}.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:8px}.flow strong{text-align:center;font:700 .75rem/1.2 'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif}.flow b{color:var(--red);font-size:1.25rem}.byline{border-top:1px solid var(--ink);padding-top:4px;font:700 .75rem/1.3 'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif}.strip{grid-column:1/13;grid-row:3;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));padding:8px 0}.strip .tag{grid-column:1/4;grid-row:1}.strip h2{grid-column:1/4;grid-row:2/5;padding-right:12px}.strip>p{margin:0;padding:0 12px;border-left:1px solid var(--hair)}.strip>p:nth-of-type(1){grid-column:4/7;grid-row:1/5;font-weight:700}.strip>p:nth-of-type(2){grid-column:7/10;grid-row:1/5}.strip>p:nth-of-type(3){grid-column:10/13;grid-row:1/5}.strip reader-controls{grid-column:1/-1;grid-row:5}@media(max-width:880px){.strip{display:block}.strip h2,.strip .tag,.strip>p{padding:0;border-left:0}.lead{grid-column:1/8}.brief,.note{grid-column:8/13}.copy{columns:2}.story h2{font-size:1.5rem}.lead h2{font-size:2.25rem}}@media(max-width:640px){.copy{columns:1}}@media(max-width:479px){.strip{display:block}.front-grid{display:block}.story,.lead,.brief,.note{padding:8px 0;border-right:0}.copy{columns:1}.lead h2{font-size:2.25rem}}",
+      "html": "<section class=\"front-grid\"><article class=\"story lead\" data-story-id=\"research-loop\"></article><article class=\"story brief\" data-story-id=\"security-loop\"></article><article class=\"story note\" data-story-id=\"feedback-contract\"></article><article class=\"story strip\" data-story-id=\"source-discipline\"></article></section>"
     },
     {
       "id": "technology",
       "section": "科技",
-      "css": ":root{--paper:oklch(94.5% .012 82);--ink:oklch(18% .012 52);--red:oklch(38% .13 27);--hair:oklch(48% .012 52)}body{margin:0;color:var(--ink);background:var(--paper);font-family:'Songti TC','STSong','PMingLiU',Georgia,serif}.paper{max-width:1240px;margin:auto}.folio{display:flex;justify-content:space-between;border-top:4px solid var(--red);border-bottom:1px solid var(--ink);padding:6px 0;font:700 10px 'PingFang TC',sans-serif}.section-head{display:grid;grid-template-columns:1fr 1fr;align-items:end;border-bottom:3px double var(--ink)}.title{margin:8px 0 6px;color:var(--red);font-family:'Kaiti TC','STKaiti','Songti TC',serif;font-size:clamp(45px,6vw,72px);letter-spacing:-.025em;line-height:.95}.section-note{max-width:34ch;margin:0 0 8px;justify-self:end;text-align:right;font-size:14px;line-height:1.4}.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:auto auto}.story{padding:12px 14px;border-bottom:1px solid var(--ink)}.lead{grid-column:1/9;grid-row:1;padding-left:0;border-right:1px solid var(--hair)}.editorial{grid-column:9/13;grid-row:1/3;padding-right:0}.brief-a{grid-column:1/5;grid-row:2;padding-left:0;border-right:1px solid var(--hair)}.brief-b{grid-column:5/9;grid-row:2;border-right:1px solid var(--hair)}.tag{margin-bottom:6px;color:var(--red);font:800 11px 'PingFang TC',sans-serif}.story h2{margin:0 0 10px;font-size:clamp(22px,2.5vw,34px);letter-spacing:-.025em;line-height:1.08;text-wrap:balance}.lead h2{max-width:21ch;font-size:clamp(36px,4vw,54px);line-height:1}.story p{margin:0 0 10px;font-size:15px;line-height:1.65;text-align:justify}.lead>p:first-of-type{font-size:18px;font-weight:700}.lead .columns{columns:3;column-gap:18px;column-rule:1px solid var(--hair)}.sandbox-figure{margin:12px 0;border-top:3px solid var(--red);border-bottom:1px solid var(--ink);padding:8px 0}.sandbox-figure img{display:block;width:100%;max-height:250px;object-fit:contain;filter:grayscale(1) contrast(.95)}.sandbox-figure figcaption{margin-top:6px;font:700 10px 'PingFang TC',sans-serif}.source{border-top:1px solid var(--ink);padding-top:6px;font:700 10px 'PingFang TC',sans-serif}@media(max-width:880px){.lead{grid-column:1/13;grid-row:1;border-right:0}.editorial{grid-column:1/7;grid-row:2;padding-right:14px;border-right:1px solid var(--hair)}.brief-a{grid-column:7/10;grid-row:2;padding-left:14px}.brief-b{grid-column:10/13;grid-row:2}.lead .columns{columns:2}}@media(max-width:479px){.section-head{display:block}.section-note{justify-self:start;text-align:left}.grid{display:block}.story,.lead,.editorial,.brief-a,.brief-b{border-right:0;padding:12px 0}.lead .columns{columns:1}.title{font-size:50px}}",
-      "html": "<section class=\"grid\"><article class=\"story lead\" data-story-id=\"sandbox-boundary\"></article><article class=\"story editorial\" data-story-id=\"sandbox-editorial\"></article><article class=\"story brief-a\" data-story-id=\"source-discipline\"></article><article class=\"story brief-b\" data-story-id=\"agent-workbench\"></article></section>"
+      "css": ":root{--paper:oklch(95.5% .009 82);--ink:oklch(16% .01 52);--red:oklch(36% .11 27);--hair:oklch(51% .01 52)}body{margin:0;color:var(--ink);background:var(--paper);font-family:'Songti TC','STSong','PMingLiU','Noto Serif TC',serif}.paper{max-width:1240px;margin:auto}.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));align-items:start;border-bottom:4px solid var(--ink)}.story{padding:8px 12px;border-bottom:1px solid var(--ink)}.lead{grid-column:1/9;grid-row:1;padding-left:0;border-right:1px solid var(--hair)}.editorial{grid-column:9/13;grid-row:1;padding-right:0}.brief-b{grid-column:1/13;grid-row:2;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));padding:8px 0}.brief-b .tag{grid-column:1/4;grid-row:1}.brief-b h2{grid-column:1/4;grid-row:2/5;padding-right:12px}.brief-b>p{margin:0;padding:0 12px;border-left:1px solid var(--hair)}.brief-b>p:nth-of-type(1){grid-column:4/7;grid-row:1/5;font-weight:700}.brief-b>p:nth-of-type(2){grid-column:7/10;grid-row:1/5}.brief-b>p:nth-of-type(3){grid-column:10/13;grid-row:1/5}.brief-b reader-controls{grid-column:1/-1;grid-row:5}.tag{margin:0 0 4px;color:var(--red);font:700 .75rem/1.2 'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif;letter-spacing:.06em}.story h2{margin:0 0 8px;font-size:clamp(1.5rem,2.4vw,2rem);letter-spacing:-.02em;line-height:1.05;text-wrap:balance}.lead h2{max-width:22ch;font-size:clamp(2.25rem,4vw,3rem);line-height:1.02}.story p{margin:0 0 8px;font-size:1rem;line-height:1.55;text-align:justify}.dek{font-weight:700;line-height:1.4!important}.lead .columns{columns:2;column-gap:16px;column-rule:1px solid var(--hair)}.sandbox-figure{margin:12px 0;border-top:3px solid var(--red);border-bottom:1px solid var(--ink);padding:8px 0}.sandbox-figure img{display:block;width:100%;max-height:240px;object-fit:contain;filter:grayscale(1) contrast(.95)}.sandbox-figure figcaption{margin-top:4px;font:700 .75rem/1.3 'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif}.source{border-top:1px solid var(--ink);padding-top:4px;font:700 .75rem/1.3 'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif}@media(max-width:880px){.lead{grid-column:1/8}.editorial{grid-column:8/13}.brief-b{display:block}.brief-b h2,.brief-b .tag,.brief-b>p{padding:0;border-left:0}.lead .columns{columns:2}.story h2{font-size:1.5rem}.lead h2{font-size:2.25rem}}@media(max-width:640px){.lead .columns{columns:1}}@media(max-width:479px){.grid{display:block}.story,.lead,.editorial,.brief-b{padding:8px 0;border-right:0}.lead .columns{columns:1}.lead h2{font-size:2.25rem}}",
+      "html": "<section class=\"grid\"><article class=\"story lead\" data-story-id=\"sandbox-boundary\"></article><article class=\"story editorial\" data-story-id=\"sandbox-editorial\"></article><article class=\"story brief-b\" data-story-id=\"agent-workbench\"></article></section>"
     },
     {
       "id": "methods",
       "section": "研究與方法",
-      "css": ":root{--paper:oklch(94.5% .012 82);--ink:oklch(18% .012 52);--red:oklch(38% .13 27);--hair:oklch(48% .012 52)}body{margin:0;color:var(--ink);background:var(--paper);font-family:'Songti TC','STSong','PMingLiU',Georgia,serif}.paper{max-width:1240px;margin:auto}.folio{display:flex;justify-content:space-between;border-top:4px solid var(--red);border-bottom:1px solid var(--ink);padding:6px 0;font:700 10px 'PingFang TC',sans-serif}.title{margin:8px 0 7px;color:var(--red);font-family:'Kaiti TC','STKaiti','Songti TC',serif;font-size:clamp(43px,6vw,70px);letter-spacing:-.025em;line-height:.95}.layout{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));border-top:3px double var(--ink)}.story{padding:12px 14px;border-bottom:1px solid var(--ink)}.lead{grid-column:1/10;padding-left:0;border-right:1px solid var(--hair)}.methods-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr))}.side{grid-column:10/13;padding-right:0}.lead-copy{grid-column:1/9;padding-right:14px;border-right:1px solid var(--hair)}.method-box{grid-column:9/13;padding-left:14px}.tag{margin-bottom:6px;color:var(--red);font:800 11px 'PingFang TC',sans-serif}.story h2{margin:0 0 10px;font-size:clamp(24px,2.8vw,36px);letter-spacing:-.025em;line-height:1.06;text-wrap:balance}.lead h2{font-size:clamp(36px,4.3vw,56px);line-height:1}.columns{columns:2;column-gap:18px;column-rule:1px solid var(--hair)}.story p{margin:0 0 10px;font-size:15px;line-height:1.65;text-align:justify}.method-box h3{margin:0;border-bottom:1px solid var(--ink);padding:0 0 7px;font:800 12px 'PingFang TC',sans-serif}.method-box ol{margin:10px 0;padding-left:19px}.method-box li{margin:0 0 10px;font-size:14px;line-height:1.45}.quote{grid-column:1/-1;margin:14px 0 0;border-top:3px solid var(--red);border-bottom:3px double var(--ink);padding:12px 0;font-size:clamp(24px,3vw,36px);font-weight:900;letter-spacing:-.015em;line-height:1.18}.lead reader-controls{grid-column:1/-1}.side h2{font-size:clamp(24px,2.5vw,34px)}.tomorrow{margin:14px 0 0;border:1px solid var(--ink);padding:10px;font:700 11px 'PingFang TC',sans-serif;line-height:1.5}.footer{border-bottom:4px solid var(--red);padding:8px 0;font:700 10px 'PingFang TC',sans-serif}@media(max-width:880px){.lead{grid-column:1/9;border-right:1px solid var(--hair)}.side{grid-column:9/13;padding:12px 0 12px 14px}.side p{columns:1}.lead-copy{grid-column:1/13;padding-right:0;border-right:0}.method-box{grid-column:1/13;border-top:1px solid var(--hair);padding:12px 0 0}}@media(max-width:479px){.layout,.methods-grid{display:block}.story,.lead,.side{padding:12px 0;border-right:0}.lead-copy{border-right:0;padding-right:0}.columns,.side p{columns:1}.method-box{border-top:1px solid var(--hair);padding:12px 0 0}.title{font-size:48px}}",
+      "css": ":root{--paper:oklch(95.5% .009 82);--ink:oklch(16% .01 52);--red:oklch(36% .11 27);--hair:oklch(51% .01 52)}body{margin:0;color:var(--ink);background:var(--paper);font-family:'Songti TC','STSong','PMingLiU','Noto Serif TC',serif}.paper{max-width:1240px;margin:auto}.layout{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));align-items:start;border-bottom:4px solid var(--ink)}.story{padding:8px 12px;border-bottom:1px solid var(--ink)}.lead{grid-column:1/9;padding-left:0;border-right:1px solid var(--hair)}.side{grid-column:9/13;padding-right:0}.methods-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr))}.lead-copy{grid-column:1/9;padding-right:12px;border-right:1px solid var(--hair)}.method-box{grid-column:9/13;padding-left:12px}.tag{margin:0 0 4px;color:var(--red);font:700 .75rem/1.2 'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif;letter-spacing:.06em}.story h2{margin:0 0 8px;font-size:clamp(1.5rem,2.4vw,2rem);letter-spacing:-.02em;line-height:1.05;text-wrap:balance}.lead h2{font-size:clamp(2.25rem,4vw,3rem);line-height:1.02}.columns{columns:2;column-gap:16px;column-rule:1px solid var(--hair)}.story p{margin:0 0 8px;font-size:1rem;line-height:1.55;text-align:justify}.dek{font-weight:700;line-height:1.4!important}.method-box h3{margin:0;border-bottom:1px solid var(--ink);padding:0 0 4px;font:700 .75rem/1.2 'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif}.method-box ol{margin:8px 0;padding-left:16px}.method-box li{margin:0 0 8px;font-size:1rem;line-height:1.45}.quote{grid-column:1/-1;margin:12px 0 0;border-top:3px solid var(--red);border-bottom:3px double var(--ink);padding:8px 0;font-size:clamp(1.5rem,2.6vw,2rem);font-weight:700;letter-spacing:-.015em;line-height:1.15}.lead reader-controls{grid-column:1/-1}.tomorrow{margin:12px 0 0;border-top:3px double var(--ink);border-bottom:1px solid var(--ink);padding:8px 0;font:700 .75rem/1.45 'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif}@media(max-width:880px){.lead{grid-column:1/8}.side{grid-column:8/13}.lead-copy{grid-column:1/13;padding-right:0;border-right:0}.method-box{grid-column:1/13;border-top:1px solid var(--hair);padding:8px 0 0}.story h2{font-size:1.5rem}.lead h2{font-size:2.25rem}}@media(max-width:640px){.columns{columns:1}}@media(max-width:479px){.layout,.methods-grid{display:block}.story,.lead,.side{padding:8px 0;border-right:0}.lead-copy{border-right:0;padding-right:0}.columns{columns:1}.method-box{border-top:1px solid var(--hair);padding:8px 0 0}.lead h2{font-size:2.25rem}}",
       "html": "<section class=\"layout\"><article class=\"story lead\" data-story-id=\"reading-contract\"></article><article class=\"story side\" data-story-id=\"next-edition\"></article></section>"
     }
   ],
@@ -41,7 +41,10 @@
           "應用安全",
           "代理驗證"
         ],
-        "preferenceTags": ["technology", "science"],
+        "preferenceTags": [
+          "technology",
+          "science"
+        ],
         "format": "report",
         "depth": "deep",
         "style": "technical",
@@ -84,7 +87,10 @@
           "資訊品質",
           "編輯判斷"
         ],
-        "preferenceTags": ["media", "technology"],
+        "preferenceTags": [
+          "media",
+          "technology"
+        ],
         "format": "analysis",
         "depth": "standard",
         "style": "contextual",
@@ -107,20 +113,23 @@
       "pageId": "front",
       "headline": "喜歡與不喜歡，現在就在每篇文章裡",
       "dek": "回饋不是報紙下方的一個控制面板，而是文章本身的編輯註記。",
-      "bodyHtml": "<p data-claim-id=\"claim-1\">每個文章區塊底部只有「喜歡」與「不喜歡」兩個回饋；點擊文章整塊或數位 jump line 則開啟同一篇報導的完整內容。原始來源只在展開後顯示，不會打斷紙面閱讀。</p><p data-claim-id=\"claim-2\">代理會根據被回饋文章的主題、版別、篇幅與寫法，累積非敏感的潛在偏好。單次點擊只算弱訊號，回饋改變未來選題與篇幅，不會改寫已經分享出去的本期內容。</p><p>互動位置本身會傳達產品如何理解回饋。若喜歡與不喜歡被放在報紙下方的獨立清單，讀者必須先把文章與另一個控制面板重新對應；回饋也會看起來像網站設定，而不是對這篇報導的即時判斷。</p><p>新版把兩個動作直接放入每個文章模組底部：喜歡與不喜歡。文章整塊與數位 jump line 都能開啟全文；原始來源則只出現在詳細文章之後。這使操作與報紙的排版層級一致，也保留每篇內容作為完整新聞包的感覺。</p><p>回饋的效果刻意延後到下一期。代理根據被回饋文章的主題、版別、篇幅與寫法累積非敏感偏好，且不會用單次訊號大幅改版。已發布報紙維持固定，個人化因此是一連串可比較的版本，而不是不斷變動的頁面。</p>",
+      "bodyHtml": "<p data-claim-id=\"claim-1\">每個文章區塊底部只有「喜歡」與「不喜歡」兩個回饋；點擊文章整塊即可開啟同一篇報導的完整內容。原始來源只在展開後顯示，不會打斷紙面閱讀。</p><p data-claim-id=\"claim-2\">代理會根據被回饋文章的主題、版別、篇幅與寫法，累積非敏感的潛在偏好。單次點擊只算弱訊號，回饋改變未來選題與篇幅，不會改寫已經分享出去的本期內容。</p><p>互動位置本身會傳達產品如何理解回饋。若喜歡與不喜歡被放在報紙下方的獨立清單，讀者必須先把文章與另一個控制面板重新對應；回饋也會看起來像網站設定，而不是對這篇報導的即時判斷。</p><p>新版把兩個動作直接放入每個文章模組底部：喜歡與不喜歡。點擊或用鍵盤開啟文章整塊即可閱讀完整報導；原始來源則只出現在詳細文章之後。這使操作與報紙的排版層級一致，也保留每篇內容作為完整新聞包的感覺。</p><p>回饋的效果刻意延後到下一期。代理根據被回饋文章的主題、版別、篇幅與寫法累積非敏感偏好，且不會用單次訊號大幅改版。已發布報紙維持固定，個人化因此是一連串可比較的版本，而不是不斷變動的頁面。</p>",
       "label": "inference",
       "sourceIds": [
         "news-design",
         "codex-cli"
       ],
       "kicker": "讀者機制",
-      "summaryHtml": "<p data-claim-id=\"claim-1\">每個文章區塊底部只有「喜歡」與「不喜歡」兩個回饋；點擊文章整塊或數位 jump line 則開啟同一篇報導的完整內容。原始來源只在展開後顯示，不會打斷紙面閱讀。</p><p data-claim-id=\"claim-2\">代理會根據被回饋文章的主題、版別、篇幅與寫法，累積非敏感的潛在偏好。單次點擊只算弱訊號，回饋改變未來選題與篇幅，不會改寫已經分享出去的本期內容。</p>",
+      "summaryHtml": "<p data-claim-id=\"claim-1\">每個文章區塊底部只有「喜歡」與「不喜歡」兩個回饋；點擊文章整塊即可開啟同一篇報導的完整內容。原始來源只在展開後顯示，不會打斷紙面閱讀。</p><p data-claim-id=\"claim-2\">代理會根據被回饋文章的主題、版別、篇幅與寫法，累積非敏感的潛在偏好。單次點擊只算弱訊號，回饋改變未來選題與篇幅，不會改寫已經分享出去的本期內容。</p>",
       "editorial": {
         "topics": [
           "個人化產品",
           "回饋設計"
         ],
-        "preferenceTags": ["design", "technology"],
+        "preferenceTags": [
+          "design",
+          "technology"
+        ],
         "format": "explainer",
         "depth": "standard",
         "style": "contextual",
@@ -129,8 +138,8 @@
       "claims": [
         {
           "id": "claim-1",
-          "summaryClaim": "每個文章區塊底部只有「喜歡」與「不喜歡」兩個回饋；點擊文章整塊或數位 jump line 則開啟同一篇報導的完整內容。原始來源只在展開後顯示，不會打斷紙面閱讀。",
-          "bodySupport": "每個文章區塊底部只有「喜歡」與「不喜歡」兩個回饋；點擊文章整塊或數位 jump line 則開啟同一篇報導的完整內容。原始來源只在展開後顯示，不會打斷紙面閱讀。",
+          "summaryClaim": "每個文章區塊底部只有「喜歡」與「不喜歡」兩個回饋；點擊文章整塊即可開啟同一篇報導的完整內容。原始來源只在展開後顯示，不會打斷紙面閱讀。",
+          "bodySupport": "每個文章區塊底部只有「喜歡」與「不喜歡」兩個回饋；點擊文章整塊即可開啟同一篇報導的完整內容。原始來源只在展開後顯示，不會打斷紙面閱讀。",
           "sourceIds": [
             "news-design",
             "codex-cli"
@@ -165,7 +174,9 @@
           "Windows 安全",
           "代理沙盒"
         ],
-        "preferenceTags": ["technology"],
+        "preferenceTags": [
+          "technology"
+        ],
         "format": "report",
         "depth": "deep",
         "style": "technical",
@@ -227,7 +238,10 @@
           "系統架構",
           "內容安全"
         ],
-        "preferenceTags": ["technology", "design"],
+        "preferenceTags": [
+          "technology",
+          "design"
+        ],
         "format": "analysis",
         "depth": "standard",
         "style": "contextual",
@@ -255,7 +269,7 @@
     },
     {
       "id": "source-discipline",
-      "pageId": "technology",
+      "pageId": "front",
       "headline": "驗證前置，少一次錯誤傳播",
       "dek": "先確認發布者、原始脈絡與可重現條件，再讓資訊進入摘要與版面。",
       "bodyHtml": "<p data-claim-id=\"claim-1\">先確認網址、發布者、日期與原始脈絡，再寫摘要。若二手文章誤讀一手資料，快速轉述只會把同一錯誤帶進更多版面；把驗證移到寫作之前，可以在排版前切斷錯誤傳播。</p><p data-claim-id=\"claim-2\">找不到直接支持主張的來源時，正確結果是刪除該主張或標示不確定，而不是用更肯定的語氣填滿版面。</p><p>錯誤資訊常不是在第一次發布時造成最大傷害，而是在後續摘要與轉述中失去限制條件。一篇二手文章省略了前提，下一個系統再把它濃縮成一句確定語氣，最後讀者看到的內容已經離原始資料很遠。</p><p>把驗證移到寫作之前，可以切斷這條傳播鏈。代理先確認來源是否為原發布者、頁面是否真的支持預定主張、日期與產品版本是否一致；只有通過這些檢查，材料才進入編輯階段。</p><p>前置驗證也使失敗更便宜。系統在研究階段捨棄一個無法證明的題目，只損失少量探索時間；若等到排版與發布後才發現，修正成本還包括讀者信任與版本一致性。對每日出版而言，這是最值得自動化的品質閘門。</p>",
@@ -270,7 +284,10 @@
           "來源驗證",
           "資訊品質"
         ],
-        "preferenceTags": ["media", "education"],
+        "preferenceTags": [
+          "media",
+          "education"
+        ],
         "format": "brief",
         "depth": "quick",
         "style": "investigative",
@@ -314,7 +331,10 @@
           "代理工作流",
           "研究方法"
         ],
-        "preferenceTags": ["technology", "education"],
+        "preferenceTags": [
+          "technology",
+          "education"
+        ],
         "format": "analysis",
         "depth": "quick",
         "style": "contextual",
@@ -347,20 +367,23 @@
       "pageId": "methods",
       "headline": "一份報紙，先是一份閱讀契約",
       "dek": "主標、副標、欄寬、圖像與 jump line 共同建立閱讀順序；個人化不應破壞這套可理解的層級。",
-      "bodyHtml": "<p data-claim-id=\"claim-1\">真正的報紙首頁不會把內容平均切成卡片。它利用主標、副標、欄寬、圖片與分隔線建立閱讀順序：先看最重要的事，再沿著大小不同的模組發現次要訊號。</p><p data-claim-id=\"claim-2\">新聞設計教材把 headline、deck、byline、照片說明與 jump line 視為一個完整新聞包。數位版的「閱讀全文」延續 jump line 的功能，因此必須留在文章裡。</p><p data-claim-id=\"claim-3\">個人化可以改變題材比例與版面主次，但每個模組仍要清楚區分報導與分析，且在紙面提供足夠事實，讓讀者不必點開才知道主旨。</p><p>報紙版面看似不規則，實際上有清楚秩序。最大的標題與最寬的欄位告訴讀者何者是今日主文，較窄的欄位承接次要事件，線條與留白把彼此相關的文字、圖像和說明組成一個新聞包。</p><p>新聞設計教材把 headline、deck、byline、照片與 jump line 列為常見構件。它們不只是裝飾：副標補足主標無法容納的脈絡，署名交代責任，jump line 告訴讀者文章仍有後續。數位報紙的「閱讀全文」延續同一功能，因此必須留在文章內。</p><h2>個人化應該改變主次，不是破壞結構</h2><p>代理可以依偏好調整哪個題目領版、哪些文章縮成短欄、哪些分類需要新增一版。但每個模組仍要提供足夠重點、清楚標籤與可開啟全文。風格可以每天伸縮，閱讀契約則保持一致，讀者才不必重新學習如何使用自己的報紙。</p>",
+      "bodyHtml": "<p data-claim-id=\"claim-1\">真正的報紙首頁不會把內容平均切成卡片。它利用主標、副標、欄寬、圖片與分隔線建立閱讀順序：先看最重要的事，再沿著大小不同的模組發現次要訊號。</p><p data-claim-id=\"claim-2\">新聞設計教材把 headline、deck、byline、照片說明與 jump line 視為一個完整新聞包。數位版把整個新聞模組視為入口；紙面不再另外插入網站式按鈕。</p><p data-claim-id=\"claim-3\">個人化可以改變題材比例與版面主次，但每個模組仍要清楚區分報導與分析，且在紙面提供足夠事實，讓讀者不必點開才知道主旨。</p><p>報紙版面看似不規則，實際上有清楚秩序。最大的標題與最寬的欄位告訴讀者何者是今日主文，較窄的欄位承接次要事件，線條與留白把彼此相關的文字、圖像和說明組成一個新聞包。</p><p>新聞設計教材把 headline、deck、byline、照片與 jump line 列為常見構件。它們不只是裝飾：副標補足主標無法容納的脈絡，署名交代責任，jump line 告訴讀者文章仍有後續；在數位版，整個新聞模組就是通往完整報導的入口。</p><h2>個人化應該改變主次，不是破壞結構</h2><p>代理可以依偏好調整哪個題目領版、哪些文章縮成短欄、哪些分類需要新增一版。但每個模組仍要提供足夠重點、清楚標籤與可開啟全文。風格可以每天伸縮，閱讀契約則保持一致，讀者才不必重新學習如何使用自己的報紙。</p>",
       "label": "inference",
       "sourceIds": [
         "news-design",
         "snd"
       ],
       "kicker": "版面研究",
-      "summaryHtml": "<div class=\"methods-grid\"><div class=\"lead-copy\"><div class=\"columns\"><p data-claim-id=\"claim-1\">真正的報紙首頁不會把內容平均切成卡片。它利用主標、副標、欄寬、圖片與分隔線建立閱讀順序：先看最重要的事，再沿著大小不同的模組發現次要訊號。</p><p data-claim-id=\"claim-2\">新聞設計教材把 headline、deck、byline、照片說明與 jump line 視為一個完整新聞包。數位版的「閱讀全文」延續 jump line 的功能，因此必須留在文章裡。</p><p data-claim-id=\"claim-3\">個人化可以改變題材比例與版面主次，但每個模組仍要清楚區分報導與分析，且在紙面提供足夠事實，讓讀者不必點開才知道主旨。</p></div></div><aside class=\"method-box\"><h3>本產品的四條硬規則</h3><ol><li>每篇紙面摘要已交代主旨、證據與意義。</li><li>點擊文章整塊即可閱讀延伸內文。</li><li>喜歡與不喜歡直接置於文章內。</li><li>桌面與平板同時運用橫向、縱向模組。</li></ol></aside><blockquote class=\"quote\">自由留給選題與版面；約束留給來源、權限與事實。</blockquote></div>",
+      "summaryHtml": "<div class=\"methods-grid\"><div class=\"lead-copy\"><div class=\"columns\"><p data-claim-id=\"claim-1\">真正的報紙首頁不會把內容平均切成卡片。它利用主標、副標、欄寬、圖片與分隔線建立閱讀順序：先看最重要的事，再沿著大小不同的模組發現次要訊號。</p><p data-claim-id=\"claim-2\">新聞設計教材把 headline、deck、byline、照片說明與 jump line 視為一個完整新聞包。數位版把整個新聞模組視為入口；紙面不再另外插入網站式按鈕。</p><p data-claim-id=\"claim-3\">個人化可以改變題材比例與版面主次，但每個模組仍要清楚區分報導與分析，且在紙面提供足夠事實，讓讀者不必點開才知道主旨。</p></div></div><aside class=\"method-box\"><h3>本產品的四條硬規則</h3><ol><li>每篇紙面摘要已交代主旨、證據與意義。</li><li>點擊文章整塊即可閱讀延伸內文。</li><li>喜歡與不喜歡直接置於文章內。</li><li>桌面與平板同時運用橫向、縱向模組。</li></ol></aside><blockquote class=\"quote\">自由留給選題與版面；約束留給來源、權限與事實。</blockquote></div>",
       "editorial": {
         "topics": [
           "新聞設計",
           "閱讀體驗"
         ],
-        "preferenceTags": ["design", "media"],
+        "preferenceTags": [
+          "design",
+          "media"
+        ],
         "format": "explainer",
         "depth": "deep",
         "style": "narrative",
@@ -378,8 +401,8 @@
         },
         {
           "id": "claim-2",
-          "summaryClaim": "新聞設計教材把 headline、deck、byline、照片說明與 jump line 視為一個完整新聞包。數位版的「閱讀全文」延續 jump line 的功能，因此必須留在文章裡。",
-          "bodySupport": "新聞設計教材把 headline、deck、byline、照片說明與 jump line 視為一個完整新聞包。數位版的「閱讀全文」延續 jump line 的功能，因此必須留在文章裡。",
+          "summaryClaim": "新聞設計教材把 headline、deck、byline、照片說明與 jump line 視為一個完整新聞包。數位版把整個新聞模組視為入口；紙面不再另外插入網站式按鈕。",
+          "bodySupport": "新聞設計教材把 headline、deck、byline、照片說明與 jump line 視為一個完整新聞包。數位版把整個新聞模組視為入口；紙面不再另外插入網站式按鈕。",
           "sourceIds": [
             "news-design",
             "snd"
@@ -415,7 +438,10 @@
           "潛在偏好",
           "版本設計"
         ],
-        "preferenceTags": ["design", "media"],
+        "preferenceTags": [
+          "design",
+          "media"
+        ],
         "format": "analysis",
         "depth": "standard",
         "style": "contextual",

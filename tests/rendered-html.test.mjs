@@ -47,7 +47,7 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.match(reader, /sandbox="allow-scripts"/);
   assert.match(reader, /api\/reactions/);
   assert.match(reader, /api\/shares/);
-  assert.match(css, /--surface: oklch\(94\.5% 0\.012 82\)/);
+  assert.match(css, /--surface: oklch\(95\.5% 0\.009 82\)/);
   assert.doesNotMatch(css, /--surface: oklch\(100% 0 0\)/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 
@@ -56,13 +56,20 @@ test("ships the private reader instead of the starter preview", async () => {
   );
 });
 
-test("uses sectioned newspaper navigation with story-level feedback", async () => {
+test("uses paper-turn navigation with story-level feedback inside each article", async () => {
   const reader = await readFile(new URL("../app/EditionReader.tsx", import.meta.url), "utf8");
 
   assert.match(reader, /page\.section/);
   assert.match(reader, /story\.pageId/);
   assert.match(reader, /postMessage/);
   assert.match(reader, /story-dialog/);
+  assert.match(reader, /aria-label="上一版"/);
+  assert.match(reader, /aria-label="下一版"/);
+  assert.match(reader, /document\.body\.getBoundingClientRect\(\)\.height/);
+  assert.doesNotMatch(reader, /document\.documentElement\.scrollHeight/);
+  assert.doesNotMatch(reader, /useState\(1120\)/);
+  assert.doesNotMatch(reader, /className="edition-pages"/);
+  assert.doesNotMatch(reader, /閱讀全文 →/);
   assert.doesNotMatch(reader, /edition-dispatch/);
   assert.doesNotMatch(reader, /reading-rail/);
 });

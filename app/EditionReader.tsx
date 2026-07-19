@@ -23,11 +23,18 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shares, setShares] = useState<Share[]>([]);
   const [activeStoryId, setActiveStoryId] = useState<string | null>(null);
+  const [pageHeight, setPageHeight] = useState<number | null>(null);
   const pageFrameRef = useRef<HTMLIFrameElement>(null);
   const articleFrameRef = useRef<HTMLIFrameElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const page = bundle.pages[pageIndex];
   const activeStory = bundle.stories.find((story) => story.id === activeStoryId) ?? null;
+
+  const turnPage = useCallback((direction: -1 | 1) => {
+    setPageIndex((current) => Math.min(Math.max(current + direction, 0), bundle.pages.length - 1));
+    setActiveStoryId(null);
+    setPageHeight(null);
+  }, [bundle.pages.length]);
 
   useEffect(() => {
     if (!owner) return;
@@ -43,6 +50,19 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     document.addEventListener("keydown", closeOnEscape);
     return () => document.removeEventListener("keydown", closeOnEscape);
   }, [activeStory]);
+
+  useEffect(() => {
+    if (activeStory) return;
+    const turnWithKeyboard = (event: KeyboardEvent) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      const target = event.target;
+      if (target instanceof HTMLElement && target.closest("a, button, input, textarea, select")) return;
+      event.preventDefault();
+      turnPage(event.key === "ArrowLeft" ? -1 : 1);
+    };
+    document.addEventListener("keydown", turnWithKeyboard);
+    return () => document.removeEventListener("keydown", turnWithKeyboard);
+  }, [activeStory, turnPage]);
 
   const react = useCallback(async (action: ReactionAction, storyId: string) => {
     setPending(`${action}:${storyId}`);
@@ -70,6 +90,10 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
 
       try {
         const readerMessage = parseReaderMessage(event.data, storyIds);
+        if (readerMessage.type === "page-resize") {
+          if (event.source === pageWindow) setPageHeight(readerMessage.height);
+          return;
+        }
         const story = bundle.stories.find((candidate) => candidate.id === readerMessage.storyId);
         if (!story) return;
         if (event.source === pageWindow && story.pageId !== page.id) return;
@@ -135,51 +159,50 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
 
   return (
     <section className="edition-reader" aria-label={`${bundle.masthead}, ${bundle.date}`}>
-      {owner ? (
-        <header className="owner-toolbar">
-          <div>
-            <p className="toolbar-name">{bundle.masthead}</p>
-            <p className="toolbar-date">{formatDate(bundle.date, bundle.language)}</p>
-          </div>
-          <div className="toolbar-actions">
-            <button className="quiet-button" type="button" onClick={share} disabled={pending === "share"}>
-              {pending === "share" ? "Preparing…" : "Share edition"}
-            </button>
-            {shareUrl ? <a className="quiet-button share-link" href={shareUrl} rel="noreferrer" target="_blank">Open link</a> : null}
-          </div>
-          <ShareList shares={shares} editionId={bundle.id} pending={pending} onRevoke={revokeShare} />
-        </header>
-      ) : null}
-
-      <nav className="edition-pages" aria-label="Edition pages">
-        {bundle.pages.map((candidate, index) => (
-          <button
-            aria-current={index === pageIndex ? "page" : undefined}
-            className={index === pageIndex ? "page-tab is-current" : "page-tab"}
-            key={candidate.id}
-            onClick={() => {
-              setPageIndex(index);
-              setActiveStoryId(null);
-            }}
-            type="button"
-          >
-            <span>{candidate.section}</span>
-            <small>{index + 1}</small>
-          </button>
-        ))}
-      </nav>
-
-      <div className="edition-spread">
-        <iframe
-          className="edition-frame"
-          key={page.id}
-          ref={pageFrameRef}
-          sandbox="allow-scripts"
-          srcDoc={pageDocument(page, bundle, owner)}
-          title={`${bundle.masthead}: ${page.section}`}
-        />
-        <p aria-live="polite" className="reader-message">{message}</p>
+      <div className="edition-stage">
+        <button
+          aria-label="上一版"
+          className="page-turn page-turn-previous"
+          disabled={pageIndex === 0}
+          onClick={() => turnPage(-1)}
+          type="button"
+        >
+          <span aria-hidden="true">←</span><small>上一版</small>
+        </button>
+        <div className="edition-sheet">
+          <iframe
+            className="edition-frame"
+            key={page.id}
+            ref={pageFrameRef}
+            sandbox="allow-scripts"
+            srcDoc={pageDocument(page, bundle, owner)}
+            style={pageHeight === null ? undefined : { height: `${pageHeight}px` }}
+            title={`${bundle.masthead}: ${page.section}`}
+          />
+        </div>
+        <button
+          aria-label="下一版"
+          className="page-turn page-turn-next"
+          disabled={pageIndex === bundle.pages.length - 1}
+          onClick={() => turnPage(1)}
+          type="button"
+        >
+          <span aria-hidden="true">→</span><small>下一版</small>
+        </button>
       </div>
+      <footer className="reader-furniture">
+        <p><strong>{page.section}</strong><span>第 {pageIndex + 1}／{bundle.pages.length} 版・{formatDate(bundle.date, bundle.language)}</span></p>
+        {owner ? (
+          <div className="reader-utilities">
+            <button className="quiet-button" type="button" onClick={share} disabled={pending === "share"}>
+              {pending === "share" ? "準備中…" : "分享本期"}
+            </button>
+            {shareUrl ? <a className="quiet-button share-link" href={shareUrl} rel="noreferrer" target="_blank">開啟分享頁</a> : null}
+          </div>
+        ) : null}
+        {owner ? <ShareList shares={shares} editionId={bundle.id} pending={pending} onRevoke={revokeShare} /> : null}
+      </footer>
+      <p aria-live="polite" className="reader-message">{message}</p>
 
       {activeStory ? (
         <StoryDialog
@@ -236,7 +259,7 @@ function StoryDialog({
         <footer className="story-dialog-sources">
           <span>核對來源</span>
           {sources.map((source, index) => (
-            <a href={source.url} key={source.id} rel="noreferrer" target="_blank">來源 {index + 1} ↗</a>
+            <a href={source.url} key={source.id} rel="noreferrer" target="_blank">閱讀原始報導 {index + 1} ↗</a>
           ))}
         </footer>
       </div>
@@ -283,107 +306,123 @@ async function loadShares(): Promise<Share[]> {
 
 function pageDocument(page: EditionPage, bundle: EditionBundle, owner: boolean): string {
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
-    :root { --paper: oklch(94.5% 0.012 82); --ink: oklch(18% 0.012 52); --red: oklch(38% 0.13 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", Georgia, serif; }
+    :root { --paper: oklch(95.5% 0.009 82); --ink: oklch(16% 0.01 52); --red: oklch(36% 0.11 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", "Noto Serif TC", serif; }
     * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; padding: clamp(1.25rem, 3vw, 3.5rem); overflow-wrap: anywhere; }
+    body { margin: 0; padding: clamp(1rem, 3vw, 3rem); overflow-wrap: break-word; word-break: normal; }
     img, svg, video { max-width: 100%; height: auto; }
     a { color: inherit; }
     ${trustedPageHeaderCss()}
     ${page.css ?? ""}
     ${readerBridgeCss()}
-  </style></head><body><main class="paper">${trustedPageHeader(page, bundle)}${page.html}</main>${trustedReaderBridge(owner, bundle.stories)}</body></html>`;
+  </style></head><body><main class="paper">${trustedPageHeader(page, bundle)}${page.html}</main>${trustedReaderBridge(owner, bundle.stories, true)}${trustedPageResizeBridge()}</body></html>`;
 }
 
 function articleDocument(story: EditionStory, bundle: EditionBundle, owner: boolean): string {
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
-    :root { --paper: oklch(94.5% 0.012 82); --ink: oklch(18% 0.012 52); --red: oklch(38% 0.13 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", Georgia, serif; }
+    :root { --paper: oklch(95.5% 0.009 82); --ink: oklch(16% 0.01 52); --red: oklch(36% 0.11 27); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", "Noto Serif TC", serif; }
     * { box-sizing: border-box; }
-    body { margin: 0; padding: clamp(20px, 4vw, 52px); }
+    body { margin: 0; padding: clamp(1.5rem, 4vw, 3rem); }
     .full-story { max-width: 820px; margin: 0 auto; cursor: default; }
-    .full-story .section { margin: 0 0 16px; border-top: 4px solid var(--red); border-bottom: 1px solid var(--ink); padding: 7px 0; color: var(--red); font: 800 11px/1.2 "PingFang TC", sans-serif; letter-spacing: .08em; }
-    .full-story h1 { max-width: 19ch; margin: 0; font-size: clamp(36px, 7vw, 68px); letter-spacing: -.035em; line-height: 1; text-wrap: balance; }
-    .full-story .dek { max-width: 56ch; margin: 16px 0; color: oklch(38% 0.014 52); font-size: clamp(18px, 2.4vw, 23px); font-weight: 700; line-height: 1.45; }
-    .full-story .byline { border-top: 1px solid var(--ink); padding: 8px 0 18px; font: 800 10px/1.3 "PingFang TC", sans-serif; letter-spacing: .04em; }
-    .full-story .body { columns: 2; column-gap: 32px; column-rule: 1px solid oklch(48% 0.012 52); font-size: clamp(17px, 1.8vw, 20px); line-height: 1.75; text-align: justify; }
+    .full-story .section { margin: 0 0 1rem; border-top: 4px solid var(--red); border-bottom: 1px solid var(--ink); padding: .5rem 0; color: var(--red); font: 700 .75rem/1.3 "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; letter-spacing: .06em; }
+    .full-story h1 { max-width: 21ch; margin: 0; font-size: clamp(2.125rem, 5vw, 3rem); letter-spacing: -.025em; line-height: 1.02; text-wrap: balance; }
+    .full-story .dek { max-width: 56ch; margin: 1rem 0; color: oklch(36% 0.012 52); font-size: 1.125rem; font-weight: 700; line-height: 1.4; }
+    .full-story .byline { border-top: 1px solid var(--ink); padding: .5rem 0 1rem; font: 700 .75rem/1.3 "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; letter-spacing: .04em; }
+    .full-story .body { columns: 2; column-gap: 2rem; column-rule: 1px solid oklch(51% 0.01 52); font-size: 1.0625rem; line-height: 1.68; text-align: justify; }
     .full-story .body p { margin: 0 0 1.35em; }
-    .full-story .body p:first-child::first-letter { float: left; margin: .08em .1em 0 0; font-size: 4.2em; font-weight: 900; line-height: .72; }
+    .full-story .body p:first-child::first-letter { float: left; margin: .08em .22em .04em 0; font-size: 3.7em; font-weight: 700; line-height: .8; }
     .full-story .body h2 { break-after: avoid; margin: 1.6em 0 .5em; color: var(--red); font-size: 1.35em; line-height: 1.1; }
     .full-story .body blockquote { column-span: all; margin: 1.6em 0; border-top: 3px solid var(--red); border-bottom: 3px double var(--ink); padding: .8em 0; font-size: 1.3em; font-weight: 700; line-height: 1.28; }
-    @media (max-width: 620px) { .full-story .body { columns: 1; } }
+    @media (max-width: 38.75rem) { .full-story .body { columns: 1; } }
     ${readerBridgeCss()}
-  </style></head><body><article class="full-story" data-story-id="${escapeAttribute(story.id)}"><p class="section">${story.label === "fact" ? "報導" : "分析"}・${escapeHtml(bundle.masthead)}</p><h1>${escapeHtml(story.headline)}</h1><p class="dek">${escapeHtml(story.dek)}</p><p class="byline">光譜日報編輯台・${escapeHtml(formatDate(bundle.date, bundle.language))}</p><div class="body">${story.bodyHtml}</div></article>${trustedReaderBridge(owner, [story])}</body></html>`;
+  </style></head><body><article class="full-story" data-story-id="${escapeAttribute(story.id)}"><p class="section">${story.label === "fact" ? "報導" : "分析"}・完整報導</p><h1>${escapeHtml(story.headline)}</h1><p class="dek">${escapeHtml(story.dek)}</p><p class="byline">光譜日報編輯台・${escapeHtml(formatDate(bundle.date, bundle.language))}</p><div class="body">${story.bodyHtml}</div></article>${trustedReaderBridge(owner, [story], false)}</body></html>`;
 }
 
 function readerBridgeCss(): string {
   return `.reader-story { cursor: pointer; position: relative; transition: background-color 120ms ease; }
     .reader-story:hover { background-color: oklch(91% 0.017 82); }
     .reader-story:focus-visible { outline: 3px solid oklch(38% 0.13 27); outline-offset: -3px; }
-    reader-controls { display: block !important; clear: both !important; margin-top: 14px !important; }`;
+    reader-controls { display: block !important; clear: both !important; margin-top: 12px !important; }`;
 }
 
 function trustedPageHeader(page: EditionPage, bundle: EditionBundle): string {
   const pageNumber = bundle.pages.findIndex((candidate) => candidate.id === page.id) + 1;
   const storyCount = bundle.stories.filter((story) => story.pageId === page.id).length;
   const title = pageNumber === 1 ? bundle.masthead : page.section;
-  return `<header class="publication-header${pageNumber === 1 ? " is-front" : ""}"><div class="publication-folio"><span>${escapeHtml(bundle.masthead)}・${escapeHtml(page.section)}</span><span>第 ${pageNumber} 版・${escapeHtml(formatDate(bundle.date, bundle.language))}</span></div><h1>${escapeHtml(title)}</h1><p><span>${escapeHtml(page.section)}</span><span>${storyCount} 篇・每篇可展開全文</span></p></header>`;
+  return `<header class="publication-header${pageNumber === 1 ? " is-front" : ""}"><div class="publication-folio"><span>${escapeHtml(bundle.masthead)}・個人早報</span><span>${escapeHtml(formatDate(bundle.date, bundle.language))}・第 ${pageNumber} 版</span></div><div class="publication-name"><h1>${escapeHtml(title)}</h1><p>${pageNumber === 1 ? "每日只留下值得讀的事" : escapeHtml(bundle.masthead)}</p></div><div class="publication-index"><span>${escapeHtml(page.section)}</span><span>${storyCount} 篇</span><span>點選任一新聞區塊開啟完整報導</span></div></header>`;
 }
 
 function trustedPageHeaderCss(): string {
-  return `.publication-header{border-top:4px solid var(--red);border-bottom:3px double var(--ink)}
-    .publication-folio,.publication-header>p{display:flex;justify-content:space-between;gap:16px;padding:6px 0;font:800 10px/1.35 "PingFang TC",sans-serif}
+  return `.publication-header{border-top:4px solid var(--ink);border-bottom:3px double var(--ink)}
+    .publication-folio,.publication-index{display:flex;justify-content:space-between;gap:16px;padding:5px 0;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;letter-spacing:.04em}
     .publication-folio{border-bottom:1px solid var(--ink)}
-    .publication-header h1{margin:8px 0 6px;color:var(--red);font-family:"Kaiti TC","STKaiti","Songti TC",serif;font-size:clamp(46px,6vw,76px);font-weight:900;letter-spacing:-.035em;line-height:.92}
-    .publication-header>p{margin:0;border-top:3px solid var(--ink)}
-    .publication-header.is-front h1{text-align:center;font-size:clamp(54px,7vw,84px)}
-    @media(max-width:559px){.publication-folio,.publication-header>p{flex-wrap:wrap}.publication-header h1,.publication-header.is-front h1{font-size:50px}}`;
+    .publication-name{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:16px;padding:7px 0 5px}
+    .publication-name h1{margin:0;color:var(--red);font-family:"Kaiti TC","STKaiti","BiauKai","DFKai-SB","Songti TC",serif;font-size:clamp(2.125rem,4.4vw,3.375rem);font-weight:700;letter-spacing:-.03em;line-height:.95}
+    .publication-name p{margin:0 0 2px;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
+    .publication-index{border-top:2px solid var(--ink)}
+    .publication-index span:last-child{margin-left:auto}
+    .publication-header.is-front .publication-name h1{font-size:clamp(2.75rem,5.4vw,3.875rem)}
+    @media(max-width:559px){.publication-folio,.publication-index{flex-wrap:wrap}.publication-index span:last-child{display:none}.publication-name{grid-template-columns:1fr}.publication-name p{display:none}.publication-header.is-front .publication-name h1{font-size:3rem}}`;
 }
 
-function trustedReaderBridge(owner: boolean, stories: EditionStory[]): string {
+function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: boolean): string {
   const summaries = Object.fromEntries(stories.map((story) => [story.id, renderStorySummary(story)]));
   return `<script>(() => {
     const owner = ${owner ? "true" : "false"};
+    const openable = ${openable ? "true" : "false"};
     const summaries = ${inlineScriptJson(summaries)};
     const send = (message) => window.parent.postMessage(message, "*");
-    const controlsMarkup = '<style>:host{all:initial;display:block;font-family:"PingFang TC",sans-serif;color:#211d19}.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid #211d19;border-bottom:1px solid #211d19;padding:6px 0}.open,.action{appearance:none;border:0;background:transparent;color:#211d19;cursor:pointer;font:800 11px/1.2 "PingFang TC",sans-serif;letter-spacing:.02em;padding:5px 2px}.open{text-decoration:underline;text-underline-offset:3px}.actions{display:flex;gap:13px}.action:hover,.open:hover{color:#7d1f25}.action:focus-visible,.open:focus-visible{outline:2px solid #7d1f25;outline-offset:2px}</style><div class="bar"><button class="open" type="button">閱讀全文 →</button>' + (owner ? '<div class="actions" aria-label="調整明日內容"><button class="action" data-action="love" type="button">♡ 喜歡</button><button class="action" data-action="less" type="button">⊘ 不喜歡</button></div>' : '') + '</div>';
+    const controlsMarkup = '<style>:host{all:initial;display:block;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:#211d19}.bar{display:flex;justify-content:flex-end;border-top:1px solid #211d19;border-bottom:1px solid #211d19;padding:4px 0}.actions{display:flex;gap:12px}.action{min-height:44px;appearance:none;border:0;background:transparent;color:#211d19;cursor:pointer;font:700 .8125rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;padding:8px}.action:hover{color:#7d1f25}.action:focus-visible{outline:2px solid #7d1f25;outline-offset:2px}</style><div class="bar"><div class="actions" aria-label="調整明日內容"><button class="action" data-action="love" type="button">♡ 喜歡</button><button class="action" data-action="less" type="button">⊘ 不喜歡</button></div></div>';
     document.querySelectorAll('[data-story-id]').forEach((article) => {
       const storyId = article.getAttribute('data-story-id');
       if (!storyId || article.dataset.readerEnhanced) return;
       article.dataset.readerEnhanced = 'true';
-      article.classList.add('reader-story');
-      article.tabIndex = 0;
+      if (openable) {
+        article.classList.add('reader-story');
+        article.tabIndex = 0;
+      }
       if (article.childElementCount === 0) {
         const summary = summaries[storyId];
         if (!summary) throw new Error('Missing canonical story summary');
         article.insertAdjacentHTML('afterbegin', summary);
       }
-      const headline = article.querySelector('h1,h2,h3')?.textContent?.trim();
-      article.setAttribute('aria-label', headline ? '閱讀全文：' + headline : '閱讀全文');
-      const host = document.createElement('reader-controls');
-      host.style.setProperty('display', 'block', 'important');
-      article.append(host);
-      const root = host.attachShadow({ mode: 'closed' });
-      root.innerHTML = controlsMarkup;
-      root.querySelector('.open')?.addEventListener('click', (event) => {
-        event.stopPropagation();
-        send({ type: 'open', storyId });
-      });
-      root.querySelectorAll('[data-action]').forEach((button) => {
-        button.addEventListener('click', (event) => {
-          event.stopPropagation();
-          send({ type: 'react', storyId, action: button.getAttribute('data-action') });
+      if (openable) {
+        const headline = article.querySelector('h1,h2,h3')?.textContent?.trim();
+        article.setAttribute('aria-label', headline ? '開啟完整報導：' + headline : '開啟完整報導');
+      }
+      if (owner) {
+        const host = document.createElement('reader-controls');
+        host.style.setProperty('display', 'block', 'important');
+        article.append(host);
+        const root = host.attachShadow({ mode: 'closed' });
+        root.innerHTML = controlsMarkup;
+        root.querySelectorAll('[data-action]').forEach((button) => {
+          button.addEventListener('click', (event) => {
+            event.stopPropagation();
+            send({ type: 'react', storyId, action: button.getAttribute('data-action') });
+          });
         });
-      });
-      article.addEventListener('click', (event) => {
-        const target = event.target;
-        if (target instanceof Element && target.closest('a,button,reader-controls')) return;
-        send({ type: 'open', storyId });
-      });
-      article.addEventListener('keydown', (event) => {
-        if (event.target !== article || (event.key !== 'Enter' && event.key !== ' ')) return;
-        event.preventDefault();
-        send({ type: 'open', storyId });
-      });
+      }
+      if (openable) {
+        article.addEventListener('click', (event) => {
+          const target = event.target;
+          if (target instanceof Element && target.closest('a,button,reader-controls')) return;
+          send({ type: 'open', storyId });
+        });
+        article.addEventListener('keydown', (event) => {
+          if (event.target !== article || (event.key !== 'Enter' && event.key !== ' ')) return;
+          event.preventDefault();
+          send({ type: 'open', storyId });
+        });
+      }
     });
+  })();</script>`;
+}
+
+function trustedPageResizeBridge(): string {
+  return `<script>(() => {
+    const publishHeight = () => window.parent.postMessage({ type: 'page-resize', height: Math.ceil(document.body.getBoundingClientRect().height) }, '*');
+    new ResizeObserver(publishHeight).observe(document.documentElement);
+    requestAnimationFrame(publishHeight);
   })();</script>`;
 }
 

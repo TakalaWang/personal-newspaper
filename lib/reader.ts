@@ -3,6 +3,10 @@ const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
 
 export type ReactionAction = "love" | "less" | "follow";
 
+export type ReaderMessage =
+  | { type: "open"; storyId: string }
+  | { type: "react"; storyId: string; action: ReactionAction };
+
 export type ShareRecord = {
   tokenHash: string;
   editionId: string;
@@ -29,6 +33,22 @@ export function parseReaction(value: unknown): { action: ReactionAction; storyId
     fail("storyId must be a valid identifier");
   }
   return { action: value.action as ReactionAction, storyId: value.storyId };
+}
+
+export function parseReaderMessage(value: unknown, storyIds: Set<string>): ReaderMessage {
+  if (!isRecord(value)) fail("reader message must be an object");
+  if (value.type !== "open" && value.type !== "react") fail("reader message type must be open or react");
+
+  const allowedKeys = value.type === "open" ? new Set(["type", "storyId"]) : new Set(["type", "storyId", "action"]);
+  for (const key of Object.keys(value)) {
+    if (!allowedKeys.has(key)) fail(`unexpected field: ${key}`);
+  }
+  if (typeof value.storyId !== "string" || !storyIds.has(value.storyId)) {
+    fail("storyId must reference a story in this edition");
+  }
+  if (value.type === "open") return { type: "open", storyId: value.storyId };
+  if (!REACTION_ACTIONS.has(value.action as string)) fail("action must be love, less, or follow");
+  return { type: "react", storyId: value.storyId, action: value.action as ReactionAction };
 }
 
 export async function hashShareToken(token: string): Promise<string> {

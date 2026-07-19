@@ -44,7 +44,7 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.match(page, /getEditionBundle/);
   assert.match(page, /Onboarding/);
   assert.match(layout, /title:\s*"The Personal Daily"/);
-  assert.match(reader, /sandbox=""/);
+  assert.match(reader, /sandbox="allow-scripts"/);
   assert.match(reader, /api\/reactions/);
   assert.match(reader, /api\/shares/);
   assert.match(css, /oklch\(100% 0 0\)/);
@@ -60,6 +60,8 @@ test("uses sectioned newspaper navigation with story-level feedback", async () =
 
   assert.match(reader, /page\.section/);
   assert.match(reader, /story\.pageId/);
-  assert.match(reader, /edition-dispatch/);
+  assert.match(reader, /postMessage/);
+  assert.match(reader, /story-dialog/);
+  assert.doesNotMatch(reader, /edition-dispatch/);
   assert.doesNotMatch(reader, /reading-rail/);
 });

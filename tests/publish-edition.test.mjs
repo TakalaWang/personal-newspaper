@@ -14,7 +14,15 @@ const bundle = {
   language: "zh-Hant-TW",
   masthead: "光譜日報",
   pages: [{ id: "front", section: "Front page", html: '<article data-story-id="lead">Briefing</article>' }],
-  stories: [{ id: "lead", pageId: "front", label: "fact", sourceIds: ["source"] }],
+  stories: [{
+    id: "lead",
+    pageId: "front",
+    headline: "The lead story",
+    dek: "The verified context behind the lead story.",
+    bodyHtml: "<p>A complete original article.</p>",
+    label: "fact",
+    sourceIds: ["source"],
+  }],
   sources: [{ id: "source", url: "https://example.com/source" }],
 };
 

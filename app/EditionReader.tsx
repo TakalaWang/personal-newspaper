@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { EditionBundle, EditionPage, EditionStory } from "@/lib/edition";
-import type { ReactionAction } from "@/lib/reader";
+import { parseReaderMessage, type ReactionAction } from "@/lib/reader";
 
 type EditionReaderProps = {
   bundle: EditionBundle;
@@ -23,15 +23,28 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shares, setShares] = useState<Share[]>([]);
   const [activeStoryId, setActiveStoryId] = useState<string | null>(null);
+  const pageFrameRef = useRef<HTMLIFrameElement>(null);
+  const articleFrameRef = useRef<HTMLIFrameElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const page = bundle.pages[pageIndex];
-  const pageStories = bundle.stories.filter((story) => story.pageId === page.id);
+  const activeStory = bundle.stories.find((story) => story.id === activeStoryId) ?? null;
 
   useEffect(() => {
     if (!owner) return;
     void loadShares().then(setShares).catch(() => undefined);
   }, [owner]);
 
-  async function react(action: ReactionAction, storyId: string) {
+  useEffect(() => {
+    if (!activeStory) return;
+    closeButtonRef.current?.focus();
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActiveStoryId(null);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [activeStory]);
+
+  const react = useCallback(async (action: ReactionAction, storyId: string) => {
     setPending(`${action}:${storyId}`);
     try {
       const response = await fetch("/api/reactions", {
@@ -46,7 +59,33 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     } finally {
       setPending(null);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    const storyIds = new Set(bundle.stories.map((story) => story.id));
+    const receiveReaderMessage = (event: MessageEvent) => {
+      const pageWindow = pageFrameRef.current?.contentWindow;
+      const articleWindow = articleFrameRef.current?.contentWindow;
+      if (event.source !== pageWindow && event.source !== articleWindow) return;
+
+      try {
+        const readerMessage = parseReaderMessage(event.data, storyIds);
+        const story = bundle.stories.find((candidate) => candidate.id === readerMessage.storyId);
+        if (!story) return;
+        if (event.source === pageWindow && story.pageId !== page.id) return;
+        if (event.source === articleWindow && story.id !== activeStoryId) return;
+        if (readerMessage.type === "open") {
+          setActiveStoryId(readerMessage.storyId);
+        } else if (owner) {
+          void react(readerMessage.action, readerMessage.storyId);
+        }
+      } catch {
+        // Sandboxed edition messages are untrusted and ignored unless fully valid.
+      }
+    };
+    window.addEventListener("message", receiveReaderMessage);
+    return () => window.removeEventListener("message", receiveReaderMessage);
+  }, [activeStoryId, bundle.stories, owner, page.id, react]);
 
   async function share() {
     setPending("share");
@@ -85,21 +124,13 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         body: JSON.stringify({ shareId }),
       });
       const result = (await response.json()) as { message?: string; error?: string };
-      if (response.ok) {
-        setShares(await loadShares());
-      }
+      if (response.ok) setShares(await loadShares());
       setMessage(result.message ?? result.error ?? "Unable to revoke the share link.");
     } catch {
       setMessage("Unable to revoke the share link.");
     } finally {
       setPending(null);
     }
-  }
-
-  function openStory(story: EditionStory) {
-    const nextPageIndex = bundle.pages.findIndex((candidate) => candidate.id === story.pageId);
-    if (nextPageIndex !== -1) setPageIndex(nextPageIndex);
-    setActiveStoryId(story.id);
   }
 
   return (
@@ -141,24 +172,75 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
       <div className="edition-spread">
         <iframe
           className="edition-frame"
-          key={`${page.id}:${activeStoryId ?? "all"}`}
-          sandbox=""
-          srcDoc={pageDocument(page, bundle, activeStoryId)}
+          key={page.id}
+          ref={pageFrameRef}
+          sandbox="allow-scripts"
+          srcDoc={pageDocument(page, bundle, owner)}
           title={`${bundle.masthead}: ${page.section}`}
-        />
-        <StoryDispatch
-          activeStoryId={activeStoryId}
-          owner={owner}
-          page={page}
-          pending={pending}
-          sources={bundle.sources}
-          stories={pageStories}
-          onOpen={openStory}
-          onReact={react}
         />
         <p aria-live="polite" className="reader-message">{message}</p>
       </div>
+
+      {activeStory ? (
+        <StoryDialog
+          bundle={bundle}
+          closeButtonRef={closeButtonRef}
+          frameRef={articleFrameRef}
+          owner={owner}
+          story={activeStory}
+          onClose={() => setActiveStoryId(null)}
+        />
+      ) : null}
     </section>
+  );
+}
+
+function StoryDialog({
+  bundle,
+  closeButtonRef,
+  frameRef,
+  owner,
+  story,
+  onClose,
+}: {
+  bundle: EditionBundle;
+  closeButtonRef: React.RefObject<HTMLButtonElement | null>;
+  frameRef: React.RefObject<HTMLIFrameElement | null>;
+  owner: boolean;
+  story: EditionStory;
+  onClose: () => void;
+}) {
+  const sources = story.sourceIds
+    .map((sourceId) => bundle.sources.find((source) => source.id === sourceId))
+    .filter((source): source is EditionBundle["sources"][number] => Boolean(source));
+
+  return (
+    <div className="story-dialog" role="dialog" aria-modal="true" aria-labelledby="story-dialog-title" onClick={onClose}>
+      <div className="story-dialog-shell" onClick={(event) => event.stopPropagation()}>
+        <header className="story-dialog-header">
+          <div>
+            <p>{story.label === "fact" ? "報導" : "分析"}</p>
+            <h2 id="story-dialog-title">{story.headline}</h2>
+          </div>
+          <button ref={closeButtonRef} className="story-dialog-close" type="button" onClick={onClose} aria-label="關閉文章">
+            關閉 ×
+          </button>
+        </header>
+        <iframe
+          className="story-dialog-frame"
+          ref={frameRef}
+          sandbox="allow-scripts"
+          srcDoc={articleDocument(story, bundle, owner)}
+          title={story.headline}
+        />
+        <footer className="story-dialog-sources">
+          <span>核對來源</span>
+          {sources.map((source, index) => (
+            <a href={source.url} key={source.id} rel="noreferrer" target="_blank">來源 {index + 1} ↗</a>
+          ))}
+        </footer>
+      </div>
+    </div>
   );
 }
 
@@ -199,96 +281,84 @@ async function loadShares(): Promise<Share[]> {
   return result.shares ?? [];
 }
 
-function StoryDispatch({
-  activeStoryId,
-  owner,
-  page,
-  pending,
-  sources,
-  stories,
-  onOpen,
-  onReact,
-}: {
-  activeStoryId: string | null;
-  owner: boolean;
-  page: EditionPage;
-  pending: string | null;
-  sources: EditionBundle["sources"];
-  stories: EditionStory[];
-  onOpen: (story: EditionStory) => void;
-  onReact: (action: ReactionAction, storyId: string) => Promise<void>;
-}) {
-  return (
-    <section className="edition-dispatch" aria-label={`${page.section} stories`}>
-      <div className="dispatch-heading">
-        <p>本版索引</p>
-        <h2>{page.section}</h2>
-      </div>
-      <div className="story-board">
-        {stories.map((story) => {
-          const storySources = story.sourceIds
-            .map((sourceId) => sources.find((source) => source.id === sourceId))
-            .filter((source): source is EditionBundle["sources"][number] => Boolean(source));
-          const headline = story.headline ?? story.id.replaceAll(/[-_]/g, " ");
-          return (
-            <article className={activeStoryId === story.id ? "story-card is-active" : "story-card"} key={story.id}>
-              <button className="story-jump" onClick={() => onOpen(story)} type="button">
-                <span className="story-label" data-label={story.label}>{story.label === "fact" ? "報導" : "推論"}</span>
-                <h3>{headline}</h3>
-                <span className="story-page">前往 {page.section}</span>
-              </button>
-              <div className="story-card-foot">
-                <div className="story-sources" aria-label="Sources">
-                  {storySources.map((source) => (
-                    <a href={source.url} key={source.id} rel="noreferrer" target="_blank">來源</a>
-                  ))}
-                </div>
-                {owner ? (
-                  <div className="reaction-actions" aria-label={`Feedback for ${headline}`}>
-                    <ReactionButton action="love" label="♡ 更多" pending={pending} storyId={story.id} onReact={onReact} />
-                    <ReactionButton action="less" label="⊘ 少一些" pending={pending} storyId={story.id} onReact={onReact} />
-                    <ReactionButton action="follow" label="＋ 追蹤" pending={pending} storyId={story.id} onReact={onReact} />
-                  </div>
-                ) : null}
-              </div>
-            </article>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function ReactionButton({
-  action,
-  label,
-  pending,
-  storyId,
-  onReact,
-}: {
-  action: ReactionAction;
-  label: string;
-  pending: string | null;
-  storyId: string;
-  onReact: (action: ReactionAction, storyId: string) => Promise<void>;
-}) {
-  return (
-    <button disabled={pending !== null} onClick={() => onReact(action, storyId)} type="button">
-      {pending === `${action}:${storyId}` ? "Saved" : label}
-    </button>
-  );
-}
-
-function pageDocument(page: EditionPage, bundle: EditionBundle, activeStoryId: string | null): string {
+function pageDocument(page: EditionPage, bundle: EditionBundle, owner: boolean): string {
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
     :root { color: oklch(16% 0.01 260); background: oklch(100% 0 0); font-family: "Noto Serif TC", "Source Han Serif TC", Georgia, serif; }
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100vh; padding: clamp(1.25rem, 3vw, 3.5rem); overflow-wrap: anywhere; }
     img, svg, video { max-width: 100%; height: auto; }
     a { color: inherit; }
-    ${activeStoryId ? `[data-story-id="${escapeAttribute(activeStoryId)}"] { outline: 3px solid oklch(62% 0.1 80); outline-offset: 8px; }` : ""}
     ${page.css ?? ""}
-  </style></head><body>${page.html}</body></html>`;
+    ${readerBridgeCss()}
+  </style></head><body>${page.html}${trustedReaderBridge(owner)}</body></html>`;
+}
+
+function articleDocument(story: EditionStory, bundle: EditionBundle, owner: boolean): string {
+  return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
+    :root { color: #111; background: #fdfcf8; font-family: "Noto Serif TC", "Source Han Serif TC", Georgia, serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: clamp(24px, 5vw, 72px); }
+    .full-story { max-width: 760px; margin: 0 auto; cursor: default; }
+    .full-story .section { margin: 0 0 20px; border-top: 5px solid #111; border-bottom: 1px solid #111; padding: 8px 0; font: 800 12px/1.2 "Avenir Next", "PingFang TC", sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+    .full-story h1 { max-width: 17ch; margin: 0; font-size: clamp(40px, 8vw, 78px); letter-spacing: -.055em; line-height: .97; text-wrap: balance; }
+    .full-story .dek { max-width: 52ch; margin: 18px 0; color: #3d3d3d; font-size: clamp(19px, 2.6vw, 25px); line-height: 1.45; }
+    .full-story .byline { border-top: 1px solid #111; padding: 9px 0 22px; font: 800 11px/1.3 "Avenir Next", "PingFang TC", sans-serif; letter-spacing: .05em; }
+    .full-story .body { font-size: clamp(18px, 2vw, 21px); line-height: 1.82; }
+    .full-story .body p { margin: 0 0 1.35em; }
+    .full-story .body p:first-child::first-letter { float: left; margin: .08em .1em 0 0; font-size: 4.2em; font-weight: 900; line-height: .72; }
+    .full-story .body h2 { margin: 1.8em 0 .5em; font-size: 1.45em; line-height: 1.1; }
+    .full-story .body blockquote { margin: 1.7em 0; border-top: 3px double #111; border-bottom: 3px double #111; padding: .8em 0; font-size: 1.35em; font-weight: 700; line-height: 1.28; }
+    ${readerBridgeCss()}
+  </style></head><body><article class="full-story" data-story-id="${escapeAttribute(story.id)}"><p class="section">${story.label === "fact" ? "報導" : "分析"}・${escapeHtml(bundle.masthead)}</p><h1>${escapeHtml(story.headline)}</h1><p class="dek">${escapeHtml(story.dek)}</p><p class="byline">光譜日報編輯台・${escapeHtml(formatDate(bundle.date, bundle.language))}</p><div class="body">${story.bodyHtml}</div></article>${trustedReaderBridge(owner)}</body></html>`;
+}
+
+function readerBridgeCss(): string {
+  return `.reader-story { cursor: pointer; position: relative; transition: background-color 120ms ease; }
+    .reader-story:hover { background-color: #f5f2e9; }
+    .reader-story:focus-visible { outline: 3px solid #a77a23; outline-offset: -3px; }
+    reader-controls { display: block !important; clear: both !important; margin-top: 18px !important; }`;
+}
+
+function trustedReaderBridge(owner: boolean): string {
+  return `<script>(() => {
+    const owner = ${owner ? "true" : "false"};
+    const send = (message) => window.parent.postMessage(message, "*");
+    const controlsMarkup = '<style>:host{all:initial;display:block;font-family:"Avenir Next","PingFang TC",sans-serif;color:#111}.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid #111;border-bottom:1px solid #111;padding:7px 0}.open,.action{appearance:none;border:0;background:transparent;color:#111;cursor:pointer;font:800 11px/1.2 "Avenir Next","PingFang TC",sans-serif;letter-spacing:.03em;padding:5px 2px}.open{text-decoration:underline;text-underline-offset:3px}.actions{display:flex;gap:13px}.action:hover,.open:hover{color:#865f16}.action:focus-visible,.open:focus-visible{outline:2px solid #a77a23;outline-offset:2px}</style><div class="bar"><button class="open" type="button">閱讀全文 →</button>' + (owner ? '<div class="actions" aria-label="調整明日內容"><button class="action" data-action="love" type="button">♡ 喜歡</button><button class="action" data-action="less" type="button">⊘ 不喜歡</button><button class="action" data-action="follow" type="button">＋ 追蹤主題</button></div>' : '') + '</div>';
+    document.querySelectorAll('[data-story-id]').forEach((article) => {
+      const storyId = article.getAttribute('data-story-id');
+      if (!storyId || article.dataset.readerEnhanced) return;
+      article.dataset.readerEnhanced = 'true';
+      article.classList.add('reader-story');
+      article.tabIndex = 0;
+      const headline = article.querySelector('h1,h2,h3')?.textContent?.trim();
+      article.setAttribute('aria-label', headline ? '閱讀全文：' + headline : '閱讀全文');
+      const host = document.createElement('reader-controls');
+      host.style.setProperty('display', 'block', 'important');
+      article.append(host);
+      const root = host.attachShadow({ mode: 'closed' });
+      root.innerHTML = controlsMarkup;
+      root.querySelector('.open')?.addEventListener('click', (event) => {
+        event.stopPropagation();
+        send({ type: 'open', storyId });
+      });
+      root.querySelectorAll('[data-action]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.stopPropagation();
+          send({ type: 'react', storyId, action: button.getAttribute('data-action') });
+        });
+      });
+      article.addEventListener('click', (event) => {
+        const target = event.target;
+        if (target instanceof Element && target.closest('a,button,reader-controls')) return;
+        send({ type: 'open', storyId });
+      });
+      article.addEventListener('keydown', (event) => {
+        if (event.target !== article || (event.key !== 'Enter' && event.key !== ' ')) return;
+        event.preventDefault();
+        send({ type: 'open', storyId });
+      });
+    });
+  })();</script>`;
 }
 
 function formatDate(date: string, language: string): string {
@@ -297,6 +367,10 @@ function formatDate(date: string, language: string): string {
   );
 }
 
+function escapeHtml(value: string): string {
+  return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+}
+
 function escapeAttribute(value: string): string {
-  return value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
+  return escapeHtml(value);
 }

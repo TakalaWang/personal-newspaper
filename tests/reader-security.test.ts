@@ -5,9 +5,26 @@ import {
   isSameOriginRequest,
   parseShareId,
   parseReaction,
+  parseReaderMessage,
   resolveShare,
   shareSummary,
 } from "../lib/reader.ts";
+
+test("accepts only known iframe story interactions", () => {
+  const storyIds = new Set(["ai-policy"]);
+
+  assert.deepEqual(parseReaderMessage({ type: "open", storyId: "ai-policy" }, storyIds), {
+    type: "open",
+    storyId: "ai-policy",
+  });
+  assert.deepEqual(parseReaderMessage({ type: "react", storyId: "ai-policy", action: "love" }, storyIds), {
+    type: "react",
+    storyId: "ai-policy",
+    action: "love",
+  });
+  assert.throws(() => parseReaderMessage({ type: "open", storyId: "missing" }, storyIds), /story/i);
+  assert.throws(() => parseReaderMessage({ type: "react", storyId: "ai-policy", action: "delete" }, storyIds), /action/i);
+});
 
 test("share tokens are stored as stable SHA-256 hashes", async () => {
   const hash = await hashShareToken("unpredictable-share-token");

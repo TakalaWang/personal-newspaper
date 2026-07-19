@@ -10,7 +10,9 @@ export type EditionPage = {
 export type EditionStory = {
   id: string;
   pageId: string;
-  headline?: string;
+  headline: string;
+  dek: string;
+  bodyHtml: string;
   label: StoryLabel;
   sourceIds: string[];
 };
@@ -33,7 +35,7 @@ export type EditionBundle = {
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
 const LANGUAGE = /^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
-const UNSAFE_CSS = /@import\b|\burl\s*\(|\bexpression\s*\(|\bbehavior\s*:|java[\u0000-\u0020]*script\s*:/i;
+const UNSAFE_CSS = /@import\b|\burl\s*\(|\bexpression\s*\(|\bbehavior\s*:|java[\u0000-\u0020]*script\s*:|<\/?\s*(?:style|script)\b/i;
 const FORBIDDEN_ELEMENTS = new Set([
   "script", "form", "iframe", "frame", "frameset", "embed", "object", "base", "link", "meta",
 ]);
@@ -142,10 +144,11 @@ function storyList(value: unknown, sourceIds: Set<string>, pageIds: Set<string>)
       }
     }
 
-    const headline = input.headline === undefined ? undefined : text(input.headline, `stories[${index}].headline`);
-    return headline === undefined
-      ? { id, pageId, label: input.label, sourceIds: sourceIdsForStory }
-      : { id, pageId, headline, label: input.label, sourceIds: sourceIdsForStory };
+    const headline = text(input.headline, `stories[${index}].headline`);
+    const dek = text(input.dek, `stories[${index}].dek`);
+    const bodyHtml = text(input.bodyHtml, `stories[${index}].bodyHtml`);
+    assertSafeMarkup(bodyHtml, `stories[${index}].bodyHtml`);
+    return { id, pageId, headline, dek, bodyHtml, label: input.label, sourceIds: sourceIdsForStory };
   });
 }
 

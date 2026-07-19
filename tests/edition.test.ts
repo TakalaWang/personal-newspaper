@@ -16,7 +16,15 @@ const validBundle = {
     },
   ],
   stories: [
-    { id: "ai-policy", pageId: "front-page", label: "fact", sourceIds: ["reuters-ai"] },
+    {
+      id: "ai-policy",
+      pageId: "front-page",
+      headline: "AI policy shifts",
+      dek: "The verified context behind today's lead story.",
+      bodyHtml: "<p>Full original reporting with enough detail to understand the finding.</p>",
+      label: "fact",
+      sourceIds: ["reuters-ai"],
+    },
   ],
   sources: [
     {
@@ -50,6 +58,18 @@ test("requires section pages and maps each story to its printed page", () => {
   );
 });
 
+test("requires a complete clickable article and validates its body", () => {
+  const story = validBundle.stories[0];
+  assert.throws(
+    () => validateEditionBundle({ ...validBundle, stories: [{ ...story, dek: "" }] }),
+    /dek/i,
+  );
+  assert.throws(
+    () => validateEditionBundle({ ...validBundle, stories: [{ ...story, bodyHtml: "<script>alert(1)</script>" }] }),
+    /unsafe|forbidden/i,
+  );
+});
+
 test("rejects executable HTML and unsafe CSS", () => {
   const unsafePages = [
     { html: '<script>alert(1)</script><article data-story-id="ai-policy"></article>' },
@@ -64,6 +84,7 @@ test("rejects executable HTML and unsafe CSS", () => {
     { css: ".lead { width: expression(alert(1)); }" },
     { css: ".lead { behavior: url(#default#time2); }" },
     { css: ".lead { background: javascript:alert(1); }" },
+    { css: "</style><script>alert(1)</script><style>" },
   ];
 
   for (const page of unsafePages) {

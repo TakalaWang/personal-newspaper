@@ -42,8 +42,10 @@ test("rejects executable HTML and unsafe CSS", () => {
   const unsafePages = [
     { html: '<script>alert(1)</script><article data-story-id="ai-policy"></article>' },
     { html: '<article data-story-id="ai-policy" onclick="alert(1)"></article>' },
+    { html: '<svg/onload="alert(1)"></svg><article data-story-id="ai-policy"></article>' },
     { html: '<form><article data-story-id="ai-policy"></article></form>' },
     { html: '<article data-story-id="ai-policy"><a href="javascript:alert(1)">x</a></article>' },
+    { html: '<style>.lead { background: url(https://example.com/image.png); }</style><article data-story-id="ai-policy"></article>' },
     { css: '@import url("https://example.com/style.css");' },
     { css: ".lead { background: url(https://example.com/image.png); }" },
     { css: ".lead { background: u\\72l(https://example.com/image.png); }" },
@@ -55,6 +57,14 @@ test("rejects executable HTML and unsafe CSS", () => {
   for (const page of unsafePages) {
     assert.throws(() => validateEditionBundle(bundleWith(page)), /unsafe|forbidden/i);
   }
+});
+
+test("allows harmless prose that mentions unsafe URL and CSS syntax", () => {
+  const bundle = bundleWith({
+    html: '<style>.lead { color: #111; }</style><section data-story-id="ai-policy"><p>Never use javascript: URLs or CSS url( values) in untrusted content.</p></section>',
+  });
+
+  assert.deepEqual(validateEditionBundle(bundle), bundle);
 });
 
 test("requires HTTPS sources", () => {
@@ -89,4 +99,10 @@ test("requires every story to have exactly one article placement", () => {
       ),
     /ai-policy.*2 times/i,
   );
+});
+
+test("maps a story from any element with data-story-id", () => {
+  const bundle = bundleWith({ html: '<section data-story-id="ai-policy">Lead story</section>' });
+
+  assert.deepEqual(validateEditionBundle(bundle), bundle);
 });

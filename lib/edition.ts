@@ -30,12 +30,15 @@ export type EditionBundle = {
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
 const LANGUAGE = /^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
-const FORBIDDEN_TAG = /<\s*\/?\s*(?:script|form|iframe|frame|frameset|embed|object|base|link|meta)\b/i;
-const EVENT_ATTRIBUTE = /\s+on[\w:-]+\s*=/i;
-const JAVASCRIPT_PROTOCOL = /java[\u0000-\u0020]*script[\u0000-\u0020]*:/i;
 const UNSAFE_CSS = /@import\b|\burl\s*\(|\bexpression\s*\(|\bbehavior\s*:|java[\u0000-\u0020]*script\s*:/i;
-const ARTICLE = /<article\b(?:(?:"[^"]*")|(?:'[^']*')|[^>"'])*>/gi;
-const STORY_ATTRIBUTE = /\bdata-story-id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/i;
+const FORBIDDEN_ELEMENTS = new Set([
+  "script", "form", "iframe", "frame", "frameset", "embed", "object", "base", "link", "meta",
+]);
+const EVENT_ATTRIBUTE = /(?:^|[\s/])on[\w:-]+\s*=/i;
+const STORY_ATTRIBUTE = /(?:^|[\s/])data-story-id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/i;
+const URL_ATTRIBUTE = /(?:^|[\s/])(?:href|src|action|formaction|poster|xlink:href)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/gi;
+const STYLE_ATTRIBUTE = /(?:^|[\s/])style\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/gi;
+const COMMENT = /<!--[\s\S]*?-->/g;
 
 export function validateEditionBundle(value: unknown): EditionBundle {
   const bundle = record(value, "edition bundle");
@@ -136,7 +139,7 @@ function storyList(value: unknown, sourceIds: Set<string>): EditionStory[] {
 function assertStoryPlacement(pages: EditionPage[], stories: EditionStory[]) {
   const placements = new Map<string, number>();
   for (const page of pages) {
-    for (const tag of page.html.matchAll(ARTICLE)) {
+    for (const tag of openingTags(tagsOnly(page.html))) {
       const attribute = tag[0].match(STORY_ATTRIBUTE);
       if (!attribute) continue;
       const storyId = decodeEntities(attribute[1] ?? attribute[2] ?? attribute[3]);
@@ -146,7 +149,7 @@ function assertStoryPlacement(pages: EditionPage[], stories: EditionStory[]) {
 
   const knownStoryIds = new Set(stories.map((story) => story.id));
   for (const storyId of placements.keys()) {
-    if (!knownStoryIds.has(storyId)) fail(`article references unknown story id: ${storyId}`);
+    if (!knownStoryIds.has(storyId)) fail(`element references unknown story id: ${storyId}`);
   }
   for (const story of stories) {
     const count = placements.get(story.id) ?? 0;
@@ -155,15 +158,55 @@ function assertStoryPlacement(pages: EditionPage[], stories: EditionStory[]) {
 }
 
 function assertSafeMarkup(html: string, path: string) {
-  const decoded = decodeEntities(html);
-  if (FORBIDDEN_TAG.test(decoded)) fail(`${path} contains a forbidden HTML element`);
-  if (EVENT_ATTRIBUTE.test(decoded)) fail(`${path} contains an unsafe event attribute`);
-  if (JAVASCRIPT_PROTOCOL.test(decoded)) fail(`${path} contains an unsafe javascript: URL`);
-  assertSafeCss(decoded, path);
+  const withoutStyleBlocks = html.replace(styleBlock(), (_, openingTag: string, css: string) => {
+    assertSafeTag(openingTag, path);
+    assertSafeCss(css, path);
+    return "";
+  });
+  const markup = withoutStyleBlocks.replace(COMMENT, "");
+  if (/<style\b/i.test(markup)) fail(`${path} contains an unclosed style element`);
+
+  for (const tag of openingTags(markup)) {
+    assertSafeTag(tag[0], path);
+  }
 }
 
 function assertSafeCss(css: string, path: string) {
   if (UNSAFE_CSS.test(decodeCss(css))) fail(`${path} contains unsafe CSS`);
+}
+
+function assertSafeTag(tag: string, path: string) {
+  const [, name] = /^<([A-Za-z][\w:-]*)/i.exec(tag) ?? [];
+  if (!name) return;
+  if (FORBIDDEN_ELEMENTS.has(name.toLowerCase())) fail(`${path} contains a forbidden HTML element`);
+  if (EVENT_ATTRIBUTE.test(tag)) fail(`${path} contains an unsafe event attribute`);
+
+  for (const attribute of tag.matchAll(URL_ATTRIBUTE)) {
+    if (isJavascriptUrl(attribute[1] ?? attribute[2] ?? attribute[3])) {
+      fail(`${path} contains an unsafe javascript: URL`);
+    }
+  }
+  for (const attribute of tag.matchAll(STYLE_ATTRIBUTE)) {
+    assertSafeCss(attribute[1] ?? attribute[2] ?? attribute[3], path);
+  }
+}
+
+function isJavascriptUrl(value: string): boolean {
+  return decodeEntities(value).replace(/[\u0000-\u0020]+/g, "").toLowerCase().startsWith("javascript:");
+}
+
+function openingTags(html: string): IterableIterator<RegExpMatchArray> {
+  return html.matchAll(/<([A-Za-z][\w:-]*)(?=[\s/>])(?:(?:"[^"]*")|(?:'[^']*')|[^>"'])*>/gi);
+}
+
+function tagsOnly(html: string): string {
+  return html
+    .replace(styleBlock(), "")
+    .replace(COMMENT, "");
+}
+
+function styleBlock(): RegExp {
+  return /(<style\b(?:(?:"[^"]*")|(?:'[^']*')|[^>"'])*>)([\s\S]*?)<\/style\s*>/gi;
 }
 
 function localDate(value: unknown): string {

@@ -4,7 +4,7 @@ This is a print grammar, not a fixed template. Picture one reader scanning one c
 
 ## Identity
 
-- The trusted reader owns the selected press palette. It offers classic neutral black-and-white, salmon financial paper with wine ink, and cool white paper with forest-green spot ink. All three keep body contrast above WCAG AA and spot color below 10% of the sheet.
+- The trusted reader owns the selected press palette. It offers gray-white newsprint with dark red spot ink, salmon financial paper with wine ink, and blue-gray evening paper with navy ink. All three keep body contrast above WCAG AA and spot color below 10% of the sheet.
 - Generated layout rules consume the semantic variables `--paper`, `--ink`, `--muted`, `--hair`, and `--red`. The trusted reader applies their final values after edition CSS, so bundle fallback declarations are never authoritative. `--red` is the historical spot-ink variable and may resolve to black, wine, or green.
 - No gradients, tinted cards, extra accent hues, brass, glass, or decorative shadows inside the sheet.
 - Songti/STSong/PMingLiU-style serif carries headlines and copy. Kaiti/STKaiti is limited to the masthead or one editorial accent. PingFang-style sans carries folios, captions, bylines, labels, and controls.
@@ -13,7 +13,8 @@ This is a print grammar, not a fixed template. Picture one reader scanning one c
 ## Stable reader shell
 
 - Present exactly one complete sheet at a time. The newspaper is the dominant surface; it is not placed beneath a website navbar, section tabs, duplicated masthead, dashboard header, or app card.
-- Move between subject pages with previous/next controls at the left and right edges plus `ArrowLeft`/`ArrowRight`. A compact folio below the sheet may identify section, date, and page count. Never place a tab bar above the masthead.
+- Move between subject pages with full-height left and right edge targets labelled `上一頁` and `下一頁` plus `ArrowLeft`/`ArrowRight`. Reveal their printed controls on hover or focus; keep a visible compact affordance for touch. Never move page controls below the paper. A compact folio below the sheet may identify section, date, and page count. Never place a tab bar above the masthead.
+- Use one restrained 200–300ms paper-turn transition to explain direction. Animate only transform and opacity, and disable the transition under `prefers-reduced-motion`.
 - Size the sheet to its content so the complete page belongs to the outer document. Do not leave a fixed empty viewport under short pages or create a nested scrolling newspaper under long pages.
 - The trusted reader, not generated page HTML, owns page turning, sharing, dialog behavior, article opening, feedback, and source links.
 
@@ -35,7 +36,7 @@ This is a print grammar, not a fixed template. Picture one reader scanning one c
 - Dense does not mean uniform. Interrupt vertical reading with at least one side-by-side path and one cross-column or stacked module; vary headline measure and article depth instead of repeating equal rectangles.
 - Avoid shared fixed grid rows when neighboring packages have materially different copy measures. Prefer independent vertical lanes, then balance story assignments so a following package fills the shorter lane instead of waiting below the taller one.
 - Within a wide package, use two or three readable columns with `column-fill: balance`; let headings, verified figures, quotes, and feedback span columns when they need the full measure. Never squeeze body columns below a readable measure merely to eliminate whitespace.
-- Estimate headline, dek, paragraph, and image measures in the private layout brief. Reject a composition when a cavity created by row alignment is larger than eight lines of neighboring body copy; reassign the next package, change spans, or switch to independent lanes.
+- Estimate headline, dek, paragraph, and image measures in the private layout brief. Reject a composition when a cavity created by row alignment is larger than four lines of neighboring body copy; reassign the next package, change spans, or switch to independent lanes. When sufficient verified copy exists, balance neighboring lane endings to within four body lines.
 - No unexplained blank block may be larger than a secondary story package. Empty paper must result from an intentional evidence-bearing image or print feature, not fixed height, oversized padding, or a short teaser.
 - At exactly 560px and above, tablets keep mixed paths and at least two distinct article roots share a row. Text columns alone do not count. Only screens narrower than 560px may become one reading column; recompose modules instead of shrinking desktop type.
 
@@ -58,5 +59,5 @@ No navbar, top tab strip, card grid, dashboard rail, detached feedback/source si
 
 - Content: compare every factual claim to the evidence ledger; verify dates, names, quantities, versions, label, and summary/body agreement. Remove claims that are merely plausible.
 - Images: open every asset, confirm provenance and relevance, then read alt text, caption, and credit as a set. No broken or unverified image ships.
-- Silhouette: at desktop and exactly 560px, blur or squint; the lead, secondary packages, evidence-bearing visual, and multiple reading paths remain distinct. Adjacent pages have visibly different silhouettes. Compare against the current live edition and reject an unexplained near-copy. Inspect lane endings and row boundaries; reject any alignment-created cavity larger than eight body lines or any page whose largest feature is empty space.
-- Interaction: confirm the sheet has left/right page turning and no top navbar or on-sheet open button. At phone width confirm no headline or control overflows; open every story by clicking the article body and by keyboard; inspect drop-cap clearance; ensure original sources exist only in the detailed reader. WCAG 2.2 AA, semantic structure, keyboard access, visible focus, useful alt text, and non-color cues are mandatory.
+- Silhouette: at desktop and exactly 560px, blur or squint; the lead, secondary packages, evidence-bearing visual, and multiple reading paths remain distinct. Adjacent pages have visibly different silhouettes. Compare against the current live edition and reject an unexplained near-copy. Inspect lane endings and row boundaries; reject any alignment-created cavity larger than four body lines, lane endings that differ by more than four body lines when enough verified copy exists, or any page whose largest feature is empty space.
+- Interaction: confirm the sheet has full-height left/right hover and focus targets labelled 上一頁／下一頁, touch affordances, arrow-key page turning, directional paper-turn motion, and a reduced-motion alternative. Confirm there is no top navbar or on-sheet open button. At phone width confirm no headline or control overflows; open every story by clicking the article body and by keyboard; inspect drop-cap clearance; ensure original sources exist only in the detailed reader. WCAG 2.2 AA, semantic structure, keyboard access, visible focus, useful alt text, and non-color cues are mandatory.

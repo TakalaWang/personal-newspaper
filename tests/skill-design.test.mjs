@@ -90,9 +90,9 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(baseDesign, /column-fill: balance/i);
   assert.match(baseDesign, /semantic variables/i);
   assert.doesNotMatch(baseDesign, /追蹤主題/);
-  assert.match(design, /black-and-white.*salmon.*forest-green/is);
+  assert.match(design, /newsprint.*salmon.*blue-gray/is);
   assert.match(design, /independent vertical lanes/i);
-  assert.doesNotMatch(design, /blue-gray|brass/);
+  assert.doesNotMatch(design, /brass/);
 
   const parsedEvals = JSON.parse(evals);
   assert.equal(parsedEvals.skill_name, "personal-newspaper");
@@ -113,4 +113,6 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   }
   assert.match(parsedTemplate.pages[0].html, /front-main.*front-side/);
   assert.match(parsedTemplate.pages[0].css, /column-fill:balance/);
+  assert.match(parsedTemplate.pages[1].html, /tech-main.*tech-rail/);
+  assert.match(baseDesign, /lane endings.*four body lines/is);
 });

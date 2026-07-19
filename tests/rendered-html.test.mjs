@@ -47,12 +47,12 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.match(reader, /sandbox="allow-scripts"/);
   assert.match(reader, /api\/reactions/);
   assert.match(reader, /api\/shares/);
-  assert.match(css, /--surface: oklch\(96% 0 0\)/);
+  assert.match(css, /--surface: oklch\(94\.8% 0\.006 85\)/);
   assert.match(css, /data-theme="salmon"/);
-  assert.match(css, /data-theme="forest"/);
+  assert.match(css, /data-theme="evening"/);
   assert.match(css, /\.theme-dialog/);
   assert.match(reader, /personal-newspaper-theme/);
-  assert.match(reader, /經典黑白.*鮭粉財經.*松綠週末/s);
+  assert.match(reader, /灰白晨報.*鮭色財經.*藍灰晚報/s);
   assert.match(reader, /themeCss\(theme\)/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 
@@ -68,9 +68,12 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.match(reader, /story\.pageId/);
   assert.match(reader, /postMessage/);
   assert.match(reader, /story-dialog/);
-  assert.match(reader, /aria-label="上一版"/);
-  assert.match(reader, /aria-label="下一版"/);
+  assert.match(reader, /aria-label="上一頁"/);
+  assert.match(reader, /aria-label="下一頁"/);
+  assert.match(reader, /data-turn=/);
+  assert.match(reader, /onAnimationEnd=/);
   assert.match(reader, /document\.body\.getBoundingClientRect\(\)\.height/);
+  assert.match(reader, /measure-page/);
   assert.doesNotMatch(reader, /document\.documentElement\.scrollHeight/);
   assert.doesNotMatch(reader, /useState\(1120\)/);
   assert.doesNotMatch(reader, /className="edition-pages"/);

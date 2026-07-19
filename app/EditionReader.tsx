@@ -17,12 +17,13 @@ type Share = {
 };
 
 const THEMES = [
-  { id: "classic", label: "經典黑白", description: "中性紙白與純黑油墨" },
-  { id: "salmon", label: "鮭粉財經", description: "鮭粉紙張與酒紅油墨" },
-  { id: "forest", label: "松綠週末", description: "冷白紙張與松綠專色" },
+  { id: "classic", label: "灰白晨報", description: "灰白新聞紙、近黑油墨與暗紅重點" },
+  { id: "salmon", label: "鮭色財經", description: "傳統鮭色新聞紙與深酒紅油墨" },
+  { id: "evening", label: "藍灰晚報", description: "藍灰新聞紙與沉穩海軍藍油墨" },
 ] as const;
 
 type NewspaperTheme = (typeof THEMES)[number]["id"];
+type PageTurnDirection = "previous" | "next";
 const THEME_STORAGE_KEY = "personal-newspaper-theme";
 
 export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
@@ -34,7 +35,9 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   const [activeStoryId, setActiveStoryId] = useState<string | null>(null);
   const [pageHeight, setPageHeight] = useState<number | null>(null);
   const [theme, setTheme] = useState<NewspaperTheme>("classic");
+  const [pageTurn, setPageTurn] = useState<PageTurnDirection | null>(null);
   const pageFrameRef = useRef<HTMLIFrameElement>(null);
+  const pendingPageHeightRef = useRef<number | null>(null);
   const articleFrameRef = useRef<HTMLIFrameElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const themeDialogRef = useRef<HTMLDialogElement>(null);
@@ -42,10 +45,13 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   const activeStory = bundle.stories.find((story) => story.id === activeStoryId) ?? null;
 
   const turnPage = useCallback((direction: -1 | 1) => {
-    setPageIndex((current) => Math.min(Math.max(current + direction, 0), bundle.pages.length - 1));
+    const nextPageIndex = Math.min(Math.max(pageIndex + direction, 0), bundle.pages.length - 1);
+    if (nextPageIndex === pageIndex) return;
+    pendingPageHeightRef.current = null;
+    setPageTurn(direction === -1 ? "previous" : "next");
+    setPageIndex(nextPageIndex);
     setActiveStoryId(null);
-    setPageHeight(null);
-  }, [bundle.pages.length]);
+  }, [bundle.pages.length, pageIndex]);
 
   useEffect(() => {
     if (!owner) return;
@@ -116,7 +122,10 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
       try {
         const readerMessage = parseReaderMessage(event.data, storyIds);
         if (readerMessage.type === "page-resize") {
-          if (event.source === pageWindow) setPageHeight(readerMessage.height);
+          if (event.source === pageWindow) {
+            if (pageTurn) pendingPageHeightRef.current = readerMessage.height;
+            else setPageHeight(readerMessage.height);
+          }
           return;
         }
         const story = bundle.stories.find((candidate) => candidate.id === readerMessage.storyId);
@@ -133,8 +142,9 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
       }
     };
     window.addEventListener("message", receiveReaderMessage);
+    pageWindow?.postMessage({ type: "measure-page" }, "*");
     return () => window.removeEventListener("message", receiveReaderMessage);
-  }, [activeStoryId, bundle.stories, owner, page.id, react]);
+  }, [activeStoryId, bundle.stories, owner, page.id, pageTurn, react]);
 
   async function share() {
     setPending("share");
@@ -186,7 +196,6 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     const selected = THEMES.find(({ id }) => id === value)?.id;
     if (!selected) return;
     setTheme(selected);
-    setPageHeight(null);
     try {
       localStorage.setItem(THEME_STORAGE_KEY, selected);
     } catch {}
@@ -197,18 +206,26 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     <section className="edition-reader" data-theme={theme} aria-label={`${bundle.masthead}, ${bundle.date}`}>
       <div className="edition-stage">
         <button
-          aria-label="上一版"
+          aria-label="上一頁"
           className="page-turn page-turn-previous"
           disabled={pageIndex === 0}
           onClick={() => turnPage(-1)}
           type="button"
         >
-          <span aria-hidden="true">←</span><small>上一版</small>
+          <span className="page-turn-control"><b aria-hidden="true">←</b><small>上一頁</small></span>
         </button>
-        <div className="edition-sheet">
+        <div
+          className="edition-sheet"
+          data-turn={pageTurn ?? undefined}
+          key={page.id}
+          onAnimationEnd={() => {
+            setPageTurn(null);
+            if (pendingPageHeightRef.current !== null) setPageHeight(pendingPageHeightRef.current);
+            pendingPageHeightRef.current = null;
+          }}
+        >
           <iframe
             className="edition-frame"
-            key={page.id}
             ref={pageFrameRef}
             sandbox="allow-scripts"
             srcDoc={pageDocument(page, bundle, owner, theme)}
@@ -217,13 +234,13 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
           />
         </div>
         <button
-          aria-label="下一版"
+          aria-label="下一頁"
           className="page-turn page-turn-next"
           disabled={pageIndex === bundle.pages.length - 1}
           onClick={() => turnPage(1)}
           type="button"
         >
-          <span aria-hidden="true">→</span><small>下一版</small>
+          <span className="page-turn-control"><b aria-hidden="true">→</b><small>下一頁</small></span>
         </button>
       </div>
       <footer className="reader-furniture">
@@ -406,14 +423,15 @@ function readerBridgeCss(): string {
   return `.reader-story { cursor: pointer; position: relative; transition: background-color 120ms ease; }
     .reader-story:hover { background-color: color-mix(in oklch, var(--paper) 91%, var(--red)); }
     .reader-story:focus-visible { outline: 3px solid var(--red); outline-offset: -3px; }
-    reader-controls { display: block !important; clear: both !important; margin-top: 12px !important; }`;
+    reader-controls { display: block !important; clear: both !important; margin-top: 12px !important; }
+    @media (prefers-reduced-motion: reduce) { .reader-story { transition-duration: .01ms; } }`;
 }
 
 function themeCss(theme: NewspaperTheme): string {
   const palette = {
-    classic: "--paper:oklch(96% 0 0);--ink:oklch(16% 0 0);--muted:oklch(34% 0 0);--red:oklch(24% 0 0);--hair:oklch(49% 0 0)",
-    salmon: "--paper:oklch(91.5% .045 30);--ink:oklch(18% .015 20);--muted:oklch(34% .03 20);--red:oklch(32% .09 15);--hair:oklch(48% .035 20)",
-    forest: "--paper:oklch(97% .006 155);--ink:oklch(16% .012 155);--muted:oklch(34% .025 155);--red:oklch(31% .07 155);--hair:oklch(48% .02 155)",
+    classic: "--paper:oklch(94.8% .006 85);--ink:oklch(18% .008 70);--muted:oklch(34% .012 70);--red:oklch(34% .085 28);--hair:oklch(52% .014 70)",
+    salmon: "--paper:oklch(90.5% .042 40);--ink:oklch(18% .012 30);--muted:oklch(33% .025 30);--red:oklch(31% .082 20);--hair:oklch(49% .035 30)",
+    evening: "--paper:oklch(94.5% .008 245);--ink:oklch(17% .014 250);--muted:oklch(33% .025 250);--red:oklch(30% .075 250);--hair:oklch(49% .025 250)",
   }[theme];
   return `:root{${palette};color:var(--ink);background:var(--paper)}`;
 }
@@ -495,6 +513,9 @@ function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: 
 function trustedPageResizeBridge(): string {
   return `<script>(() => {
     const publishHeight = () => window.parent.postMessage({ type: 'page-resize', height: Math.ceil(document.body.getBoundingClientRect().height) }, '*');
+    window.addEventListener('message', (event) => {
+      if (event.source === window.parent && event.data?.type === 'measure-page') publishHeight();
+    });
     new ResizeObserver(publishHeight).observe(document.documentElement);
     requestAnimationFrame(publishHeight);
   })();</script>`;

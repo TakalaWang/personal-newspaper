@@ -61,7 +61,7 @@ Before writing page HTML or CSS, create a private layout brief from the actual e
 2. Inspect the corresponding page in the current live edition and record its silhouette: lead position, dominant span, visual position, brief axis, and module count.
 3. Derive a new composition from today's editorial relationships. Do not begin from the template CSS, a named preset archetype, the previous edition's page HTML, or random variation.
 4. When the content permits, change at least two recorded structural dimensions from the corresponding live page. If repeating a silhouette is genuinely the clearest editorial choice, record the evidence-based reason in the private brief rather than forcing novelty.
-5. Let editorial coherence determine page count, section grouping, and module count. Balance independent vertical lanes when shared grid rows would strand whitespace; reject any alignment-created cavity larger than eight lines of neighboring body copy. Remove or combine a thin page instead of filling a fixed slot.
+5. Let editorial coherence determine page count, section grouping, and module count. Balance independent vertical lanes when shared grid rows would strand whitespace; reject any alignment-created cavity larger than four lines of neighboring body copy. When enough verified material exists, keep neighboring lane endings within four body lines. Remove or combine a thin page instead of padding a fixed slot.
 
 The stable contract is one complete sheet, safe structural HTML, canonical injected copy, whole-article opening, in-article feedback, page turning, and responsive access. The arrangement inside that sheet is not stable.
 
@@ -81,7 +81,7 @@ Prepare and validate the complete bundle before visual review. Validation must e
 
 Open every image and confirm provenance, response MIME, relevance, alt, caption, credit, date, source id, and usage basis. Inline SVG, SVG responses, media, `srcset`, remote page assets, and CSS image fetches are forbidden. A documented image transform is acceptable only after the opened response is verified as a raster MIME type.
 
-Use a real browser at desktop, exactly 560px, and phone widths. Check the complete-sheet silhouette, left/right and keyboard page turning, hierarchy, density, multiple reading paths, unexplained blank areas, nested scrolling, overflow, keyboard focus, whole-article opening, drop-cap clearance, source-link location, images, and controls. Compare the new silhouettes with the current live edition; reject an unjustified near-copy as well as arbitrary cosmetic reshuffling. Reject JavaScript, event attributes, forms, frames, embeds, remote CSS, and undeclared fetch surfaces.
+Use a real browser at desktop, exactly 560px, and phone widths. Check the complete-sheet silhouette, full-height left/right hover and focus targets labelled 上一頁／下一頁, touch affordances, arrow-key page turning, directional page-turn motion, reduced motion, hierarchy, density, lane endings, multiple reading paths, unexplained blank areas, nested scrolling, overflow, keyboard focus, whole-article opening, drop-cap clearance, source-link location, images, and controls. Compare the new silhouettes with the current live edition; reject an unjustified near-copy as well as arbitrary cosmetic reshuffling. Reject JavaScript, event attributes, forms, frames, embeds, remote CSS, and undeclared fetch surfaces.
 
 ### 9. Prepare and publish
 

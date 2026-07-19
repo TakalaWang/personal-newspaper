@@ -33,7 +33,8 @@
         "Creates subject pages rather than one page per article",
         "Shows only love and less controls inside articles and verifies desktop, 560px, and phone",
         "Uses semantic palette variables and lets the trusted reader apply the selected press theme",
-        "Rejects alignment-created cavities larger than eight lines of neighboring body copy"
+        "Rejects alignment-created cavities or avoidable lane-ending differences larger than four lines of neighboring body copy",
+        "Verifies edge hover and focus labels, touch affordances, directional motion, and reduced motion"
       ]
     },
     {

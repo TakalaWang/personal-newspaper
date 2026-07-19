@@ -33,6 +33,8 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(skill, /pnpm edition:validate/);
   assert.match(skill, /pnpm edition:publish/);
   assert.match(skill, /## Daily automation prompt/);
+  assert.match(skill, /do not copy its composition or the template CSS/i);
+  assert.match(skill, /change at least two structural dimensions/i);
   assert.doesNotMatch(skill, /BASE_DESIGN\.md/);
   assert.doesNotMatch(skill, /追蹤主題/);
 
@@ -50,6 +52,10 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(pipeline, /publish.*verify/is);
   assert.match(pipeline, /edition:restore/);
   assert.match(pipeline, /atomically restore/i);
+  assert.match(pipeline, /adaptive layout brief/i);
+  assert.match(pipeline, /current live edition.*silhouette/is);
+  assert.match(pipeline, /Do not begin from the template CSS/i);
+  assert.match(pipeline, /variation.*never be random|random variation/is);
 
   assert.match(contract, /data-claim-id/);
   assert.match(contract, /summaryHtml.*bodyHtml/is);
@@ -57,6 +63,7 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(contract, /source.*links.*detail/is);
   assert.match(contract, /claim.*source/is);
   assert.match(contract, /generation\.contextRevision/);
+  assert.match(contract, /Never copy its page CSS/i);
 
   assert.match(baseDesign, /empty.*article.*data-story-id/is);
   assert.match(baseDesign, /no visible text|no visible prose/i);
@@ -75,6 +82,10 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(baseDesign, /Editorial coherence.*density/is);
   assert.match(baseDesign, /At exactly 560px/);
   assert.match(baseDesign, /9\/3 feature.*not.*sidebar/is);
+  assert.match(baseDesign, /data-contract sample/i);
+  assert.match(baseDesign, /consecutive editions/i);
+  assert.match(baseDesign, /current live edition/i);
+  assert.match(baseDesign, /Random rearrangement/i);
   assert.doesNotMatch(baseDesign, /追蹤主題/);
   assert.match(design, /newsprint.*deep press red/is);
   assert.doesNotMatch(design, /blue-gray|brass/);

@@ -53,31 +53,43 @@ Open sources and verify names, dates, quantities, versions, causal wording, and 
 
 Select only stories that clear the evidence gate. Aim for 70/20/10 core/adjacent/surprise and 70/30 current/durable when suitable evidence exists. Group pages by useful subjects such as 要聞、科技、文化、運動, never by individual story. Combine thin subjects instead of adding filler or one-story pages.
 
-### 5. Canonical article writing
+### 5. Adaptive layout brief
+
+Before writing page HTML or CSS, create a private layout brief from the actual edition:
+
+1. Inventory each subject page's story count, importance, summary and headline measures, useful image availability and aspect ratio, and natural comparisons or chronology.
+2. Inspect the corresponding page in the current live edition and record its silhouette: lead position, dominant span, visual position, brief axis, and module count.
+3. Derive a new composition from today's editorial relationships. Do not begin from the template CSS, a named preset archetype, the previous edition's page HTML, or random variation.
+4. When the content permits, change at least two recorded structural dimensions from the corresponding live page. If repeating a silhouette is genuinely the clearest editorial choice, record the evidence-based reason in the private brief rather than forcing novelty.
+5. Let editorial coherence determine page count, section grouping, and module count. Remove or combine a thin page instead of filling a fixed slot.
+
+The stable contract is one complete sheet, safe structural HTML, canonical injected copy, whole-article opening, in-article feedback, page turning, and responsive access. The arrangement inside that sheet is not stable.
+
+### 6. Canonical article writing
 
 Write each story once using the fields in [the edition contract](edition-contract.md): `kicker`, `headline`, substantive `dek`, standalone `summaryHtml`, expanded `bodyHtml`, label, sources, editorial signals, claims, and image manifest.
 
 The printed summary is a compact report, not a teaser: a reader should understand what happened, the decisive evidence, why it matters, and material uncertainty without opening it. The detailed article keeps the same thesis and facts, then adds evidence, mechanism, chronology, context, limits, and implications.
 
-### 6. Page composition
+### 7. Page composition
 
 Read [the newspaper base design](base-design.md) completely. Apply it as variable print grammar. Compose one dense complete sheet per subject page with asymmetric multi-column reading paths; reject a navbar, top tabs, landing-page hero, oversized empty field, vertical article stack, or on-sheet read-more button. Page HTML contains structural layout only and exactly one empty `<article data-story-id="…"></article>` placement for every story. The trusted reader supplies folios, canonical copy, whole-article opening, and only the `喜歡`／`不喜歡` controls.
 
-### 7. Content, image, security, and visual preflight
+### 8. Content, image, security, and visual preflight
 
 Prepare and validate the complete bundle before visual review. Validation must enforce metadata, editorial signals, claim mappings, image manifests, safe HTML/CSS, and exact generation snapshot fields.
 
 Open every image and confirm provenance, response MIME, relevance, alt, caption, credit, date, source id, and usage basis. Inline SVG, SVG responses, media, `srcset`, remote page assets, and CSS image fetches are forbidden. A documented image transform is acceptable only after the opened response is verified as a raster MIME type.
 
-Use a real browser at desktop, exactly 560px, and phone widths. Check the complete-sheet silhouette, left/right and keyboard page turning, hierarchy, density, multiple reading paths, unexplained blank areas, nested scrolling, overflow, keyboard focus, whole-article opening, drop-cap clearance, source-link location, images, and controls. Reject JavaScript, event attributes, forms, frames, embeds, remote CSS, and undeclared fetch surfaces.
+Use a real browser at desktop, exactly 560px, and phone widths. Check the complete-sheet silhouette, left/right and keyboard page turning, hierarchy, density, multiple reading paths, unexplained blank areas, nested scrolling, overflow, keyboard focus, whole-article opening, drop-cap clearance, source-link location, images, and controls. Compare the new silhouettes with the current live edition; reject an unjustified near-copy as well as arbitrary cosmetic reshuffling. Reject JavaScript, event attributes, forms, frames, embeds, remote CSS, and undeclared fetch surfaces.
 
-### 8. Prepare and publish
+### 9. Prepare and publish
 
 `edition:prepare` copies the exact context snapshot into `generation.basedOnEditionId`, `generation.contextVersion`, `generation.contextRevision`, and `generation.reactions`. Do not write these fields manually. Run `edition:validate`, then `edition:publish`.
 
 The server revalidates the bundle and uses an atomic database revision guard. A reaction or profile change after the snapshot causes `409`; the prior edition remains current. Never retry with patched generation fields or a different snapshot that did not shape the content.
 
-### 9. Verify and recover
+### 10. Verify and recover
 
 Fetch agent context again and verify the new id, confirmed local date, page/story/source counts, published status, and zero pending reactions from the consumed snapshot. Open the live edition and verify:
 

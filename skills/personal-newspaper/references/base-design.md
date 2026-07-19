@@ -16,13 +16,21 @@ This is a print grammar, not a fixed template. Picture one reader scanning one c
 - Size the sheet to its content so the complete page belongs to the outer document. Do not leave a fixed empty viewport under short pages or create a nested scrolling newspaper under long pages.
 - The trusted reader, not generated page HTML, owns page turning, sharing, dialog behavior, article opening, feedback, and source links.
 
+## Adaptive composition
+
+- The fixed part is the reader contract, never a page silhouette. Page count, section grouping, lead position, dominant span, image position, brief direction, headline measure, and module count are decisions made anew from the day's evidence and editorial relationships.
+- Before composing, inventory story importance, copy measure, evidence imagery, comparisons, and chronology, then inspect the corresponding current live page. When content permits, change at least two structural dimensions from that page. Repeating a silhouette requires an evidence-based reason in the private layout brief.
+- `assets/edition-template.json` is a data-contract sample and local smoke-test fixture only. Never reuse its page CSS, wrapper structure, spans, or article order as a publication starting point.
+- Do not maintain named front-page or section-page templates for the agent to rotate through. Variation must explain the news: it may expose a comparison, isolate a short urgent brief, align a chronology, or give verified imagery appropriate weight. Random rearrangement and cosmetic class renaming do not count.
+- Page-specific CSS and structural wrappers should be regenerated for every publication. The safe empty-article contract still applies, so expressive composition never creates a new trust or fetch surface.
+
 ## Composition
 
 - Build every desktop page on a 6–12 column modular grid with shared horizontal and vertical alignments. Use hairlines, not boxes. Body copy is at least `16px` with `1.45–1.6` line height in readable narrow columns. Use a 4pt spacing scale; structural gutters are `8px`, `12px`, or `16px`, while `24px+` belongs outside dense news packages.
 - Front page: use an off-centre lead, stacked narrow reports, and a horizontal skyline, brief row, evidence-bearing visual, quote, or data strip. Aim for 4–7 verified story packages; reduce page count before shipping a sparse page. Do not use a centred landing-page headline, a single full-width hero, or a large blank field around one story.
 - Section page: choose an L-shaped lead with a two-row side column, image-led grid with briefs beneath, 9/3 feature with an internal 8/4 split, or dense brief grid anchored by one dominant package. A 9/3 feature is not a wide hero plus utility sidebar: the lead needs an internal cross-column visual, quote, or module, while the narrow zone carries either one substantive counterpoint or two briefs.
 - Editorial coherence outranks density. Combine adjacent low-count sections as a labelled multi-section page or briefs on the front; never add filler merely to reach a count.
-- Do not repeat the same composition on adjacent pages. Change at least two of: lead position, dominant span, visual position, brief axis, or module count.
+- Do not repeat the same composition on adjacent pages or consecutive editions when the content permits a clearer alternative. Change at least two of: lead position, dominant span, visual position, brief axis, or module count; document an editorially necessary exception instead of manufacturing random difference.
 - Dense does not mean uniform. Interrupt vertical reading with at least one side-by-side path and one cross-column or stacked module; vary headline measure and article depth instead of repeating equal rectangles.
 - No unexplained blank block may be larger than a secondary story package. Empty paper must result from an intentional evidence-bearing image or print feature, not fixed height, oversized padding, or a short teaser.
 - At exactly 560px and above, tablets keep mixed paths and at least two distinct article roots share a row. Text columns alone do not count. Only screens narrower than 560px may become one reading column; recompose modules instead of shrinking desktop type.
@@ -46,5 +54,5 @@ No navbar, top tab strip, card grid, dashboard rail, detached feedback/source si
 
 - Content: compare every factual claim to the evidence ledger; verify dates, names, quantities, versions, label, and summary/body agreement. Remove claims that are merely plausible.
 - Images: open every asset, confirm provenance and relevance, then read alt text, caption, and credit as a set. No broken or unverified image ships.
-- Silhouette: at desktop and exactly 560px, blur or squint; the lead, secondary packages, evidence-bearing visual, and multiple reading paths remain distinct. Adjacent pages have visibly different silhouettes. Reject any page whose largest feature is empty space.
+- Silhouette: at desktop and exactly 560px, blur or squint; the lead, secondary packages, evidence-bearing visual, and multiple reading paths remain distinct. Adjacent pages have visibly different silhouettes. Compare against the current live edition and reject an unexplained near-copy. Reject any page whose largest feature is empty space.
 - Interaction: confirm the sheet has left/right page turning and no top navbar or on-sheet open button. At phone width confirm no headline or control overflows; open every story by clicking the article body and by keyboard; inspect drop-cap clearance; ensure original sources exist only in the detailed reader. WCAG 2.2 AA, semantic structure, keyboard access, visible focus, useful alt text, and non-color cues are mandatory.

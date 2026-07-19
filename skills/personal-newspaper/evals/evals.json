@@ -55,6 +55,17 @@
         "Does not infer occupation or another sensitive identity trait",
         "Does not turn a dislike into a profile exclusion"
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "Yesterday's nine-story edition used an 8/4 lead with a bottom strip. Today's edition also has nine verified stories, but their importance, text lengths, relationships, and image evidence differ. Publish without turning the base design into a fixed template.",
+      "expected_output": "The agent inventories today's content, records the current live silhouettes, derives new page-specific composition from editorial relationships, changes at least two structural dimensions where content permits, and preserves only the stable reader and safety contract.",
+      "expectations": [
+        "Creates a content-derived adaptive layout brief before page HTML or CSS",
+        "Uses the edition template only for the data contract and does not copy its CSS or composition",
+        "Compares with the current live edition and changes at least two structural dimensions or records an evidence-based exception",
+        "Keeps variation editorial rather than random while preserving the stable reader contract"
+      ]
     }
   ]
 }

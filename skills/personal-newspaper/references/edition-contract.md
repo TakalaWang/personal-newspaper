@@ -1,6 +1,6 @@
 # Edition contract
 
-Use `assets/edition-template.json` as a structural example, not as current news. The application validator is authoritative. Drafts omit `generation`; `edition:prepare` injects it from the private context snapshot.
+Use `assets/edition-template.json` only as a data-shape example and smoke-test fixture, not as current news or a layout source. Never copy its page CSS, HTML composition, spans, or article order into a new edition. The application validator is authoritative. Drafts omit `generation`; `edition:prepare` injects it from the private context snapshot.
 
 ## Bundle
 

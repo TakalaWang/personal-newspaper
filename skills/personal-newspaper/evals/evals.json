@@ -69,6 +69,30 @@
         "Compares with the current live edition and changes at least two structural dimensions or records an evidence-based exception",
         "Keeps variation editorial rather than random while preserving the stable reader contract"
       ]
+    },
+    {
+      "id": 7,
+      "prompt": "Set up my personal newspaper for the first time. Discuss my preferences with me, publish an initial edition, then make it update every day at 00:00 Asia/Taipei without depending on this chat remaining open.",
+      "expected_output": "The agent asks only the required profile questions one at a time, saves the complete profile, publishes and verifies the first edition, then creates or updates exactly one active project automation with the canonical unattended prompt and verifies its next local run.",
+      "expectations": [
+        "Asks one required profile question at a time and does not invent tracking or storage settings",
+        "Saves the confirmed profile and verifies an initial live edition before scheduling",
+        "Resolves the correct Codex project and updates an existing named automation instead of duplicating it",
+        "Verifies the active schedule, project target, next local run, and exact canonical prompt",
+        "States that scheduling is incomplete if Codex Automation access is unavailable"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "The daily newspaper automation already exists, but its saved prompt predates the current layout and recovery rules. Complete setup without creating a second schedule.",
+      "expected_output": "The agent locates the existing automation, preserves its project, schedule, model, reasoning, status, and notification fields, replaces only the stale prompt with the current exact prompt, and verifies that exactly one automation remains active.",
+      "expectations": [
+        "Inspects existing automation state before mutation",
+        "Updates the existing automation id and never creates a duplicate",
+        "Uses the exact current daily prompt from SKILL.md",
+        "Preserves fields unrelated to the prompt update",
+        "Verifies the resulting automation after the update"
+      ]
     }
   ]
 }

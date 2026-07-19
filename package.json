@@ -12,6 +12,7 @@
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "pnpm run build && node --import ./tests/cloudflare-loader.mjs --test tests/*.test.mjs tests/*.test.ts",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "edition:publish": "node scripts/publish-edition.mjs",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

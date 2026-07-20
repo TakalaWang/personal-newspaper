@@ -53,6 +53,8 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.match(css, /body:has\(\.edition-reader\[data-theme="salmon"\]\)/);
   assert.match(css, /\.page-turn\s*\{[\s\S]*width:\s*max\(4rem,/);
   assert.doesNotMatch(css, /width:\s*max\(1rem,\s*calc\(\(100vw - 80rem\)/);
+  assert.match(css, /\.page-turn-control > span\s*\{[\s\S]*border:\s*0;[\s\S]*background:\s*transparent;[\s\S]*box-shadow:\s*none;/);
+  assert.doesNotMatch(css, /\.page-turn-control b/);
   assert.match(css, /\.theme-dialog/);
   assert.match(reader, /personal-newspaper-theme/);
   assert.match(reader, /暖灰新聞紙.*深酒紅正文.*深藍正文/s);
@@ -80,6 +82,11 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.match(reader, /document\.body\.getBoundingClientRect\(\)\.height/);
   assert.match(reader, /measure-page/);
   assert.match(reader, /onLoad=/);
+  assert.match(reader, /event\.source !== pageFrameRef\.current\?\.contentWindow/);
+  assert.match(reader, /event\.source !== articleFrameRef\.current\?\.contentWindow/);
+  assert.doesNotMatch(reader, /const pageWindow =/);
+  assert.doesNotMatch(reader, /const articleWindow =/);
+  assert.doesNotMatch(reader, /publication-index/);
   assert.match(reader, /className="share-action"/);
   assert.doesNotMatch(reader, /點選任一新聞區塊開啟完整報導/);
   assert.doesNotMatch(reader, /第 \{pageIndex \+ 1\}／\{bundle\.pages\.length\} 版/);

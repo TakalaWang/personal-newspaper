@@ -120,15 +120,13 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
 
   useEffect(() => {
     const storyIds = new Set(bundle.stories.map((story) => story.id));
-    const pageWindow = pageFrameRef.current?.contentWindow;
-    const articleWindow = articleFrameRef.current?.contentWindow;
     const receiveReaderMessage = (event: MessageEvent) => {
-      if (event.source !== pageWindow && event.source !== articleWindow) return;
+      if (event.source !== pageFrameRef.current?.contentWindow && event.source !== articleFrameRef.current?.contentWindow) return;
 
       try {
         const readerMessage = parseReaderMessage(event.data, storyIds);
         if (readerMessage.type === "page-resize") {
-          if (event.source === pageWindow) {
+          if (event.source === pageFrameRef.current?.contentWindow) {
             if (pageTurn) pendingPageHeightRef.current = readerMessage.height;
             else setPageHeight(readerMessage.height);
           }
@@ -136,8 +134,8 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         }
         const story = bundle.stories.find((candidate) => candidate.id === readerMessage.storyId);
         if (!story) return;
-        if (event.source === pageWindow && story.pageId !== page.id) return;
-        if (event.source === articleWindow && story.id !== activeStoryId) return;
+        if (event.source === pageFrameRef.current?.contentWindow && story.pageId !== page.id) return;
+        if (event.source === articleFrameRef.current?.contentWindow && story.id !== activeStoryId) return;
         if (readerMessage.type === "open") {
           setActiveStoryId(readerMessage.storyId);
         } else if (owner) {
@@ -148,7 +146,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
       }
     };
     window.addEventListener("message", receiveReaderMessage);
-    pageWindow?.postMessage({ type: "measure-page" }, "*");
+    pageFrameRef.current?.contentWindow?.postMessage({ type: "measure-page" }, "*");
     return () => window.removeEventListener("message", receiveReaderMessage);
   }, [activeStoryId, bundle.stories, owner, page.id, pageTurn, react]);
 
@@ -218,7 +216,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
           onClick={() => turnPage(-1)}
           type="button"
         >
-          <span className="page-turn-control"><b aria-hidden="true">←</b><small>上一頁</small></span>
+          <span className="page-turn-control"><span aria-hidden="true">‹</span></span>
         </button>
         <div
           className="edition-sheet"
@@ -248,7 +246,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
           onClick={() => turnPage(1)}
           type="button"
         >
-          <span className="page-turn-control"><b aria-hidden="true">→</b><small>下一頁</small></span>
+          <span className="page-turn-control"><span aria-hidden="true">›</span></span>
         </button>
       </div>
       {owner ? (
@@ -445,21 +443,19 @@ function themeCss(theme: NewspaperTheme): string {
 
 function trustedPageHeader(page: EditionPage, bundle: EditionBundle): string {
   const pageNumber = bundle.pages.findIndex((candidate) => candidate.id === page.id) + 1;
-  const storyCount = bundle.stories.filter((story) => story.pageId === page.id).length;
   const title = pageNumber === 1 ? bundle.masthead : page.section;
-  return `<header class="publication-header${pageNumber === 1 ? " is-front" : ""}"><div class="publication-folio"><span>${escapeHtml(bundle.masthead)}・個人早報</span><span>${escapeHtml(formatDate(bundle.date, bundle.language))}・第 ${pageNumber} 版</span></div><div class="publication-name"><h1>${escapeHtml(title)}</h1><p>${pageNumber === 1 ? "每日只留下值得讀的事" : escapeHtml(bundle.masthead)}</p></div><div class="publication-index"><span>${escapeHtml(page.section)}</span><span>${storyCount} 篇</span></div></header>`;
+  return `<header class="publication-header${pageNumber === 1 ? " is-front" : ""}"><div class="publication-folio"><span>${escapeHtml(bundle.masthead)}・個人早報</span><span>${escapeHtml(formatDate(bundle.date, bundle.language))}・第 ${pageNumber} 版</span></div><div class="publication-name"><h1>${escapeHtml(title)}</h1><p>${pageNumber === 1 ? "每日只留下值得讀的事" : escapeHtml(bundle.masthead)}</p></div></header>`;
 }
 
 function trustedPageHeaderCss(): string {
   return `.publication-header{border-top:4px solid var(--ink);border-bottom:3px double var(--ink)}
-    .publication-folio,.publication-index{display:flex;justify-content:space-between;gap:16px;padding:4px 0;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;letter-spacing:.04em}
+    .publication-folio{display:flex;justify-content:space-between;gap:16px;padding:4px 0;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;letter-spacing:.04em}
     .publication-folio{border-bottom:1px solid var(--ink)}
     .publication-name{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:16px;padding:8px 0 4px}
     .publication-name h1{margin:0;color:var(--red);font-family:"Kaiti TC","STKaiti","BiauKai","DFKai-SB","Songti TC",serif;font-size:clamp(2.125rem,4.4vw,3.375rem);font-weight:700;letter-spacing:-.03em;line-height:.95}
     .publication-name p{margin:0 0 4px;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
-    .publication-index{border-top:2px solid var(--ink)}
     .publication-header.is-front .publication-name h1{font-size:clamp(2.75rem,5.4vw,3.875rem)}
-    @media(max-width:559px){.publication-folio,.publication-index{flex-wrap:wrap}.publication-index span:last-child{display:none}.publication-name{grid-template-columns:1fr}.publication-name p{display:none}.publication-header.is-front .publication-name h1{font-size:3rem}}`;
+    @media(max-width:559px){.publication-folio{flex-wrap:wrap}.publication-name{grid-template-columns:1fr}.publication-name p{display:none}.publication-header.is-front .publication-name h1{font-size:3rem}}`;
 }
 
 function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: boolean): string {

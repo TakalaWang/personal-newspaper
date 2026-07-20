@@ -76,7 +76,7 @@ The printed summary is a compact report, not a teaser: a reader should understan
 
 ### 7. Page composition
 
-Read [the newspaper base design](base-design.md) completely. Apply it as variable print grammar. Compose one dense complete sheet per subject page with asymmetric multi-column reading paths; reject a navbar, top tabs, landing-page hero, oversized empty field, vertical article stack, or on-sheet read-more button. Layout rules must consume the reader's semantic palette variables; any bundle fallback values are non-authoritative. Page HTML contains structural layout only and exactly one empty `<article data-story-id="…"></article>` placement for every story. The trusted reader supplies folios, canonical copy, whole-article opening, and only the `喜歡`／`不喜歡` controls.
+Read [the newspaper base design](base-design.md) completely. Apply it as variable print grammar. Compose one dense complete sheet per subject page with asymmetric multi-column reading paths; reject a navbar, top tabs, landing-page hero, oversized empty field, vertical article stack, or on-sheet read-more button. Layout rules must consume the reader's semantic palette variables; any bundle fallback values are non-authoritative. Page HTML contains structural layout only and exactly one empty `<article data-story-id="…"></article>` placement for every story. The trusted reader supplies folios, canonical copy, whole-article opening, and only the localized like and dislike controls.
 
 ### 8. Content, image, security, and visual preflight
 
@@ -84,7 +84,7 @@ Prepare and validate the complete bundle before visual review. Validation must e
 
 Open every image and confirm provenance, response MIME, relevance, alt, caption, credit, date, source id, and usage basis. Preserve the verified original colors so diagrams, charts, screenshots, and photographs remain legible; reject grayscale, duotone, tint, blend, contrast, or opacity filters that can erase evidence. Inline SVG, SVG responses, media, `srcset`, remote page assets, and CSS image fetches are forbidden. A documented crop or resize is acceptable only after the opened response is verified as a raster MIME type and the result is visually compared with the source.
 
-Use a real browser at desktop, exactly 560px, and phone widths. Check the complete-sheet silhouette and measured desktop sheet ratio, full-height left/right hover and focus targets labelled 上一頁／下一頁, touch affordances, arrow-key page turning, directional page-turn motion, reduced motion, hierarchy, density, lane endings, multiple reading paths, stepped seams, unexplained blank areas, nested scrolling, overflow, keyboard focus, whole-article opening, drop-cap clearance, source-link location, images, and controls. Exercise feedback through default, pending, saved, changed, reload-persisted, and error states; the visible control must say `儲存中…`, `已儲存`, or `儲存失敗` instead of appearing inert. Open at least the lead and one image-bearing story: the detail must add new reporting, show one headline rather than a duplicate shell headline, keep figures and captions in the reading flow, and keep every source link in the detail footer. Compare the new silhouettes with the current live edition; reject an unjustified near-copy as well as arbitrary cosmetic reshuffling. Reject JavaScript, event attributes, forms, frames, embeds, remote CSS, and undeclared fetch surfaces.
+Use a real browser at desktop, exactly 560px, and phone widths. Check the complete-sheet silhouette and measured desktop sheet ratio, full-height left/right hover and focus targets labelled in the edition language, touch affordances, arrow-key page turning, directional page-turn motion, reduced motion, hierarchy, density, lane endings, multiple reading paths, stepped seams, unexplained blank areas, nested scrolling, overflow, keyboard focus, whole-article opening, drop-cap clearance, source-link location, images, and controls. Exercise feedback through default, pending, saved, changed, reload-persisted, and error states; the visible control must show the edition-language equivalent of saving, saved, or save failed instead of appearing inert. Open at least the lead and one image-bearing story: the detail must add new reporting, show one headline rather than a duplicate shell headline, keep figures and captions in the reading flow, and keep every source link in the detail footer. Compare the new silhouettes with the current live edition; reject an unjustified near-copy as well as arbitrary cosmetic reshuffling. Reject JavaScript, event attributes, forms, frames, embeds, remote CSS, and undeclared fetch surfaces.
 
 ### 9. Prepare and publish
 
@@ -103,7 +103,7 @@ Fetch agent context again and verify the new id, confirmed local date, page/stor
 - detailed copy expands the same claim set;
 - original links appear only in the detailed source footer;
 - images render only where useful;
-- every article contains only `喜歡` and `不喜歡` feedback;
+- every article contains only localized like and dislike feedback;
 - no browser errors occur.
 
 If any live check fails, use `edition:restore -- --id <predecessor> --expected-current <failed-id> --url <site>` to atomically restore the direct predecessor only while the failed edition remains current. Verify the restored context and reader. Report both failed and restored ids.

@@ -78,8 +78,8 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.match(reader, /story\.pageId/);
   assert.match(reader, /postMessage/);
   assert.match(reader, /story-dialog/);
-  assert.match(reader, /aria-label="上一頁"/);
-  assert.match(reader, /aria-label="下一頁"/);
+  assert.match(reader, /previousPage:\s*"上一頁"/);
+  assert.match(reader, /nextPage:\s*"下一頁"/);
   assert.match(reader, /data-turn=/);
   assert.match(reader, /onAnimationEnd=/);
   assert.match(reader, /document\.body\.getBoundingClientRect\(\)\.height/);
@@ -99,7 +99,7 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.doesNotMatch(reader, />Active</);
   assert.doesNotMatch(reader, />Revoke</);
   assert.doesNotMatch(reader, /點選任一新聞區塊開啟完整報導/);
-  assert.match(reader, /第 \$\{pageNumber\}／\$\{bundle\.pages\.length\} 頁/);
+  assert.match(reader, /pageCount:\s*\(current, total\) => `第 \$\{current\}／\$\{total\} 頁`/);
   assert.match(reader, /reader-story-footer/);
   assert.match(reader, /reader-story-note/);
   assert.match(reader, /aria-pressed/);
@@ -120,4 +120,16 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.doesNotMatch(reader, /<h2 id="story-dialog-title">\{story\.headline\}<\/h2>/);
   assert.match(reader, /class="article-head"/);
   assert.match(reader, /\.full-story \.body figure/);
+});
+
+test("localizes the trusted reader shell for an English edition", async () => {
+  const reader = await readFile(new URL("../app/EditionReader.tsx", import.meta.url), "utf8");
+
+  assert.match(reader, /function readerCopy\(/);
+  assert.match(reader, /startsWith\("en"\)/);
+  assert.match(reader, /previousPage:\s*"Previous page"/);
+  assert.match(reader, /like:\s*"Like"/);
+  assert.match(reader, /completeReport:\s*"Full report"/);
+  assert.match(reader, /bundle\.masthead.*desk/is);
+  assert.doesNotMatch(reader, /光譜日報編輯台/);
 });

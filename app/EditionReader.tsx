@@ -21,13 +21,61 @@ const THEMES = [
   { id: "salmon", label: "鮭色財經", description: "飽和鮭色紙、深酒紅正文與套色" },
   { id: "modern", label: "現代白報", description: "冷白紙、深藍正文與靛藍規則線" },
 ] as const;
+const ENGLISH_THEMES = [
+  { id: "classic", label: "Classic newsprint", description: "Warm grey paper, charcoal ink, dark red spot color" },
+  { id: "salmon", label: "Salmon financial", description: "Saturated salmon paper with deep wine ink" },
+  { id: "modern", label: "Modern white", description: "Cool white paper, navy ink, indigo rules" },
+] as const;
 
 type NewspaperTheme = (typeof THEMES)[number]["id"];
+type ReaderCopy = {
+  themes: ReadonlyArray<{ id: NewspaperTheme; label: string; description: string }>;
+  previousPage: string;
+  nextPage: string;
+  feedbackSaved: string;
+  feedbackFailed: string;
+  shareFailed: string;
+  shareCopied: string;
+  shareCreated: string;
+  shareRevoked: string;
+  shareRevokeFailed: string;
+  paperTheme: string;
+  creating: string;
+  createShare: string;
+  openShare: string;
+  themeTitle: string;
+  themeDescription: string;
+  completeReport: string;
+  completeAnalysis: string;
+  closeArticle: string;
+  originalSources: string;
+  activeShares: string;
+  shareLink: string;
+  revoking: string;
+  revoke: string;
+  report: string;
+  analysis: string;
+  desk: string;
+  personalDaily: string;
+  frontTagline: string;
+  feedbackLabel: string;
+  like: string;
+  less: string;
+  openReport: string;
+  saving: string;
+  loved: string;
+  disliked: string;
+  saved: string;
+  saveFailed: string;
+  pageCount(current: number, total: number): string;
+};
 type PageTurnDirection = "previous" | "next";
 type ReactionResult = { ok: boolean; message: string };
 const THEME_STORAGE_KEY = "personal-newspaper-theme";
 
 export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
+  const copy = readerCopy(bundle.language);
+  const themeOptions = copy.themes;
   const [pageIndex, setPageIndex] = useState(0);
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState<string | null>(null);
@@ -91,7 +139,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     if (!owner) return;
     let savedTheme: NewspaperTheme | undefined;
     try {
-      savedTheme = THEMES.find(({ id }) => id === localStorage.getItem(THEME_STORAGE_KEY))?.id;
+      savedTheme = themeOptions.find(({ id }) => id === localStorage.getItem(THEME_STORAGE_KEY))?.id;
     } catch {}
     if (!savedTheme) {
       if (!themeDialogRef.current?.open) themeDialogRef.current?.showModal();
@@ -99,7 +147,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     }
     const frame = requestAnimationFrame(() => setTheme(savedTheme));
     return () => cancelAnimationFrame(frame);
-  }, [owner]);
+  }, [owner, themeOptions]);
 
   useEffect(() => {
     if (!activeStory) return;
@@ -133,18 +181,18 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         body: JSON.stringify({ action, storyId, editionId: bundle.id }),
       });
       const result = (await response.json()) as { message?: string; error?: string };
-      const responseMessage = result.message ?? result.error ?? "無法儲存這項回饋。";
+      const responseMessage = response.ok ? copy.feedbackSaved : (result.error ?? copy.feedbackFailed);
       if (response.ok) reactionSelectionsRef.current = { ...reactionSelectionsRef.current, [storyId]: action };
       setMessage(responseMessage);
       return { ok: response.ok, message: responseMessage };
     } catch {
-      const responseMessage = "無法儲存這項回饋，請再試一次。";
+      const responseMessage = copy.feedbackFailed;
       setMessage(responseMessage);
       return { ok: false, message: responseMessage };
     } finally {
       setPending(null);
     }
-  }, [bundle.id]);
+  }, [bundle.id, copy]);
 
   useEffect(() => {
     const storyIds = new Set(bundle.stories.map((story) => story.id));
@@ -192,19 +240,19 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
       });
       const result = (await response.json()) as { token?: string; url?: string; error?: string };
       if (!response.ok || !result.token || !result.url) {
-        setMessage(result.error ?? "無法建立分享連結。");
+        setMessage(result.error ?? copy.shareFailed);
         return;
       }
       setShareUrl(result.url);
       setShares(await loadShares());
       try {
         await navigator.clipboard?.writeText(result.url);
-        setMessage("分享連結已複製；只會開啟本期報紙。");
+        setMessage(copy.shareCopied);
       } catch {
-        setMessage("分享連結已建立；可從版尾開啟本期分享頁。");
+        setMessage(copy.shareCreated);
       }
     } catch {
-      setMessage("無法建立分享連結，請稍後再試。");
+      setMessage(copy.shareFailed);
     } finally {
       setPending(null);
     }
@@ -223,16 +271,16 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         setShares(await loadShares());
         setShareUrl(null);
       }
-      setMessage(response.ok ? "分享連結已停止使用。" : (result.error ?? "無法停止分享連結。"));
+      setMessage(response.ok ? copy.shareRevoked : (result.error ?? copy.shareRevokeFailed));
     } catch {
-      setMessage("無法停止分享連結，請稍後再試。");
+      setMessage(copy.shareRevokeFailed);
     } finally {
       setPending(null);
     }
   }
 
   function chooseTheme(value: string) {
-    const selected = THEMES.find(({ id }) => id === value)?.id;
+    const selected = themeOptions.find(({ id }) => id === value)?.id;
     if (!selected) return;
     setTheme(selected);
     try {
@@ -245,7 +293,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     <section className="edition-reader" data-theme={theme} aria-label={`${bundle.masthead}, ${bundle.date}`}>
       <div className="edition-stage">
         <button
-          aria-label="上一頁"
+          aria-label={copy.previousPage}
           className="page-turn page-turn-previous"
           disabled={pageIndex === 0}
           onClick={() => turnPage(-1)}
@@ -279,7 +327,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
           />
         </div>
         <button
-          aria-label="下一頁"
+          aria-label={copy.nextPage}
           className="page-turn page-turn-next"
           disabled={pageIndex === bundle.pages.length - 1}
           onClick={() => turnPage(1)}
@@ -292,17 +340,17 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         <footer className="reader-furniture">
           <div className="reader-utilities">
             <label className="theme-picker">
-              <span>報紙主題</span>
+              <span>{copy.paperTheme}</span>
               <select value={theme} onChange={(event) => chooseTheme(event.target.value)}>
-                {THEMES.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
+                {themeOptions.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
               </select>
             </label>
             <button className="share-action" type="button" onClick={share} disabled={pending === "share"}>
-              {pending === "share" ? "建立中…" : "建立本期分享連結"}
+              {pending === "share" ? copy.creating : copy.createShare}
             </button>
-            {shareUrl ? <a className="share-link" href={shareUrl} rel="noreferrer" target="_blank">開啟剛建立的分享頁 ↗</a> : null}
+            {shareUrl ? <a className="share-link" href={shareUrl} rel="noreferrer" target="_blank">{copy.openShare} ↗</a> : null}
           </div>
-          <ShareList shares={shares} editionId={bundle.id} pending={pending} onRevoke={revokeShare} />
+          <ShareList copy={copy} shares={shares} editionId={bundle.id} pending={pending} onRevoke={revokeShare} />
         </footer>
       ) : null}
       {message ? <p aria-live="polite" className="reader-message">{message}</p> : null}
@@ -310,6 +358,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
       {activeStory ? (
         <StoryDialog
           bundle={bundle}
+          copy={copy}
           closeButtonRef={closeButtonRef}
           frameRef={articleFrameRef}
           owner={owner}
@@ -322,11 +371,11 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
       {owner ? (
         <dialog className="theme-dialog" ref={themeDialogRef} aria-labelledby="theme-dialog-title">
           <form method="dialog">
-            <p>紙本主題</p>
-            <h2 id="theme-dialog-title">先選一份你想每天打開的報紙</h2>
-            <span>紙色、正文油墨與套色會一起改變；版面仍由每天的內容決定。之後可在版尾更換。</span>
+            <p>{copy.paperTheme}</p>
+            <h2 id="theme-dialog-title">{copy.themeTitle}</h2>
+            <span>{copy.themeDescription}</span>
             <div className="theme-options">
-              {THEMES.map((option) => (
+              {themeOptions.map((option) => (
                 <button data-theme-option={option.id} key={option.id} onClick={() => chooseTheme(option.id)} type="button">
                   <i aria-hidden="true" />
                   <strong>{option.label}</strong>
@@ -343,6 +392,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
 
 function StoryDialog({
   bundle,
+  copy,
   closeButtonRef,
   frameRef,
   owner,
@@ -352,6 +402,7 @@ function StoryDialog({
   onFrameLoad,
 }: {
   bundle: EditionBundle;
+  copy: ReaderCopy;
   closeButtonRef: React.RefObject<HTMLButtonElement | null>;
   frameRef: React.RefObject<HTMLIFrameElement | null>;
   owner: boolean;
@@ -368,8 +419,8 @@ function StoryDialog({
     <div className="story-dialog" role="dialog" aria-modal="true" aria-label={story.headline} onClick={onClose}>
       <div className="story-dialog-shell" onClick={(event) => event.stopPropagation()}>
         <header className="story-dialog-header">
-          <p>{story.kicker}・{story.label === "fact" ? "完整報導" : "完整分析"}</p>
-          <button ref={closeButtonRef} className="story-dialog-close" type="button" onClick={onClose} aria-label="關閉文章">
+          <p>{story.kicker}・{story.label === "fact" ? copy.completeReport : copy.completeAnalysis}</p>
+          <button ref={closeButtonRef} className="story-dialog-close" type="button" onClick={onClose} aria-label={copy.closeArticle}>
             ×
           </button>
         </header>
@@ -382,7 +433,7 @@ function StoryDialog({
           onLoad={onFrameLoad}
         />
         <footer className="story-dialog-sources">
-          <span>原始資料</span>
+          <span>{copy.originalSources}</span>
           {sources.map((source) => (
             <a href={source.url} key={source.id} rel="noreferrer" target="_blank">
               {source.publisher}：{source.title} ↗
@@ -395,11 +446,13 @@ function StoryDialog({
 }
 
 function ShareList({
+  copy,
   shares,
   editionId,
   pending,
   onRevoke,
 }: {
+  copy: ReaderCopy;
   shares: Share[];
   editionId: string;
   pending: string | null;
@@ -409,12 +462,12 @@ function ShareList({
   if (editionShares.length === 0) return null;
 
   return (
-    <ul className="share-list" aria-label="本期有效分享連結">
+    <ul className="share-list" aria-label={copy.activeShares}>
       {editionShares.map((share, index) => (
         <li key={share.id}>
-          <span>分享連結 {index + 1}</span>
+          <span>{copy.shareLink} {index + 1}</span>
           <button className="share-revoke" disabled={pending === `revoke:${share.id}`} onClick={() => onRevoke(share.id)} type="button">
-            {pending === `revoke:${share.id}` ? "停止中…" : "停止分享"}
+            {pending === `revoke:${share.id}` ? copy.revoking : copy.revoke}
           </button>
         </li>
       ))}
@@ -453,10 +506,11 @@ function pageDocument(page: EditionPage, bundle: EditionBundle, owner: boolean, 
     ${page.css ?? ""}
     ${themeCss(theme)}
     ${readerBridgeCss()}
-  </style></head><body><main class="paper">${trustedPageHeader(page, bundle)}${page.html}</main>${trustedReaderBridge(owner, bundle.stories, true)}${trustedPageResizeBridge()}</body></html>`;
+  </style></head><body><main class="paper">${trustedPageHeader(page, bundle)}${page.html}</main>${trustedReaderBridge(owner, bundle.stories, true, bundle.language)}${trustedPageResizeBridge()}</body></html>`;
 }
 
 function articleDocument(story: EditionStory, bundle: EditionBundle, owner: boolean, theme: NewspaperTheme): string {
+  const copy = readerCopy(bundle.language);
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
     :root { --paper: oklch(96% 0 0); --ink: oklch(16% 0 0); --muted: oklch(34% 0 0); --red: oklch(24% 0 0); --hair: oklch(49% 0 0); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", "Noto Serif TC", serif; }
     * { box-sizing: border-box; }
@@ -483,7 +537,7 @@ function articleDocument(story: EditionStory, bundle: EditionBundle, owner: bool
     @media (max-width: 46rem) { .article-title,.article-standfirst { grid-column: 1/-1; } .article-standfirst { margin-top: .25rem; } .full-story .body { columns: 1; text-align: left; } }
     ${themeCss(theme)}
     ${readerBridgeCss()}
-  </style></head><body><article class="full-story" data-story-id="${escapeAttribute(story.id)}"><header class="article-head"><p class="section">${story.label === "fact" ? "報導" : "分析"}・完整報導</p><div class="article-title"><h1>${escapeHtml(story.headline)}</h1></div><div class="article-standfirst"><p class="dek">${escapeHtml(story.dek)}</p><p class="byline">光譜日報編輯台・${escapeHtml(formatDate(bundle.date, bundle.language))}</p></div></header><div class="body">${renderStoryDetail(story)}</div></article>${trustedReaderBridge(owner, [story], false)}</body></html>`;
+  </style></head><body><article class="full-story" data-story-id="${escapeAttribute(story.id)}"><header class="article-head"><p class="section">${story.label === "fact" ? copy.report : copy.analysis}・${story.label === "fact" ? copy.completeReport : copy.completeAnalysis}</p><div class="article-title"><h1>${escapeHtml(story.headline)}</h1></div><div class="article-standfirst"><p class="dek">${escapeHtml(story.dek)}</p><p class="byline">${escapeHtml(bundle.masthead)} ${escapeHtml(copy.desk)}・${escapeHtml(formatDate(bundle.date, bundle.language))}</p></div></header><div class="body">${renderStoryDetail(story)}</div></article>${trustedReaderBridge(owner, [story], false, bundle.language)}</body></html>`;
 }
 
 function readerBridgeCss(): string {
@@ -508,9 +562,10 @@ function themeCss(theme: NewspaperTheme): string {
 }
 
 function trustedPageHeader(page: EditionPage, bundle: EditionBundle): string {
+  const copy = readerCopy(bundle.language);
   const pageNumber = bundle.pages.findIndex((candidate) => candidate.id === page.id) + 1;
   const title = pageNumber === 1 ? bundle.masthead : page.section;
-  return `<header class="publication-header${pageNumber === 1 ? " is-front" : ""}"><div class="publication-folio"><span>${escapeHtml(bundle.masthead)}・個人早報</span><span>${escapeHtml(formatDate(bundle.date, bundle.language))}・第 ${pageNumber}／${bundle.pages.length} 頁</span></div><div class="publication-name"><h1>${escapeHtml(title)}</h1><p>${pageNumber === 1 ? "每日只留下值得讀的事" : escapeHtml(bundle.masthead)}</p></div></header>`;
+  return `<header class="publication-header${pageNumber === 1 ? " is-front" : ""}"><div class="publication-folio"><span>${escapeHtml(bundle.masthead)}・${escapeHtml(copy.personalDaily)}</span><span>${escapeHtml(formatDate(bundle.date, bundle.language))}・${escapeHtml(copy.pageCount(pageNumber, bundle.pages.length))}</span></div><div class="publication-name"><h1>${escapeHtml(title)}</h1><p>${pageNumber === 1 ? escapeHtml(copy.frontTagline) : escapeHtml(bundle.masthead)}</p></div></header>`;
 }
 
 function trustedPageHeaderCss(): string {
@@ -524,15 +579,26 @@ function trustedPageHeaderCss(): string {
     @media(max-width:559px){.publication-folio{flex-wrap:wrap}.publication-name{grid-template-columns:1fr}.publication-name p{display:none}.publication-header.is-front .publication-name h1{font-size:3rem}}`;
 }
 
-function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: boolean): string {
+function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: boolean, language: string): string {
+  const copy = readerCopy(language);
   const summaries = Object.fromEntries(stories.map((story) => [story.id, renderStorySummary(story)]));
+  const controlsMarkup = `<style>:host{all:initial;display:block;height:100%;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:var(--ink)}.bar{display:flex;height:100%;align-items:center;justify-content:flex-end;gap:6px}.status{min-width:3.5em;color:var(--muted);font:700 .6875rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;text-align:right}.actions{display:flex;gap:2px}.action{min-height:44px;appearance:none;border:0;background:transparent;color:var(--ink);cursor:pointer;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;padding:6px}.action:hover{color:var(--red)}.action[aria-pressed="true"]{background:var(--ink);color:var(--paper)}.action:disabled{cursor:wait;opacity:.58}.action:focus-visible{outline:2px solid var(--red);outline-offset:-2px}</style><div class="bar"><span class="status" data-status aria-live="polite"></span><div class="actions" aria-label="${escapeAttribute(copy.feedbackLabel)}"><button class="action" data-action="love" aria-pressed="false" type="button">♡ ${escapeHtml(copy.like)}</button><button class="action" data-action="less" aria-pressed="false" type="button">⊘ ${escapeHtml(copy.less)}</button></div></div>`;
+  const labels = {
+    openReport: copy.openReport,
+    saving: copy.saving,
+    loved: copy.loved,
+    disliked: copy.disliked,
+    saved: copy.saved,
+    saveFailed: copy.saveFailed,
+  };
   return `<script>(() => {
     const owner = ${owner ? "true" : "false"};
     const openable = ${openable ? "true" : "false"};
     const summaries = ${inlineScriptJson(summaries)};
+    const labels = ${inlineScriptJson(labels)};
     const send = (message) => window.parent.postMessage(message, "*");
     const controls = new Map();
-    const controlsMarkup = '<style>:host{all:initial;display:block;height:100%;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:var(--ink)}.bar{display:flex;height:100%;align-items:center;justify-content:flex-end;gap:6px}.status{min-width:3.5em;color:var(--muted);font:700 .6875rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;text-align:right}.actions{display:flex;gap:2px}.action{min-height:44px;appearance:none;border:0;background:transparent;color:var(--ink);cursor:pointer;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;padding:6px}.action:hover{color:var(--red)}.action[aria-pressed="true"]{background:var(--ink);color:var(--paper)}.action:disabled{cursor:wait;opacity:.58}.action:focus-visible{outline:2px solid var(--red);outline-offset:-2px}</style><div class="bar"><span class="status" data-status aria-live="polite"></span><div class="actions" aria-label="調整明日內容"><button class="action" data-action="love" aria-pressed="false" type="button">♡ 喜歡</button><button class="action" data-action="less" aria-pressed="false" type="button">⊘ 不喜歡</button></div></div>';
+    const controlsMarkup = ${inlineScriptJson(controlsMarkup)};
     document.querySelectorAll('[data-story-id]').forEach((article) => {
       const storyId = article.getAttribute('data-story-id');
       if (!storyId || article.dataset.readerEnhanced) return;
@@ -548,7 +614,7 @@ function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: 
       }
       if (openable) {
         const headline = article.querySelector('h1,h2,h3')?.textContent?.trim();
-        article.setAttribute('aria-label', headline ? '開啟完整報導：' + headline : '開啟完整報導');
+        article.setAttribute('aria-label', headline ? labels.openReport + ': ' + headline : labels.openReport);
       }
       if (owner) {
         const host = document.createElement('reader-controls');
@@ -575,7 +641,7 @@ function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: 
             event.stopPropagation();
             if (button.disabled) return;
             buttons.forEach((item) => { item.disabled = true; });
-            status.textContent = '儲存中…';
+            status.textContent = labels.saving;
             send({ type: 'react', storyId, action: button.getAttribute('data-action') });
           });
         });
@@ -605,15 +671,15 @@ function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: 
     window.addEventListener('message', (event) => {
       if (event.source !== window.parent || !event.data || typeof event.data !== 'object') return;
       if (event.data.type === 'reaction-sync' && event.data.selections && typeof event.data.selections === 'object') {
-        Object.entries(event.data.selections).forEach(([storyId, action]) => showSelection(storyId, action, action === 'love' ? '已喜歡' : '已不喜歡'));
+        Object.entries(event.data.selections).forEach(([storyId, action]) => showSelection(storyId, action, action === 'love' ? labels.loved : labels.disliked));
       }
       if (event.data.type === 'reaction-result') {
-        if (event.data.ok) showSelection(event.data.storyId, event.data.action, '已儲存');
+        if (event.data.ok) showSelection(event.data.storyId, event.data.action, labels.saved);
         else {
           const control = controls.get(event.data.storyId);
           if (!control) return;
           control.buttons.forEach((button) => { button.disabled = false; });
-          control.status.textContent = '儲存失敗';
+          control.status.textContent = labels.saveFailed;
         }
       }
     });
@@ -629,6 +695,94 @@ function trustedPageResizeBridge(): string {
     new ResizeObserver(publishHeight).observe(document.body);
     requestAnimationFrame(publishHeight);
   })();</script>`;
+}
+
+function readerCopy(language: string): ReaderCopy {
+  if (language.toLowerCase().startsWith("en")) {
+    return {
+      themes: ENGLISH_THEMES,
+      previousPage: "Previous page",
+      nextPage: "Next page",
+      feedbackSaved: "Saved. The next edition will reflect this signal.",
+      feedbackFailed: "Unable to save this response. Please try again.",
+      shareFailed: "Unable to create the edition link.",
+      shareCopied: "Edition link copied. It opens only this issue.",
+      shareCreated: "Edition link created. Open it from the paper footer.",
+      shareRevoked: "Edition link revoked.",
+      shareRevokeFailed: "Unable to revoke the edition link.",
+      paperTheme: "Paper theme",
+      creating: "Creating…",
+      createShare: "Create an edition link",
+      openShare: "Open the new shared edition",
+      themeTitle: "Choose the paper you want to open every day",
+      themeDescription: "Paper, body ink, and spot color change together. Each edition still composes its own layout.",
+      completeReport: "Full report",
+      completeAnalysis: "Full analysis",
+      closeArticle: "Close article",
+      originalSources: "Original sources",
+      activeShares: "Active edition links",
+      shareLink: "Edition link",
+      revoking: "Revoking…",
+      revoke: "Revoke",
+      report: "Report",
+      analysis: "Analysis",
+      desk: "desk",
+      personalDaily: "personal daily",
+      frontTagline: "Only what is worth reading today",
+      feedbackLabel: "Shape tomorrow's edition",
+      like: "Like",
+      less: "Less like this",
+      openReport: "Open full report",
+      saving: "Saving…",
+      loved: "Liked",
+      disliked: "Less like this",
+      saved: "Saved",
+      saveFailed: "Save failed",
+      pageCount: (current, total) => `Page ${current} of ${total}`,
+    };
+  }
+
+  return {
+    themes: THEMES,
+    previousPage: "上一頁",
+    nextPage: "下一頁",
+    feedbackSaved: "已儲存，下一期會依這項回饋調整。",
+    feedbackFailed: "無法儲存這項回饋，請再試一次。",
+    shareFailed: "無法建立分享連結。",
+    shareCopied: "分享連結已複製；只會開啟本期報紙。",
+    shareCreated: "分享連結已建立；可從版尾開啟本期分享頁。",
+    shareRevoked: "分享連結已停止使用。",
+    shareRevokeFailed: "無法停止分享連結。",
+    paperTheme: "報紙主題",
+    creating: "建立中…",
+    createShare: "建立本期分享連結",
+    openShare: "開啟剛建立的分享頁",
+    themeTitle: "先選一份你想每天打開的報紙",
+    themeDescription: "紙色、正文油墨與套色會一起改變；版面仍由每天的內容決定。之後可在版尾更換。",
+    completeReport: "完整報導",
+    completeAnalysis: "完整分析",
+    closeArticle: "關閉文章",
+    originalSources: "原始資料",
+    activeShares: "本期有效分享連結",
+    shareLink: "分享連結",
+    revoking: "停止中…",
+    revoke: "停止分享",
+    report: "報導",
+    analysis: "分析",
+    desk: "編輯台",
+    personalDaily: "個人早報",
+    frontTagline: "每日只留下值得讀的事",
+    feedbackLabel: "調整明日內容",
+    like: "喜歡",
+    less: "不喜歡",
+    openReport: "開啟完整報導",
+    saving: "儲存中…",
+    loved: "已喜歡",
+    disliked: "已不喜歡",
+    saved: "已儲存",
+    saveFailed: "儲存失敗",
+    pageCount: (current, total) => `第 ${current}／${total} 頁`,
+  };
 }
 
 function formatDate(date: string, language: string): string {

@@ -5,8 +5,9 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 
 test("follows the Agent Skills structure and progressive-disclosure contract", async () => {
-  const [skill, pipeline, contract, baseDesign, evals, template, design] = await Promise.all([
+  const [skill, firstRun, pipeline, contract, baseDesign, evals, template, design] = await Promise.all([
     readFile(new URL("skills/personal-newspaper/SKILL.md", root), "utf8"),
+    readFile(new URL("skills/personal-newspaper/references/first-run.md", root), "utf8"),
     readFile(new URL("skills/personal-newspaper/references/pipeline.md", root), "utf8"),
     readFile(new URL("skills/personal-newspaper/references/edition-contract.md", root), "utf8"),
     readFile(new URL("skills/personal-newspaper/references/base-design.md", root), "utf8"),
@@ -18,15 +19,19 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   const frontmatter = skill.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? "";
   const name = frontmatter.match(/^name:\s*(.+)$/m)?.[1]?.trim();
   const description = frontmatter.match(/^description:\s*(.+)$/m)?.[1]?.trim() ?? "";
-  const compatibility = frontmatter.match(/^compatibility:\s*(.+)$/m)?.[1]?.trim() ?? "";
+  const frontmatterKeys = frontmatter
+    .split("\n")
+    .map((line) => line.match(/^([a-zA-Z][\w-]*):/)?.[1])
+    .filter(Boolean);
   assert.equal(name, "personal-newspaper");
   assert.match(name, /^(?!-)(?!.*--)[a-z0-9-]+(?<!-)$/);
   assert.ok(description.length > 0 && description.length <= 1024);
   assert.ok(description.startsWith("Use when "), "description must expose trigger conditions before workflow details");
   assert.match(description, /publish|publishing/i);
-  assert.ok(compatibility.length > 0 && compatibility.length <= 500);
+  assert.deepEqual(frontmatterKeys, ["name", "description"]);
   assert.ok(skill.split("\n").length < 500);
   assert.match(skill, /references\/pipeline\.md/);
+  assert.match(skill, /references\/first-run\.md/);
   assert.match(skill, /references\/edition-contract\.md/);
   assert.match(skill, /references\/base-design\.md/);
   assert.match(skill, /pnpm edition:prepare/);
@@ -34,25 +39,31 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(skill, /pnpm edition:publish/);
   assert.match(skill, /## Daily automation prompt/);
   assert.match(skill, /## First-run setup/);
-  assert.match(skill, /automation_update/);
-  assert.match(skill, /list_projects/);
-  assert.match(skill, /verify.*automation/is);
-  assert.match(skill, /update.*existing.*automation.*never.*duplicate/is);
+  assert.match(firstRun, /automation_update/);
+  assert.match(firstRun, /list_projects/);
+  assert.match(firstRun, /verify.*automation/is);
+  assert.match(firstRun, /update.*one candidate.*create one only/is);
   assert.match(skill, /publish.*before.*automation/is);
   assert.match(skill, /unattended standalone daily run/i);
   assert.match(skill, /do not depend on.*prior session/i);
   assert.match(skill, /remove.*private temporary directory.*every exit path/is);
-  assert.match(skill, /multiple automation candidates.*stop.*report.*conflict/is);
-  assert.match(skill, /automation candidates.*stable automation id.*or.*exact name.*exact project/is);
-  assert.match(skill, /unique nearest ancestor.*repository root/is);
-  assert.match(skill, /no project.*ancestor.*stop.*report.*incomplete/is);
-  assert.match(skill, /multiple projects.*same nearest ancestor.*stop.*ask.*owner/is);
-  assert.match(skill, /entire automation prompt.*byte-for-byte equal/is);
+  assert.match(firstRun, /stop if multiple candidates/is);
+  assert.match(firstRun, /candidate.*saved automation id.*or.*exact name.*exact project/is);
+  assert.match(firstRun, /unique nearest ancestor project/is);
+  assert.match(firstRun, /no match.*ambiguous nearest match/is);
+  assert.match(firstRun, /byte-for-byte equal prompt/is);
   assert.match(skill, /do not claim.*unattended.*proven.*successful scheduled run/is);
   assert.match(skill, /do not copy its composition or the template CSS/i);
   assert.match(skill, /change at least two structural dimensions/i);
   assert.doesNotMatch(skill, /BASE_DESIGN\.md/);
   assert.doesNotMatch(skill, /追蹤主題/);
+  assert.doesNotMatch(skill, /\.env\.local/);
+  assert.match(firstRun, /never reuse.*project_id.*URL.*credential.*D1.*R2/is);
+  assert.match(firstRun, /do not ask.*environment variable/is);
+  assert.match(firstRun, /Sites:create_site/);
+  assert.match(firstRun, /Sites:update_environment_variables/);
+  assert.match(firstRun, /pnpm profile:save/);
+  assert.match(firstRun, /publish.*verify.*before.*schedule/is);
 
   assert.match(pipeline, /latent preference brief/i);
   assert.match(pipeline, /evidence ledger/i);
@@ -138,29 +149,30 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   const parsedTemplate = JSON.parse(template);
   assert.equal("generation" in parsedTemplate, false);
   assert.doesNotMatch(template, /ctx_0{64}/);
-  assert.equal(parsedTemplate.pages.length, 2, "the smoke fixture must combine its thin two-story section");
+  assert.equal(parsedTemplate.language, "en-US", "the public fixture must be the neutral English example");
+  assert.equal(parsedTemplate.masthead, "The Personal Daily");
+  assert.equal(parsedTemplate.pages.length, 2, "the smoke fixture must group stories into subject pages");
   const fixtureStoryCounts = Object.groupBy(parsedTemplate.stories, (story) => story.pageId);
   assert.equal(fixtureStoryCounts.front?.length, 5);
-  assert.equal(fixtureStoryCounts.technology?.length, 4);
+  assert.equal(fixtureStoryCounts.practice?.length, 3);
   for (const page of parsedTemplate.pages) {
-    assert.match(page.css, /@media\(max-width:479px\)/, `${page.id} needs a phone-only single-column breakpoint`);
-    assert.doesNotMatch(page.css, /@media\(max-width:559px\)/, `${page.id} must preserve mixed paths at 560px`);
+    assert.match(page.css, /@media\(max-width:559px\)/, `${page.id} needs a phone-only single-column breakpoint`);
+    assert.doesNotMatch(page.css, /@media\(max-width:560px\)/, `${page.id} must preserve mixed paths at exactly 560px`);
   }
-  assert.match(parsedTemplate.pages[0].html, /front-mosaic/);
+  assert.match(parsedTemplate.pages[0].html, /front-grid/);
   assert.match(parsedTemplate.pages[0].css, /repeat\(12,minmax\(0,1fr\)\)/);
-  assert.match(parsedTemplate.pages[0].css, /grid-column:1\/9/);
-  assert.match(parsedTemplate.pages[0].css, /grid-column:9\/13/);
+  assert.match(parsedTemplate.pages[0].css, /grid-column:1\/10/);
+  assert.match(parsedTemplate.pages[0].css, /grid-column:10\/13/);
   assert.match(parsedTemplate.pages[0].css, /grid-column:1\/6/);
   assert.match(parsedTemplate.pages[0].css, /grid-column:6\/13/);
-  assert.match(parsedTemplate.pages[0].css, /analysis-wide.*grid-column:1\/13/);
-  assert.match(parsedTemplate.pages[0].css, /@media\(max-width:880px\).*\.lead\{grid-column:1\/8\}\.brief\{grid-column:8\/13\}/);
+  assert.match(parsedTemplate.pages[0].css, /questions.*grid-column:1\/13/);
+  assert.match(parsedTemplate.pages[0].css, /@media\(max-width:880px\).*\.lead\{grid-column:1\/9\}\.dispatch\{grid-column:9\/13\}/);
   assert.doesNotMatch(parsedTemplate.pages[0].css, /5fr\).*3fr/);
-  assert.match(parsedTemplate.pages[0].css, /column-fill:balance/);
-  assert.match(parsedTemplate.pages[1].html, /technology-mosaic/);
+  assert.match(parsedTemplate.pages[1].html, /practice-grid/);
   assert.match(parsedTemplate.pages[1].css, /grid-column:1\/13/);
-  assert.match(parsedTemplate.pages[1].css, /grid-column:1\/6/);
-  assert.match(parsedTemplate.pages[1].css, /grid-column:6\/13/);
-  assert.match(parsedTemplate.pages[1].css, /tomorrow-story.*grid-column:1\/13/);
+  assert.match(parsedTemplate.pages[1].css, /grid-column:1\/8/);
+  assert.match(parsedTemplate.pages[1].css, /grid-column:8\/13/);
+  assert.match(parsedTemplate.pages[1].css, /boundary.*grid-column:1\/13/);
   assert.doesNotMatch(parsedTemplate.pages[1].css, /2fr\).*1fr/);
   assert.match(baseDesign, /lane endings.*four body lines/is);
   assert.match(baseDesign, /preserve.*original color/is);

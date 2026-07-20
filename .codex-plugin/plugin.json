@@ -1,0 +1,41 @@
+{
+  "name": "personal-newspaper",
+  "version": "1.0.0",
+  "description": "Create a personal newspaper website and let Codex publish a verified edition on schedule.",
+  "author": {
+    "name": "TakalaWang",
+    "url": "https://github.com/TakalaWang"
+  },
+  "homepage": "https://github.com/TakalaWang/personal-newspaper",
+  "repository": "https://github.com/TakalaWang/personal-newspaper",
+  "license": "MIT",
+  "keywords": [
+    "newspaper",
+    "personalization",
+    "sites",
+    "schedule",
+    "publishing"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Personal Newspaper",
+    "shortDescription": "Your own newspaper, edited and published daily",
+    "longDescription": "Codex interviews one reader, creates a private Sites newspaper, publishes a verified first edition, and schedules future editions that learn from like and dislike feedback.",
+    "developerName": "TakalaWang",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/TakalaWang/personal-newspaper",
+    "defaultPrompt": [
+      "Create my daily newspaper.",
+      "Publish today's personal newspaper.",
+      "Show the status of my newspaper."
+    ],
+    "brandColor": "#7D1F25",
+    "composerIcon": "./app/icon.svg",
+    "logo": "./app/icon.svg",
+    "screenshots": []
+  }
+}

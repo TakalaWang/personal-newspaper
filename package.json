@@ -13,6 +13,7 @@
     "test": "pnpm run build && node --import ./tests/cloudflare-loader.mjs --test tests/*.test.mjs tests/*.test.ts",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "edition:context": "node skills/personal-newspaper/scripts/snapshot-context.mjs",
+    "profile:save": "node skills/personal-newspaper/scripts/save-profile.mjs",
     "edition:prepare": "node skills/personal-newspaper/scripts/prepare-edition.mjs",
     "edition:validate": "node skills/personal-newspaper/scripts/validate-edition.mjs",
     "edition:publish": "node skills/personal-newspaper/scripts/publish-edition.mjs",

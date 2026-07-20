@@ -1,0 +1,21 @@
+{
+  "name": "personal-newspaper",
+  "interface": {
+    "displayName": "Personal Newspaper"
+  },
+  "plugins": [
+    {
+      "name": "personal-newspaper",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/TakalaWang/personal-newspaper.git",
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

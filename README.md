@@ -1,20 +1,20 @@
-# The Personal Daily
+# Codex Reporter
 
 > **You know yourself best. Codex becomes the next-best editor of what deserves your attention.**
 
-The Personal Daily is a private newspaper that Codex researches, writes, designs, publishes, and improves for one reader. Tell Codex what matters to you, then use **Like** and **Less like this** inside the paper. Those explicit signals shape tomorrow's issue—not an opaque engagement feed and never today's already-published edition.
+Codex Reporter is a private newspaper that Codex researches, writes, designs, publishes, and improves for one reader. Tell Codex what matters to you, then use **Like** and **Less like this** inside the paper. Those explicit signals shape tomorrow's issue—not an opaque engagement feed and never today's already-published edition.
 
-It is distributed as the **Personal Newspaper** Codex plugin. The website is what the plugin creates for each reader, not a shared account or a copy of the author's paper.
+It is distributed as the **Codex Reporter** Codex plugin. The website is what the plugin creates for each reader, not a shared account or a copy of the author's paper.
 
-[![Open the English example edition](assets/personal-newspaper.png)](https://personal-daily-codex.takalawang.chatgpt.site/)
+[![Open the English example edition](assets/codex-reporter.png)](https://personal-daily-codex.takalawang.chatgpt.site/)
 
 ## Make it yours
 
 1. Install the plugin:
 
    ```bash
-   codex plugin marketplace add TakalaWang/personal-newspaper
-   codex plugin add personal-newspaper@personal-newspaper
+   codex plugin marketplace add TakalaWang/codex-reporter
+   codex plugin add codex-reporter@codex-reporter
    ```
 
 2. Restart Codex, start a new task in a new or empty project, and say:
@@ -52,7 +52,7 @@ Each issue balances:
 
 Every installation creates a reader-owned Site and an isolated profile, reaction history, and edition archive. The plugin never reuses the example deployment's project, URL, credentials, profile, reactions, or issues.
 
-Reading is private by default. A reader can explicitly create a revocable, non-guessable link for one complete issue; the shared edition contains no owner profile.
+Reading is private by default. One **Share** action copies a revocable, non-guessable link for the selected issue; the shared edition contains no owner profile.
 
 ## From one conversation to every morning
 
@@ -104,11 +104,11 @@ Judges do not need to rebuild the application, provide sample data, clone this r
 ## Plugin structure
 
 - [`.codex-plugin/plugin.json`](.codex-plugin/plugin.json) — plugin identity and starter prompts.
-- [`skills/personal-newspaper/SKILL.md`](skills/personal-newspaper/SKILL.md) — task router, publication workflow, and canonical Schedule prompt.
-- [`skills/personal-newspaper/references/first-run.md`](skills/personal-newspaper/references/first-run.md) — reader-owned Sites provisioning and scheduling gates.
-- [`skills/personal-newspaper/references/pipeline.md`](skills/personal-newspaper/references/pipeline.md) — research, evidence, feedback, publication, and recovery state machine.
-- [`skills/personal-newspaper/references/base-design.md`](skills/personal-newspaper/references/base-design.md) — flexible print grammar rather than a fixed template.
-- [`skills/personal-newspaper/evals/evals.json`](skills/personal-newspaper/evals/evals.json) — setup, editorial, concurrency, layout, and recovery scenarios.
+- [`skills/codex-reporter/SKILL.md`](skills/codex-reporter/SKILL.md) — task router, publication workflow, and canonical Schedule prompt.
+- [`skills/codex-reporter/references/first-run.md`](skills/codex-reporter/references/first-run.md) — reader-owned Sites provisioning and scheduling gates.
+- [`skills/codex-reporter/references/pipeline.md`](skills/codex-reporter/references/pipeline.md) — research, evidence, feedback, publication, and recovery state machine.
+- [`skills/codex-reporter/references/base-design.md`](skills/codex-reporter/references/base-design.md) — flexible print grammar rather than a fixed template.
+- [`skills/codex-reporter/evals/evals.json`](skills/codex-reporter/evals/evals.json) — setup, editorial, concurrency, layout, and recovery scenarios.
 
 The Skill follows the Agent Skills open structure: `SKILL.md` contains only `name` and `description` frontmatter, keeps the main workflow concise, and links directly to one-level references and deterministic scripts.
 

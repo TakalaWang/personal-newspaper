@@ -1,5 +1,5 @@
 {
-  "name": "personal-newspaper",
+  "name": "codex-reporter",
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@10.28.0",
@@ -12,14 +12,14 @@
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "pnpm run build && node --import ./tests/cloudflare-loader.mjs --test tests/*.test.mjs tests/*.test.ts",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "edition:context": "node skills/personal-newspaper/scripts/snapshot-context.mjs",
-    "profile:save": "node skills/personal-newspaper/scripts/save-profile.mjs",
-    "edition:prepare": "node skills/personal-newspaper/scripts/prepare-edition.mjs",
-    "edition:validate": "node skills/personal-newspaper/scripts/validate-edition.mjs",
-    "edition:publish": "node skills/personal-newspaper/scripts/publish-edition.mjs",
-    "edition:restore": "node skills/personal-newspaper/scripts/restore-edition.mjs",
+    "edition:context": "node skills/codex-reporter/scripts/snapshot-context.mjs",
+    "profile:save": "node skills/codex-reporter/scripts/save-profile.mjs",
+    "edition:prepare": "node skills/codex-reporter/scripts/prepare-edition.mjs",
+    "edition:validate": "node skills/codex-reporter/scripts/validate-edition.mjs",
+    "edition:publish": "node skills/codex-reporter/scripts/publish-edition.mjs",
+    "edition:restore": "node skills/codex-reporter/scripts/restore-edition.mjs",
     "flow:verify-empty": "node --import ./tests/cloudflare-loader.mjs --test --test-name-pattern='empty first-run pipeline' tests/publish-edition.test.mjs && pnpm skill:validate",
-    "skill:validate": "node skills/personal-newspaper/scripts/validate-skill.mjs",
+    "skill:validate": "node skills/codex-reporter/scripts/validate-skill.mjs",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

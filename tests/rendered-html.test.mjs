@@ -43,7 +43,7 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.match(page, /requireChatGPTUser/);
   assert.match(page, /getEditionBundle/);
   assert.match(page, /Onboarding/);
-  assert.match(layout, /title:\s*"The Personal Daily"/);
+  assert.match(layout, /title:\s*"Codex Reporter"/);
   assert.match(reader, /sandbox="allow-scripts"/);
   assert.match(reader, /api\/reactions/);
   assert.match(reader, /api\/shares/);
@@ -59,7 +59,7 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.doesNotMatch(reader, /<small>上一頁<\/small>|<small>下一頁<\/small>/);
   assert.doesNotMatch(css, /\.page-turn-control b/);
   assert.match(css, /\.theme-dialog/);
-  assert.match(reader, /personal-newspaper-theme/);
+  assert.match(reader, /codex-reporter-theme/);
   assert.match(reader, /暖灰新聞紙.*深酒紅正文.*深藍正文/s);
   assert.match(reader, /themeCss\(theme\)/);
   assert.match(reader, /setFrameReady\(true\)/);

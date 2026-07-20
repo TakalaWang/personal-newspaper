@@ -1,6 +1,6 @@
 # Product
 
-## The Personal Daily
+## Codex Reporter
 
 A private, one-reader newspaper researched, edited, designed, and published by Codex. The reader knows themselves best; after a short interview and explicit Like / Less like this feedback, Codex becomes the next-best editor of what deserves their attention.
 

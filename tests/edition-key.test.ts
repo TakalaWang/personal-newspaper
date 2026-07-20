@@ -5,7 +5,7 @@ import { serializeEditionBundle } from "../lib/edition-key.ts";
 import { validateEditionBundle } from "../lib/edition.ts";
 
 const draft = JSON.parse(
-  await readFile(new URL("../skills/personal-newspaper/assets/edition-template.json", import.meta.url), "utf8"),
+  await readFile(new URL("../skills/codex-reporter/assets/edition-template.json", import.meta.url), "utf8"),
 );
 const generation = {
   basedOnEditionId: "previous-edition",

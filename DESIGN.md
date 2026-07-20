@@ -1,6 +1,6 @@
 # Design Constitution
 
-The canonical daily-edition grammar is [skills/personal-newspaper/references/base-design.md](skills/personal-newspaper/references/base-design.md).
+The canonical daily-edition grammar is [skills/codex-reporter/references/base-design.md](skills/codex-reporter/references/base-design.md).
 
 The reader offers three restrained press palettes chosen on first use and changeable at the folio: natural newsprint with dark red spot ink, salmon financial paper with wine ink, and modern white paper with navy spot ink. Generated layout rules consume semantic paper, ink, muted, rule, and spot variables; the trusted reader applies their final values after edition CSS. Songti-style serif carries the newspaper; Kaiti is reserved for the masthead or one accent; sans-serif carries metadata and controls.
 

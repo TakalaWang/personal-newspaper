@@ -51,8 +51,8 @@
 ### Task 4: Redesign the generation pipeline
 
 **Files:**
-- Modify: `skills/personal-newspaper/SKILL.md`
-- Modify: `skills/personal-newspaper/references/base-design.md`
+- Modify: `skills/codex-reporter/SKILL.md`
+- Modify: `skills/codex-reporter/references/base-design.md`
 - Modify: `tests/skill-design.test.mjs`
 
 1. Add failing contract assertions for two reactions, latent topic inference, evidence ledger, canonical summary/detail, detail-only source links, image rules, content audit, and visual preflight.
@@ -63,7 +63,7 @@
 ### Task 5: Migrate and republish the current edition
 
 **Files:**
-- Modify: `skills/personal-newspaper/assets/edition-template.json`
+- Modify: `skills/codex-reporter/assets/edition-template.json`
 - Modify: `tests/edition.test.ts`
 
 1. Move printed prose and visuals into each story's `summaryHtml`; add canonical `kicker`; leave each page article root empty.
@@ -76,6 +76,6 @@
 **Files:**
 - Commit all files above after verification.
 
-1. Update the existing `personal-newspaper-daily-edition` automation without changing schedule, model, or notification policy.
+1. Update the existing `codex-reporter-daily-edition` automation without changing schedule, model, or notification policy.
 2. Push the exact commit to the existing Sites source, save and deploy a new version, then publish the migrated edition with a unique id.
 3. Verify production authentication, agent context enrichment, edition manifest, two-button UI, printed summary, detail article, source links, and zero browser errors.

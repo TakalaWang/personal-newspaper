@@ -1,5 +1,5 @@
 {
-  "skill_name": "personal-newspaper",
+  "skill_name": "codex-reporter",
   "evals": [
     {
       "id": 1,
@@ -72,7 +72,7 @@
     },
     {
       "id": 7,
-      "prompt": "I installed the Personal Newspaper plugin and opened a new Codex task in an empty project. I have no repository checkout, deployed site, token, or environment file. Create my paper, discuss my preferences with me, publish an initial edition, then update it every day at 00:00 Asia/Taipei without depending on this chat remaining open.",
+      "prompt": "I installed the Codex Reporter plugin and opened a new Codex task in an empty project. I have no repository checkout, deployed site, token, or environment file. Create my paper, discuss my preferences with me, publish an initial edition, then update it every day at 00:00 Asia/Taipei without depending on this chat remaining open.",
       "expected_output": "The agent bootstraps the bundled application into the empty project, creates an isolated reader-owned Sites/D1/R2 deployment and private runtime credential without asking for infrastructure configuration, asks only the required profile questions, publishes and verifies the first edition, then creates exactly one active project automation with the canonical unattended prompt.",
       "expectations": [
         "Uses the bundled bootstrap script and never asks the reader to clone the repository, run pnpm, or enter environment variables",

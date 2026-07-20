@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "The Personal Daily",
-  description: "A private, daily edition made for one reader.",
+  title: "Codex Reporter",
+  description: "Codex Reporter is a private daily newspaper researched and edited for one reader.",
 };
 
 export default function RootLayout({

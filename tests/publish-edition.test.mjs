@@ -10,13 +10,13 @@ import { fileURLToPath } from "node:url";
 import { parseProfileUpdate } from "../lib/agent.ts";
 import { validateEditionBundle } from "../lib/edition.ts";
 
-const cli = new URL("../skills/personal-newspaper/scripts/publish-edition.mjs", import.meta.url);
-const restoreCli = new URL("../skills/personal-newspaper/scripts/restore-edition.mjs", import.meta.url);
-const contextCli = new URL("../skills/personal-newspaper/scripts/snapshot-context.mjs", import.meta.url);
-const prepareCli = new URL("../skills/personal-newspaper/scripts/prepare-edition.mjs", import.meta.url);
-const validateCli = new URL("../skills/personal-newspaper/scripts/validate-edition.mjs", import.meta.url);
-const profileCli = new URL("../skills/personal-newspaper/scripts/save-profile.mjs", import.meta.url);
-const draft = JSON.parse(await readFile(new URL("../skills/personal-newspaper/assets/edition-template.json", import.meta.url), "utf8"));
+const cli = new URL("../skills/codex-reporter/scripts/publish-edition.mjs", import.meta.url);
+const restoreCli = new URL("../skills/codex-reporter/scripts/restore-edition.mjs", import.meta.url);
+const contextCli = new URL("../skills/codex-reporter/scripts/snapshot-context.mjs", import.meta.url);
+const prepareCli = new URL("../skills/codex-reporter/scripts/prepare-edition.mjs", import.meta.url);
+const validateCli = new URL("../skills/codex-reporter/scripts/validate-edition.mjs", import.meta.url);
+const profileCli = new URL("../skills/codex-reporter/scripts/save-profile.mjs", import.meta.url);
+const draft = JSON.parse(await readFile(new URL("../skills/codex-reporter/assets/edition-template.json", import.meta.url), "utf8"));
 const bundle = {
   ...draft,
   generation: {
@@ -104,7 +104,7 @@ test("captures a private context and prepares an edition with the exact snapshot
     response.writeHead(200, { "content-type": "application/json" });
     response.end(JSON.stringify(context));
   });
-  const directory = await mkdtemp(join(tmpdir(), "personal-newspaper-pipeline-"));
+  const directory = await mkdtemp(join(tmpdir(), "codex-reporter-pipeline-"));
   const contextPath = join(directory, "context.json");
   const draftPath = join(directory, "draft.json");
   const outputPath = join(directory, "edition.json");
@@ -135,7 +135,7 @@ test("captures a private context and prepares an edition with the exact snapshot
 test("saves the confirmed first-run profile without exposing its credential", async () => {
   const profile = {
     ownerEmail: "reader@example.com",
-    masthead: "The Personal Daily",
+    masthead: "Codex Reporter",
     language: "English",
     timezone: "America/New_York",
     publicationTime: "07:00",
@@ -149,7 +149,7 @@ test("saves the confirmed first-run profile without exposing its credential", as
     response.writeHead(200, { "content-type": "application/json" });
     response.end(JSON.stringify({ profile }));
   });
-  const directory = await mkdtemp(join(tmpdir(), "personal-newspaper-profile-"));
+  const directory = await mkdtemp(join(tmpdir(), "codex-reporter-profile-"));
   const profilePath = join(directory, "profile.json");
   await writeFile(profilePath, JSON.stringify(profile));
   const url = await received.url;
@@ -159,7 +159,7 @@ test("saves the confirmed first-run profile without exposing its credential", as
       AUTOMATION_TOKEN: "private-token",
     });
     assert.equal(result.code, 0, result.stderr);
-    assert.match(result.stdout, /saved.*The Personal Daily/i);
+    assert.match(result.stdout, /saved.*Codex Reporter/i);
     assert.doesNotMatch(result.stdout + result.stderr, /private-token/);
   } finally {
     await received.stop();
@@ -171,7 +171,7 @@ test("runs the empty first-run pipeline without touching production state", asyn
   const [packageText, readme, skill] = await Promise.all([
     readFile(new URL("../package.json", import.meta.url), "utf8"),
     readFile(new URL("../README.md", import.meta.url), "utf8"),
-    readFile(new URL("../skills/personal-newspaper/SKILL.md", import.meta.url), "utf8"),
+    readFile(new URL("../skills/codex-reporter/SKILL.md", import.meta.url), "utf8"),
   ]);
   const packageJson = JSON.parse(packageText);
   assert.equal(
@@ -183,7 +183,7 @@ test("runs the empty first-run pipeline without touching production state", asyn
 
   const paper = emptyPaper();
   const url = await paper.url;
-  const directory = await mkdtemp(join(tmpdir(), "personal-newspaper-empty-flow-"));
+  const directory = await mkdtemp(join(tmpdir(), "codex-reporter-empty-flow-"));
   const contextPath = join(directory, "context.json");
   const draftPath = join(directory, "draft.json");
   const outputPath = join(directory, "edition.json");
@@ -265,7 +265,7 @@ test("restores an explicit previous edition without exposing the token", async (
 });
 
 async function bundleFile(value = bundle) {
-  const directory = await mkdtemp(join(tmpdir(), "personal-newspaper-"));
+  const directory = await mkdtemp(join(tmpdir(), "codex-reporter-"));
   const path = join(directory, "edition.json");
   await writeFile(path, JSON.stringify(value));
   return { path, cleanup: () => rm(directory, { recursive: true, force: true }) };

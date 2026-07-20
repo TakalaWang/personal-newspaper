@@ -71,7 +71,7 @@ type ReaderCopy = {
 };
 type PageTurnDirection = "previous" | "next";
 type ReactionResult = { ok: boolean; message: string };
-const THEME_STORAGE_KEY = "personal-newspaper-theme";
+const THEME_STORAGE_KEY = "codex-reporter-theme";
 
 export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   const copy = readerCopy(bundle.language);

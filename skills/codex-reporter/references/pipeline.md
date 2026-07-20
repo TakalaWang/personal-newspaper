@@ -16,7 +16,7 @@ Confirm the owner email when authenticated context cannot supply it, interests, 
 
 `PUT $PAPER_URL/api/agent/profile`
 
-Use exactly `{ ownerEmail, masthead, language, timezone, publicationTime, preferences: { topics, exclusions } }`. Publish immediately, then create or update exactly one daily automation named `Personal Newspaper daily edition` at the confirmed local time. Never duplicate it.
+Use exactly `{ ownerEmail, masthead, language, timezone, publicationTime, preferences: { topics, exclusions } }`. Publish immediately, then create or update exactly one daily automation named `Codex Reporter daily edition` at the confirmed local time. Never duplicate it.
 
 ## Publish gates
 

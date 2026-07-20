@@ -8,7 +8,7 @@ import { parseOptions, required } from "./cli.mjs";
 const usage = "Usage: node bootstrap-project.mjs --target <empty-project-directory>";
 const skillRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const pluginRoot = resolve(skillRoot, "../..");
-const directories = ["app", "build", "db", "drizzle", "lib", "tests", "worker", "skills/personal-newspaper"];
+const directories = ["app", "build", "db", "drizzle", "lib", "tests", "worker", "skills/codex-reporter"];
 const files = [
   ".gitignore",
   "AGENTS.md",
@@ -60,5 +60,5 @@ async function main(args) {
   const packageJson = JSON.parse(await readFile(packagePath, "utf8"));
   packageJson.private = true;
   await writeFile(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
-  console.log("Created an isolated Personal Newspaper Sites project.");
+  console.log("Created an isolated Codex Reporter Sites project.");
 }

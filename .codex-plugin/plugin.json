@@ -1,13 +1,13 @@
 {
-  "name": "personal-newspaper",
-  "version": "1.0.1",
-  "description": "Create The Personal Daily and let Codex research, publish, and personalize it on schedule.",
+  "name": "codex-reporter",
+  "version": "2.0.0",
+  "description": "Create Codex Reporter and let Codex research, publish, and personalize it on schedule.",
   "author": {
     "name": "TakalaWang",
     "url": "https://github.com/TakalaWang"
   },
-  "homepage": "https://github.com/TakalaWang/personal-newspaper",
-  "repository": "https://github.com/TakalaWang/personal-newspaper",
+  "homepage": "https://github.com/TakalaWang/codex-reporter",
+  "repository": "https://github.com/TakalaWang/codex-reporter",
   "license": "MIT",
   "keywords": [
     "newspaper",
@@ -18,7 +18,7 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "The Personal Daily",
+    "displayName": "Codex Reporter",
     "shortDescription": "Your private newspaper, edited daily by Codex",
     "longDescription": "Tell Codex what deserves your attention. It creates a private Sites newspaper, publishes a verified first issue, and schedules future issues shaped by explicit Like and Less like this feedback.",
     "developerName": "TakalaWang",
@@ -27,17 +27,17 @@
       "Interactive",
       "Write"
     ],
-    "websiteURL": "https://github.com/TakalaWang/personal-newspaper",
+    "websiteURL": "https://github.com/TakalaWang/codex-reporter",
     "defaultPrompt": [
       "Create my daily newspaper.",
-      "Publish today's personal newspaper.",
+      "Publish today's Codex Reporter.",
       "Show the status of my newspaper."
     ],
     "brandColor": "#7D1F25",
     "composerIcon": "./app/icon.svg",
     "logo": "./app/icon.svg",
     "screenshots": [
-      "./assets/personal-newspaper.png"
+      "./assets/codex-reporter.png"
     ]
   }
 }

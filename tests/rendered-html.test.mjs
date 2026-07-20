@@ -96,6 +96,7 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.match(reader, /className="share-action"/);
   assert.match(reader, /建立本期分享連結/);
   assert.match(reader, /分享連結已複製；只會開啟本期報紙。/);
+  assert.match(reader, /if \(response\.ok\) \{[\s\S]*setShares\(await loadShares\(\)\);[\s\S]*setShareUrl\(null\);[\s\S]*\}/);
   assert.doesNotMatch(reader, />Active</);
   assert.doesNotMatch(reader, />Revoke</);
   assert.doesNotMatch(reader, /點選任一新聞區塊開啟完整報導/);

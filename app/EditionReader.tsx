@@ -187,7 +187,10 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         body: JSON.stringify({ shareId }),
       });
       const result = (await response.json()) as { message?: string; error?: string };
-      if (response.ok) setShares(await loadShares());
+      if (response.ok) {
+        setShares(await loadShares());
+        setShareUrl(null);
+      }
       setMessage(response.ok ? "分享連結已停止使用。" : (result.error ?? "無法停止分享連結。"));
     } catch {
       setMessage("無法停止分享連結，請稍後再試。");

@@ -55,9 +55,8 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.doesNotMatch(css, /width:\s*max\(1rem,\s*calc\(\(100vw - 80rem\)/);
   assert.match(css, /\.edition-stage\s*\{[\s\S]*width:\s*min\(64rem,/);
   assert.match(css, /\.page-turn\s*\{[\s\S]*calc\(\(100vw - 64rem\)/);
-  assert.match(css, /\.page-turn-control > span\s*\{[\s\S]*border:\s*0;[\s\S]*background:\s*transparent;[\s\S]*box-shadow:\s*none;/);
-  assert.match(reader, /<small>上一頁<\/small>/);
-  assert.match(reader, /<small>下一頁<\/small>/);
+  assert.match(css, /\.page-turn-control\s*\{[\s\S]*border:\s*0;[\s\S]*background:\s*transparent;[\s\S]*box-shadow:\s*none;/);
+  assert.doesNotMatch(reader, /<small>上一頁<\/small>|<small>下一頁<\/small>/);
   assert.doesNotMatch(css, /\.page-turn-control b/);
   assert.match(css, /\.theme-dialog/);
   assert.match(reader, /personal-newspaper-theme/);

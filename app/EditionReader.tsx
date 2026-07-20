@@ -219,7 +219,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
           onClick={() => turnPage(-1)}
           type="button"
         >
-          <span className="page-turn-control"><span aria-hidden="true">‹</span><small>上一頁</small></span>
+          <span className="page-turn-control" aria-hidden="true">‹</span>
         </button>
         <div
           className="edition-sheet"
@@ -249,7 +249,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
           onClick={() => turnPage(1)}
           type="button"
         >
-          <span className="page-turn-control"><small>下一頁</small><span aria-hidden="true">›</span></span>
+          <span className="page-turn-control" aria-hidden="true">›</span>
         </button>
       </div>
       {owner ? (

@@ -31,7 +31,7 @@ test("ships as a Codex plugin with a credential-free reader quick start", async 
   assert.equal(marketplace.plugins[0].source.source, "url");
   assert.equal(marketplace.plugins[0].source.url, "https://github.com/TakalaWang/personal-newspaper.git");
 
-  const quickStart = readme.match(/## Quick start\n([\s\S]*?)(?=\n## )/)?.[1] ?? "";
+  const quickStart = readme.match(/## Make it yours\n([\s\S]*?)(?=\n## )/)?.[1] ?? "";
   assert.match(quickStart, /codex plugin marketplace add TakalaWang\/personal-newspaper/);
   assert.match(quickStart, /codex plugin add personal-newspaper@personal-newspaper/);
   assert.match(quickStart, /start a new task/i);

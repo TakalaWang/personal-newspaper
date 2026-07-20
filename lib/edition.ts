@@ -127,7 +127,10 @@ const STYLE_ATTRIBUTE = /(?:^|[\s/])style\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<
 const REMOTE_VARIANT_ATTRIBUTE = /(?:^|[\s/])(?:srcset|imagesrcset)\s*=/i;
 const COMMENT = /<!--[\s\S]*?-->/g;
 
-export function validateEditionBundle(value: unknown): EditionBundle {
+export function validateEditionBundle(
+  value: unknown,
+  { requireEditorialExpansion = true }: { requireEditorialExpansion?: boolean } = {},
+): EditionBundle {
   const bundle = record(value, "edition bundle");
   const id = identifier(bundle.id, "edition id");
   const date = localDate(bundle.date);
@@ -145,6 +148,7 @@ export function validateEditionBundle(value: unknown): EditionBundle {
     bundle.stories,
     new Set(sources.map((source) => source.id)),
     new Set(pages.map((page) => page.id)),
+    requireEditorialExpansion,
   );
   assertStoryPlacement(pages, stories);
 
@@ -231,7 +235,12 @@ function sourceList(value: unknown): EditionSource[] {
   });
 }
 
-function storyList(value: unknown, sourceIds: Set<string>, pageIds: Set<string>): EditionStory[] {
+function storyList(
+  value: unknown,
+  sourceIds: Set<string>,
+  pageIds: Set<string>,
+  requireEditorialExpansion: boolean,
+): EditionStory[] {
   const stories = list(value, "stories");
   if (stories.length === 0) fail("stories must not be empty");
 
@@ -283,6 +292,9 @@ function storyList(value: unknown, sourceIds: Set<string>, pageIds: Set<string>)
       summaryClaims,
       bodyClaims,
     );
+    if (requireEditorialExpansion) {
+      assertDetailedExpansion(summaryHtml, bodyHtml, claims, `stories[${index}].bodyHtml`);
+    }
     const images = imageList(input.images, `stories[${index}].images`, new Set(sourceIdsForStory));
     assertRenderedImages(`${summaryHtml}${bodyHtml}`, images, `stories[${index}]`);
     return {
@@ -341,7 +353,6 @@ function claimList(
     if ([...normalizedSummary].length < 30) fail(`${path}[${index}].summaryClaim must be a complete statement`);
     if (printedClaims.get(id) !== normalizedSummary) fail(`${path}[${index}].summaryClaim must exactly match its printed claim element`);
     if (detailedClaims.get(id) !== normalizedSupport) fail(`${path}[${index}].bodySupport must exactly match its detailed claim element`);
-    if (!normalizedSupport.includes(normalizedSummary)) fail(`${path}[${index}].bodySupport must include the same printed claim`);
     const sourceIds = list(input.sourceIds, `${path}[${index}].sourceIds`).map((sourceId, sourceIndex) =>
       identifier(sourceId, `${path}[${index}].sourceIds[${sourceIndex}]`),
     );
@@ -383,6 +394,37 @@ function claimElements(html: string, path: string, requireEveryParagraph: boolea
     claims.set(claimId, normalizeText(plainText(markup.slice(contentStart, close.index))));
   }
   return claims;
+}
+
+function assertDetailedExpansion(summaryHtml: string, bodyHtml: string, claims: EditionClaim[], path: string) {
+  const summary = normalizeText(plainText(summaryHtml));
+  const detail = normalizeText(plainText(bodyHtml));
+  let newReporting = detail;
+  for (const claim of claims) {
+    newReporting = newReporting.replaceAll(normalizeText(claim.summaryClaim), " ");
+  }
+
+  const summaryLength = [...summary].length;
+  const detailLength = [...detail].length;
+  const newReportingLength = [...normalizeText(newReporting)].length;
+  if (detailLength < summaryLength + 160 || newReportingLength < 140) {
+    fail(`${path} bodySupport must add material new reporting beyond the same printed claim`);
+  }
+}
+
+export function renderStoryDetail(story: Pick<EditionStory, "bodyHtml" | "claims">): string {
+  const repeatedClaimIds = new Set(
+    story.claims
+      .filter((claim) => normalizeText(claim.bodySupport) === normalizeText(claim.summaryClaim))
+      .map((claim) => claim.id),
+  );
+  if (repeatedClaimIds.size === 0) return story.bodyHtml;
+
+  return story.bodyHtml.replace(/<p\b[^>]*>[\s\S]*?<\/p\s*>/gi, (paragraph) => {
+    const openingTag = /^<p\b[^>]*>/i.exec(paragraph)?.[0];
+    const claimId = openingTag ? attributeValue(openingTag, "data-claim-id") : undefined;
+    return claimId && repeatedClaimIds.has(claimId) ? "" : paragraph;
+  });
 }
 
 function imageList(value: unknown, path: string, storySourceIds: Set<string>): EditionImage[] {

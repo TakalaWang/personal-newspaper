@@ -5,6 +5,32 @@ import { editions, profiles, reactions } from "@/db/schema";
 import { getEditionBundle } from "@/lib/edition-store";
 import { isSameOriginRequest, parseReaction } from "@/lib/reader";
 
+export async function GET(): Promise<Response> {
+  const user = await getChatGPTUser();
+  if (!user) return Response.json({ error: "Sign in with ChatGPT to view responses" }, { status: 401 });
+
+  try {
+    const db = getDb();
+    const [profile, edition] = await Promise.all([
+      db.select().from(profiles).where(eq(profiles.id, 1)).limit(1),
+      db.select().from(editions).where(eq(editions.isCurrent, true)).limit(1),
+    ]);
+    if (profile[0]?.ownerEmail !== user.email) return Response.json({ error: "This edition belongs to another reader" }, { status: 403 });
+    if (!edition[0]) return Response.json({ editionId: null, reactions: [] });
+
+    const rows = await db.select({ storyId: reactions.storyId, action: reactions.action })
+      .from(reactions)
+      .where(eq(reactions.editionId, edition[0].id));
+    return Response.json({
+      editionId: edition[0].id,
+      reactions: rows.filter((row) => row.action === "love" || row.action === "less"),
+    });
+  } catch (error) {
+    console.error("Unable to load reactions", error);
+    return Response.json({ error: "Unable to load reactions" }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request): Promise<Response> {
   if (!isSameOriginRequest(request)) return Response.json({ error: "Cross-origin requests are not allowed" }, { status: 403 });
 
@@ -44,7 +70,7 @@ export async function POST(request: Request): Promise<Response> {
       target: [reactions.editionId, reactions.storyId],
       set: { action: reaction.action, createdAt, consumedAt: null, consumedByEditionId: null },
     });
-    return Response.json({ message: "Saved. The next edition will take this into account." }, { status: 201 });
+    return Response.json({ message: "已儲存，下一期會依這項回饋調整。" }, { status: 201 });
   } catch (error) {
     console.error("Unable to save reaction", error);
     return Response.json({ error: "Unable to save reaction" }, { status: 500 });

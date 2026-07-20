@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { escapeHtml, renderStorySummary, type EditionBundle, type EditionPage, type EditionStory } from "@/lib/edition";
+import { escapeHtml, renderStoryDetail, renderStorySummary, type EditionBundle, type EditionPage, type EditionStory } from "@/lib/edition";
 import { parseReaderMessage, type ReactionAction } from "@/lib/reader";
 
 type EditionReaderProps = {
@@ -24,6 +24,7 @@ const THEMES = [
 
 type NewspaperTheme = (typeof THEMES)[number]["id"];
 type PageTurnDirection = "previous" | "next";
+type ReactionResult = { ok: boolean; message: string };
 const THEME_STORAGE_KEY = "personal-newspaper-theme";
 
 export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
@@ -40,6 +41,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   const pageFrameRef = useRef<HTMLIFrameElement>(null);
   const pendingPageHeightRef = useRef<number | null>(null);
   const articleFrameRef = useRef<HTMLIFrameElement>(null);
+  const reactionSelectionsRef = useRef<Record<string, ReactionAction>>({});
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const themeDialogRef = useRef<HTMLDialogElement>(null);
   const page = bundle.pages[pageIndex];
@@ -59,10 +61,31 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     setActiveStoryId(null);
   }, [bundle.pages.length, pageIndex]);
 
+  const syncReactions = useCallback((target?: Window | null) => {
+    if (!owner) return;
+    const message = { type: "reaction-sync", selections: reactionSelectionsRef.current };
+    if (target) target.postMessage(message, "*");
+    else {
+      pageFrameRef.current?.contentWindow?.postMessage(message, "*");
+      articleFrameRef.current?.contentWindow?.postMessage(message, "*");
+    }
+  }, [owner]);
+
   useEffect(() => {
     if (!owner) return;
     void loadShares().then(setShares).catch(() => undefined);
   }, [owner]);
+
+  useEffect(() => {
+    if (!owner) return;
+    let current = true;
+    void loadReactions(bundle.id).then((selections) => {
+      if (!current) return;
+      reactionSelectionsRef.current = selections;
+      syncReactions();
+    }).catch(() => undefined);
+    return () => { current = false; };
+  }, [bundle.id, owner, syncReactions]);
 
   useEffect(() => {
     if (!owner) return;
@@ -101,7 +124,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     return () => document.removeEventListener("keydown", turnWithKeyboard);
   }, [activeStory, turnPage]);
 
-  const react = useCallback(async (action: ReactionAction, storyId: string) => {
+  const react = useCallback(async (action: ReactionAction, storyId: string): Promise<ReactionResult> => {
     setPending(`${action}:${storyId}`);
     try {
       const response = await fetch("/api/reactions", {
@@ -110,9 +133,14 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         body: JSON.stringify({ action, storyId, editionId: bundle.id }),
       });
       const result = (await response.json()) as { message?: string; error?: string };
-      setMessage(result.message ?? result.error ?? "Unable to save this response.");
+      const responseMessage = result.message ?? result.error ?? "無法儲存這項回饋。";
+      if (response.ok) reactionSelectionsRef.current = { ...reactionSelectionsRef.current, [storyId]: action };
+      setMessage(responseMessage);
+      return { ok: response.ok, message: responseMessage };
     } catch {
-      setMessage("Unable to save this response.");
+      const responseMessage = "無法儲存這項回饋，請再試一次。";
+      setMessage(responseMessage);
+      return { ok: false, message: responseMessage };
     } finally {
       setPending(null);
     }
@@ -139,7 +167,11 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         if (readerMessage.type === "open") {
           setActiveStoryId(readerMessage.storyId);
         } else if (owner) {
-          void react(readerMessage.action, readerMessage.storyId);
+          const source = event.source as Window;
+          void react(readerMessage.action, readerMessage.storyId).then((result) => {
+            source.postMessage({ type: "reaction-result", storyId: readerMessage.storyId, action: readerMessage.action, ...result }, "*");
+            if (result.ok) syncReactions();
+          });
         }
       } catch {
         // Sandboxed edition messages are untrusted and ignored unless fully valid.
@@ -148,7 +180,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
     window.addEventListener("message", receiveReaderMessage);
     pageFrameRef.current?.contentWindow?.postMessage({ type: "measure-page" }, "*");
     return () => window.removeEventListener("message", receiveReaderMessage);
-  }, [activeStoryId, bundle.stories, owner, page.id, pageTurn, react]);
+  }, [activeStoryId, bundle.stories, owner, page.id, pageTurn, react, syncReactions]);
 
   async function share() {
     setPending("share");
@@ -236,7 +268,11 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
             key={`${page.id}:${theme}:${frameReady ? "ready" : "server"}`}
             ref={pageFrameRef}
             sandbox="allow-scripts"
-            onLoad={() => pageFrameRef.current?.contentWindow?.postMessage({ type: "measure-page" }, "*")}
+            onLoad={() => {
+              const target = pageFrameRef.current?.contentWindow;
+              target?.postMessage({ type: "measure-page" }, "*");
+              syncReactions(target);
+            }}
             srcDoc={pageDocument(page, bundle, owner, theme)}
             style={pageHeight === null ? undefined : { height: `${pageHeight}px` }}
             title={`${bundle.masthead}: ${page.section}`}
@@ -280,6 +316,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
           story={activeStory}
           theme={theme}
           onClose={() => setActiveStoryId(null)}
+          onFrameLoad={() => syncReactions(articleFrameRef.current?.contentWindow)}
         />
       ) : null}
       {owner ? (
@@ -312,6 +349,7 @@ function StoryDialog({
   story,
   theme,
   onClose,
+  onFrameLoad,
 }: {
   bundle: EditionBundle;
   closeButtonRef: React.RefObject<HTMLButtonElement | null>;
@@ -320,21 +358,19 @@ function StoryDialog({
   story: EditionStory;
   theme: NewspaperTheme;
   onClose: () => void;
+  onFrameLoad: () => void;
 }) {
   const sources = story.sourceIds
     .map((sourceId) => bundle.sources.find((source) => source.id === sourceId))
     .filter((source): source is EditionBundle["sources"][number] => Boolean(source));
 
   return (
-    <div className="story-dialog" role="dialog" aria-modal="true" aria-labelledby="story-dialog-title" onClick={onClose}>
+    <div className="story-dialog" role="dialog" aria-modal="true" aria-label={story.headline} onClick={onClose}>
       <div className="story-dialog-shell" onClick={(event) => event.stopPropagation()}>
         <header className="story-dialog-header">
-          <div>
-            <p>{story.label === "fact" ? "報導" : "分析"}</p>
-            <h2 id="story-dialog-title">{story.headline}</h2>
-          </div>
+          <p>{story.kicker}・{story.label === "fact" ? "完整報導" : "完整分析"}</p>
           <button ref={closeButtonRef} className="story-dialog-close" type="button" onClick={onClose} aria-label="關閉文章">
-            關閉 ×
+            ×
           </button>
         </header>
         <iframe
@@ -343,11 +379,14 @@ function StoryDialog({
           sandbox="allow-scripts"
           srcDoc={articleDocument(story, bundle, owner, theme)}
           title={story.headline}
+          onLoad={onFrameLoad}
         />
         <footer className="story-dialog-sources">
-          <span>核對來源</span>
-          {sources.map((source, index) => (
-            <a href={source.url} key={source.id} rel="noreferrer" target="_blank">閱讀原始報導 {index + 1} ↗</a>
+          <span>原始資料</span>
+          {sources.map((source) => (
+            <a href={source.url} key={source.id} rel="noreferrer" target="_blank">
+              {source.publisher}：{source.title} ↗
+            </a>
           ))}
         </footer>
       </div>
@@ -390,6 +429,19 @@ async function loadShares(): Promise<Share[]> {
   return result.shares ?? [];
 }
 
+async function loadReactions(editionId: string): Promise<Record<string, ReactionAction>> {
+  const response = await fetch("/api/reactions");
+  if (!response.ok) throw new Error("Unable to load reactions");
+  const result = (await response.json()) as {
+    editionId?: string;
+    reactions?: Array<{ storyId?: string; action?: string }>;
+  };
+  if (result.editionId !== editionId) return {};
+  return Object.fromEntries((result.reactions ?? []).flatMap(({ storyId, action }) =>
+    storyId && (action === "love" || action === "less") ? [[storyId, action]] : [],
+  ));
+}
+
 function pageDocument(page: EditionPage, bundle: EditionBundle, owner: boolean, theme: NewspaperTheme): string {
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
     :root { --paper: oklch(96% 0 0); --ink: oklch(16% 0 0); --muted: oklch(34% 0 0); --red: oklch(24% 0 0); --hair: oklch(49% 0 0); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", "Noto Serif TC", serif; }
@@ -408,21 +460,30 @@ function articleDocument(story: EditionStory, bundle: EditionBundle, owner: bool
   return `<!doctype html><html lang="${escapeAttribute(bundle.language)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
     :root { --paper: oklch(96% 0 0); --ink: oklch(16% 0 0); --muted: oklch(34% 0 0); --red: oklch(24% 0 0); --hair: oklch(49% 0 0); color: var(--ink); background: var(--paper); font-family: "Songti TC", "STSong", "PMingLiU", "Noto Serif TC", serif; }
     * { box-sizing: border-box; }
-    body { margin: 0; padding: clamp(1.5rem, 4vw, 3rem); }
-    .full-story { max-width: 820px; margin: 0 auto; cursor: default; }
-    .full-story .section { margin: 0 0 1rem; border-top: 4px solid var(--red); border-bottom: 1px solid var(--ink); padding: .5rem 0; color: var(--red); font: 700 .75rem/1.3 "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; letter-spacing: .06em; }
-    .full-story h1 { max-width: 21ch; margin: 0; font-size: clamp(2.125rem, 5vw, 3rem); letter-spacing: -.025em; line-height: 1.02; text-wrap: balance; }
-    .full-story .dek { max-width: 56ch; margin: 1rem 0; color: var(--muted); font-size: 1.125rem; font-weight: 700; line-height: 1.4; }
-    .full-story .byline { border-top: 1px solid var(--ink); padding: .5rem 0 1rem; font: 700 .75rem/1.3 "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; letter-spacing: .04em; }
-    .full-story .body { columns: 2; column-gap: 2rem; column-rule: 1px solid var(--hair); font-size: 1.0625rem; line-height: 1.68; text-align: justify; }
-    .full-story .body p { margin: 0 0 1.35em; }
-    .full-story .body p:first-child::first-letter { float: left; margin: .08em .22em .04em 0; font-size: 3.7em; font-weight: 700; line-height: .8; }
-    .full-story .body h2 { break-after: avoid; margin: 1.6em 0 .5em; color: var(--red); font-size: 1.35em; line-height: 1.1; }
-    .full-story .body blockquote { column-span: all; margin: 1.6em 0; border-top: 3px solid var(--red); border-bottom: 3px double var(--ink); padding: .8em 0; font-size: 1.3em; font-weight: 700; line-height: 1.28; }
-    @media (max-width: 38.75rem) { .full-story .body { columns: 1; } }
+    body { margin: 0; padding: clamp(1.25rem, 4vw, 3.5rem); overflow-wrap: break-word; }
+    .full-story { max-width: 60rem; margin: 0 auto; cursor: default; }
+    .article-head { display: grid; grid-template-columns: repeat(12,minmax(0,1fr)); gap: .75rem 1rem; border-top: 4px solid var(--ink); border-bottom: 3px double var(--ink); padding: .5rem 0 1rem; }
+    .full-story .section { grid-column: 1/-1; margin: 0; border-bottom: 1px solid var(--hair); padding: 0 0 .4rem; color: var(--red); font: 700 .75rem/1.3 "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; letter-spacing: .06em; }
+    .article-title { grid-column: 1/9; }
+    .full-story h1 { max-width: 18ch; margin: 0; font-size: clamp(2.25rem, 5vw, 3.75rem); letter-spacing: -.03em; line-height: .98; text-wrap: balance; }
+    .article-standfirst { grid-column: 9/-1; align-self: end; border-top: 1px solid var(--ink); padding-top: .5rem; }
+    .full-story .dek { margin: 0 0 .75rem; color: var(--muted); font-size: 1.05rem; font-weight: 700; line-height: 1.48; text-wrap: pretty; }
+    .full-story .byline { margin: 0; font: 700 .75rem/1.4 "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; letter-spacing: .04em; }
+    .full-story .body { margin-top: 1.25rem; columns: 2; column-gap: 2rem; column-rule: 1px solid var(--hair); column-fill: balance; font-size: 1.0625rem; line-height: 1.68; text-align: justify; }
+    .full-story .body p { margin: 0 0 1.35em; text-wrap: pretty; }
+    .full-story .body p:first-of-type::first-letter { float: left; margin: .08em .22em .12em 0; font-size: 3.7em; font-weight: 700; line-height: .78; }
+    .full-story .body h2 { column-span: all; break-after: avoid; margin: 1.5em 0 .6em; border-top: 1px solid var(--ink); padding-top: .45em; color: var(--red); font-size: 1.35em; line-height: 1.1; }
+    .full-story .body blockquote { column-span: all; margin: 1.6em 0; border-top: 3px solid var(--red); border-bottom: 3px double var(--ink); padding: .8em 0; font-size: 1.3em; font-weight: 700; line-height: 1.28; text-align: left; }
+    .full-story .body figure { column-span: all; break-inside: avoid; margin: 1.5rem 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); padding: .5rem 0; text-align: left; }
+    .full-story .body figure img { display: block; width: 100%; max-height: 34rem; object-fit: contain; background: color-mix(in oklch,var(--paper) 94%,var(--ink)); }
+    .full-story .body figcaption { margin-top: .45rem; color: var(--muted); font: 700 .75rem/1.45 "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; }
+    .full-story .body ul, .full-story .body ol { break-inside: avoid; margin: 0 0 1.35em; padding-inline-start: 1.25em; text-align: left; }
+    .full-story .body table { display: block; column-span: all; width: 100%; overflow-x: auto; border-collapse: collapse; text-align: left; }
+    .full-story .body th, .full-story .body td { border-bottom: 1px solid var(--hair); padding: .4rem .5rem; }
+    @media (max-width: 46rem) { .article-title,.article-standfirst { grid-column: 1/-1; } .article-standfirst { margin-top: .25rem; } .full-story .body { columns: 1; text-align: left; } }
     ${themeCss(theme)}
     ${readerBridgeCss()}
-  </style></head><body><article class="full-story" data-story-id="${escapeAttribute(story.id)}"><p class="section">${story.label === "fact" ? "報導" : "分析"}・完整報導</p><h1>${escapeHtml(story.headline)}</h1><p class="dek">${escapeHtml(story.dek)}</p><p class="byline">光譜日報編輯台・${escapeHtml(formatDate(bundle.date, bundle.language))}</p><div class="body">${story.bodyHtml}</div></article>${trustedReaderBridge(owner, [story], false)}</body></html>`;
+  </style></head><body><article class="full-story" data-story-id="${escapeAttribute(story.id)}"><header class="article-head"><p class="section">${story.label === "fact" ? "報導" : "分析"}・完整報導</p><div class="article-title"><h1>${escapeHtml(story.headline)}</h1></div><div class="article-standfirst"><p class="dek">${escapeHtml(story.dek)}</p><p class="byline">光譜日報編輯台・${escapeHtml(formatDate(bundle.date, bundle.language))}</p></div></header><div class="body">${renderStoryDetail(story)}</div></article>${trustedReaderBridge(owner, [story], false)}</body></html>`;
 }
 
 function readerBridgeCss(): string {
@@ -470,7 +531,8 @@ function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: 
     const openable = ${openable ? "true" : "false"};
     const summaries = ${inlineScriptJson(summaries)};
     const send = (message) => window.parent.postMessage(message, "*");
-    const controlsMarkup = '<style>:host{all:initial;display:block;height:100%;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:var(--ink)}.bar{display:flex;height:100%;align-items:center;justify-content:flex-end}.actions{display:flex;gap:2px}.action{min-height:44px;appearance:none;border:0;background:transparent;color:var(--ink);cursor:pointer;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;padding:6px}.action:hover{color:var(--red)}.action:focus-visible{outline:2px solid var(--red);outline-offset:-2px}</style><div class="bar"><div class="actions" aria-label="調整明日內容"><button class="action" data-action="love" type="button">♡ 喜歡</button><button class="action" data-action="less" type="button">⊘ 不喜歡</button></div></div>';
+    const controls = new Map();
+    const controlsMarkup = '<style>:host{all:initial;display:block;height:100%;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:var(--ink)}.bar{display:flex;height:100%;align-items:center;justify-content:flex-end;gap:6px}.status{min-width:3.5em;color:var(--muted);font:700 .6875rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;text-align:right}.actions{display:flex;gap:2px}.action{min-height:44px;appearance:none;border:0;background:transparent;color:var(--ink);cursor:pointer;font:700 .75rem/1.3 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;padding:6px}.action:hover{color:var(--red)}.action[aria-pressed="true"]{background:var(--ink);color:var(--paper)}.action:disabled{cursor:wait;opacity:.58}.action:focus-visible{outline:2px solid var(--red);outline-offset:-2px}</style><div class="bar"><span class="status" data-status aria-live="polite"></span><div class="actions" aria-label="調整明日內容"><button class="action" data-action="love" aria-pressed="false" type="button">♡ 喜歡</button><button class="action" data-action="less" aria-pressed="false" type="button">⊘ 不喜歡</button></div></div>';
     document.querySelectorAll('[data-story-id]').forEach((article) => {
       const storyId = article.getAttribute('data-story-id');
       if (!storyId || article.dataset.readerEnhanced) return;
@@ -505,9 +567,15 @@ function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: 
         }
         const root = host.attachShadow({ mode: 'closed' });
         root.innerHTML = controlsMarkup;
-        root.querySelectorAll('[data-action]').forEach((button) => {
+        const buttons = [...root.querySelectorAll('[data-action]')];
+        const status = root.querySelector('[data-status]');
+        controls.set(storyId, { buttons, status });
+        buttons.forEach((button) => {
           button.addEventListener('click', (event) => {
             event.stopPropagation();
+            if (button.disabled) return;
+            buttons.forEach((item) => { item.disabled = true; });
+            status.textContent = '儲存中…';
             send({ type: 'react', storyId, action: button.getAttribute('data-action') });
           });
         });
@@ -523,6 +591,30 @@ function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: 
           event.preventDefault();
           send({ type: 'open', storyId });
         });
+      }
+    });
+    const showSelection = (storyId, action, statusText) => {
+      const control = controls.get(storyId);
+      if (!control || (action !== 'love' && action !== 'less')) return;
+      control.buttons.forEach((button) => {
+        button.disabled = false;
+        button.setAttribute('aria-pressed', String(button.getAttribute('data-action') === action));
+      });
+      control.status.textContent = statusText;
+    };
+    window.addEventListener('message', (event) => {
+      if (event.source !== window.parent || !event.data || typeof event.data !== 'object') return;
+      if (event.data.type === 'reaction-sync' && event.data.selections && typeof event.data.selections === 'object') {
+        Object.entries(event.data.selections).forEach(([storyId, action]) => showSelection(storyId, action, action === 'love' ? '已喜歡' : '已不喜歡'));
+      }
+      if (event.data.type === 'reaction-result') {
+        if (event.data.ok) showSelection(event.data.storyId, event.data.action, '已儲存');
+        else {
+          const control = controls.get(event.data.storyId);
+          if (!control) return;
+          control.buttons.forEach((button) => { button.disabled = false; });
+          control.status.textContent = '儲存失敗';
+        }
       }
     });
   })();</script>`;

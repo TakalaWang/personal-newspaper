@@ -76,6 +76,9 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(pipeline, /persistent vertical seam/i);
   assert.match(pipeline, /three distinct occupied spans/i);
   assert.match(pipeline, /1\.30.*1\.55/is);
+  assert.match(pipeline, /verbatim.*summary|summary.*verbatim/is);
+  assert.match(pipeline, /pending.*saved.*error|儲存中.*已儲存.*失敗/is);
+  assert.match(pipeline, /image-bearing story/i);
 
   assert.match(contract, /data-claim-id/);
   assert.match(contract, /summaryHtml.*bodyHtml/is);
@@ -84,6 +87,7 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(contract, /claim.*source/is);
   assert.match(contract, /generation\.contextRevision/);
   assert.match(contract, /Never copy its page CSS/i);
+  assert.match(contract, /materially expand|new reporting/i);
 
   assert.match(baseDesign, /empty.*article.*data-story-id/is);
   assert.match(baseDesign, /no visible text|no visible prose/i);
@@ -113,6 +117,8 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(baseDesign, /Random rearrangement/i);
   assert.match(baseDesign, /independent vertical lanes/i);
   assert.match(baseDesign, /column-fill: balance/i);
+  assert.match(baseDesign, /detail.*figure.*column-span/is);
+  assert.match(baseDesign, /duplicate.*headline/is);
   assert.match(baseDesign, /semantic variables/i);
   assert.doesNotMatch(baseDesign, /追蹤主題/);
   assert.match(design, /newsprint.*salmon.*modern white/is);

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { renderStorySummary, validateEditionBundle } from "../lib/edition.ts";
+import { renderStoryDetail, renderStorySummary, validateEditionBundle } from "../lib/edition.ts";
 
 const validBundle = {
   id: "daily-2026-07-19",
@@ -168,6 +168,40 @@ test("requires machine-checkable editorial signals and claim evidence", () => {
     () => validateEditionBundle({ ...validBundle, stories: [{ ...story, summaryHtml: `${story.summaryHtml}<p>An uncovered factual statement that has no claim id and no evidence mapping.</p>` }] }),
     /claim id/i,
   );
+});
+
+test("rejects a detailed article that only repeats the printed report", () => {
+  const story = validBundle.stories[0];
+  const repeated = story.claims[0].summaryClaim;
+  assert.throws(
+    () => validateEditionBundle({
+      ...validBundle,
+      stories: [{
+        ...story,
+        bodyHtml: `<p data-claim-id="scope-change">${repeated}</p><p>${repeated}</p>`,
+        claims: [{ ...story.claims[0], bodySupport: repeated }],
+      }],
+    }),
+    /materially expand|new reporting/i,
+  );
+});
+
+test("reads archived shallow detail while removing its duplicated printed claim from display", () => {
+  const story = validBundle.stories[0];
+  const repeated = story.claims[0].summaryClaim;
+  const archived = {
+    ...validBundle,
+    stories: [{
+      ...story,
+      bodyHtml: `<p data-claim-id="scope-change">${repeated}</p><p>The archived report still contains a separate implementation timeline paragraph with enough context for the reader.</p>`,
+      claims: [{ ...story.claims[0], bodySupport: repeated }],
+    }],
+  };
+
+  const parsed = validateEditionBundle(archived, { requireEditorialExpansion: false });
+  const detail = renderStoryDetail(parsed.stories[0]);
+  assert.ok(!detail.includes(repeated));
+  assert.match(detail, /implementation timeline/);
 });
 
 test("requires every rendered image to have a source-linked manifest", () => {

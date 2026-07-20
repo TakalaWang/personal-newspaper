@@ -104,6 +104,18 @@
         "Uses at least three distinct occupied spans and a stepped seam justified by story importance and copy measure",
         "Verifies a rendered sheet ratio from 1.30 through 1.55 without min-height, spacer modules, or filler copy"
       ]
+    },
+    {
+      "id": 10,
+      "prompt": "Before publishing, the lead story's outer report already explains the event, but its detail repeats the same paragraph and its evidence image overflows the reader. The love and less controls also give no visible response after a click. Finish the edition safely.",
+      "expected_output": "The agent rewrites the detail as materially deeper reporting without verbatim summary repetition, keeps the same claim ids and sources, composes the figure with its caption in the article flow, and blocks publication until feedback visibly passes pending, saved, changed, reload-persisted, and error-state checks.",
+      "expectations": [
+        "Keeps the outer report substantive while adding at least two useful reporting dimensions in detail",
+        "Preserves claim ids and source bindings without copying the outer paragraph verbatim",
+        "Verifies the image-bearing detail at desktop, exactly 560px, and phone widths",
+        "Exercises love and less through pending, saved, changed, reload-persisted, and error states",
+        "Does not publish merely because edition:validate or the POST succeeds"
+      ]
     }
   ]
 }

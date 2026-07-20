@@ -33,13 +33,13 @@ The stable trusted reader injects masthead, folio, canonical summaries, article 
 Every story has `kicker`, `headline`, a substantive `dek`, `summaryHtml`, `bodyHtml`, `label`, nonempty `sourceIds`, `editorial`, `claims`, and `images`.
 
 - `summaryHtml` explains the news on the outer paper. Every summary paragraph has a unique `data-claim-id`.
-- `bodyHtml` expands the same thesis and facts. For each printed claim, one detailed paragraph uses the same `data-claim-id`, contains the exact printed claim, then may elaborate.
+- `bodyHtml` expands the same thesis and facts. For each printed claim, one detailed paragraph uses the same `data-claim-id`, restates the verified finding without copying the outer paragraph verbatim, and adds evidence, mechanism, chronology, context, limits, or implications.
 - `claims` bind the exact `summaryClaim` and `bodySupport` strings to one or more source ids.
 - `label` is `fact` or `inference`; it does not excuse unsupported claims.
 - `editorial.topics` is descriptive. `editorial.preferenceTags` uses only the closed non-sensitive taxonomy. Format, depth, style, and importance are required so feedback has interpretable context.
 - Summary and body HTML contain no links. Original source links are created only by the trusted detailed reader from `sourceIds`.
 
-The outside and inside are not two articles: the outside is a compact edition of the same report; the inside adds clarity, evidence, and context.
+The outside and inside are not two articles: the outside is a compact edition of the same report; the inside adds clarity, evidence, and context. Validation rejects a detailed body that lacks material new reporting beyond the printed summary.
 
 ## Source contract
 

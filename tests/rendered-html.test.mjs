@@ -102,6 +102,9 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.match(reader, /第 \$\{pageNumber\}／\$\{bundle\.pages\.length\} 頁/);
   assert.match(reader, /reader-story-footer/);
   assert.match(reader, /reader-story-note/);
+  assert.match(reader, /aria-pressed/);
+  assert.match(reader, /reaction-result/);
+  assert.match(reader, /已儲存/);
   assert.match(reader, /:scope > \.byline, :scope > \.source, :scope > \.tomorrow/);
   assert.doesNotMatch(reader, /reader-controls \{ display: block !important; clear: both !important; margin-top: 12px !important; \}/);
   assert.doesNotMatch(reader, /document\.documentElement\.scrollHeight/);
@@ -112,4 +115,7 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.doesNotMatch(reader, /reading-rail/);
   assert.match(reader, /<dialog className="theme-dialog"/);
   assert.match(reader, /localStorage\.setItem\(THEME_STORAGE_KEY/);
+  assert.doesNotMatch(reader, /<h2 id="story-dialog-title">\{story\.headline\}<\/h2>/);
+  assert.match(reader, /class="article-head"/);
+  assert.match(reader, /\.full-story \.body figure/);
 });

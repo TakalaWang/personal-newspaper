@@ -4,7 +4,7 @@ description: Use when a user asks to create, configure, publish, refresh, person
 compatibility: Requires this personal-newspaper repository, pnpm, HTTPS web and browser access, Codex Automation access, PAPER_URL, and a secret AUTOMATION_TOKEN.
 metadata:
   author: personal-newspaper
-  version: "1.2.1"
+  version: "1.2.2"
 ---
 
 # Personal Newspaper

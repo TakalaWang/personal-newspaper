@@ -132,6 +132,10 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   const parsedTemplate = JSON.parse(template);
   assert.equal("generation" in parsedTemplate, false);
   assert.doesNotMatch(template, /ctx_0{64}/);
+  assert.equal(parsedTemplate.pages.length, 2, "the smoke fixture must combine its thin two-story section");
+  const fixtureStoryCounts = Object.groupBy(parsedTemplate.stories, (story) => story.pageId);
+  assert.equal(fixtureStoryCounts.front?.length, 5);
+  assert.equal(fixtureStoryCounts.technology?.length, 4);
   for (const page of parsedTemplate.pages) {
     assert.match(page.css, /@media\(max-width:479px\)/, `${page.id} needs a phone-only single-column breakpoint`);
     assert.doesNotMatch(page.css, /@media\(max-width:559px\)/, `${page.id} must preserve mixed paths at 560px`);
@@ -142,12 +146,15 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(parsedTemplate.pages[0].css, /grid-column:9\/13/);
   assert.match(parsedTemplate.pages[0].css, /grid-column:1\/6/);
   assert.match(parsedTemplate.pages[0].css, /grid-column:6\/13/);
+  assert.match(parsedTemplate.pages[0].css, /analysis-wide.*grid-column:1\/13/);
+  assert.match(parsedTemplate.pages[0].css, /@media\(max-width:880px\).*\.lead\{grid-column:1\/8\}\.brief\{grid-column:8\/13\}/);
   assert.doesNotMatch(parsedTemplate.pages[0].css, /5fr\).*3fr/);
   assert.match(parsedTemplate.pages[0].css, /column-fill:balance/);
   assert.match(parsedTemplate.pages[1].html, /technology-mosaic/);
   assert.match(parsedTemplate.pages[1].css, /grid-column:1\/13/);
-  assert.match(parsedTemplate.pages[1].css, /grid-column:1\/5/);
-  assert.match(parsedTemplate.pages[1].css, /grid-column:5\/13/);
+  assert.match(parsedTemplate.pages[1].css, /grid-column:1\/6/);
+  assert.match(parsedTemplate.pages[1].css, /grid-column:6\/13/);
+  assert.match(parsedTemplate.pages[1].css, /tomorrow-story.*grid-column:1\/13/);
   assert.doesNotMatch(parsedTemplate.pages[1].css, /2fr\).*1fr/);
   assert.match(baseDesign, /lane endings.*four body lines/is);
   assert.match(baseDesign, /preserve.*original color/is);

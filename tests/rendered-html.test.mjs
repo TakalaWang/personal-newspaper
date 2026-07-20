@@ -53,6 +53,8 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.match(css, /body:has\(\.edition-reader\[data-theme="salmon"\]\)/);
   assert.match(css, /\.page-turn\s*\{[\s\S]*width:\s*max\(4rem,/);
   assert.doesNotMatch(css, /width:\s*max\(1rem,\s*calc\(\(100vw - 80rem\)/);
+  assert.match(css, /\.edition-stage\s*\{[\s\S]*width:\s*min\(64rem,/);
+  assert.match(css, /\.page-turn\s*\{[\s\S]*calc\(\(100vw - 64rem\)/);
   assert.match(css, /\.page-turn-control > span\s*\{[\s\S]*border:\s*0;[\s\S]*background:\s*transparent;[\s\S]*box-shadow:\s*none;/);
   assert.doesNotMatch(css, /\.page-turn-control b/);
   assert.match(css, /\.theme-dialog/);

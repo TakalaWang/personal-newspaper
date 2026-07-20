@@ -93,6 +93,17 @@
         "Preserves fields unrelated to the prompt update",
         "Verifies the resulting automation after the update"
       ]
+    },
+    {
+      "id": 9,
+      "prompt": "Compose a four-story front page for an A-series portrait sheet. Your first sketch is a wide lead beside a stacked rail, producing one continuous two-column seam from top to bottom. Finish the page correctly without selecting a named template.",
+      "expected_output": "The agent rejects the first sketch, maps the packages on twelve editorial columns, offsets the seam between bands, uses at least three distinct occupied spans plus a cross-column interruption, and verifies a dense portrait sheet without fixed-height filler.",
+      "expectations": [
+        "Creates a private 12-column page map before page HTML or CSS",
+        "Rejects the persistent vertical split even though it technically has multiple columns",
+        "Uses at least three distinct occupied spans and a stepped seam justified by story importance and copy measure",
+        "Verifies a rendered sheet ratio from 1.30 through 1.55 without min-height, spacer modules, or filler copy"
+      ]
     }
   ]
 }

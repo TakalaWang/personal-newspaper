@@ -72,6 +72,10 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(pipeline, /current live edition.*silhouette/is);
   assert.match(pipeline, /Do not begin from the template CSS/i);
   assert.match(pipeline, /variation.*never be random|random variation/is);
+  assert.match(pipeline, /12-column page map/i);
+  assert.match(pipeline, /persistent vertical seam/i);
+  assert.match(pipeline, /three distinct occupied spans/i);
+  assert.match(pipeline, /1\.30.*1\.55/is);
 
   assert.match(contract, /data-claim-id/);
   assert.match(contract, /summaryHtml.*bodyHtml/is);
@@ -88,7 +92,10 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(baseDesign, /explanatory|evidence-bearing/i);
   assert.match(baseDesign, /source links.*detailed reader/is);
   assert.match(baseDesign, /6–12 column/);
-  assert.match(baseDesign, /central lead|off-centre lead/);
+  assert.match(baseDesign, /stepped seam/i);
+  assert.match(baseDesign, /three distinct module widths/i);
+  assert.match(baseDesign, /persistent vertical split/i);
+  assert.match(baseDesign, /A-series portrait/i);
   assert.match(baseDesign, /Only screens narrower than 560px/);
   assert.match(baseDesign, /silhouette/i);
   assert.match(baseDesign, /Do not repeat the same composition on adjacent pages/);
@@ -100,7 +107,6 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(baseDesign, /redundant.*section.*story-count/is);
   assert.match(baseDesign, /Editorial coherence.*density/is);
   assert.match(baseDesign, /At exactly 560px/);
-  assert.match(baseDesign, /9\/3 feature.*not.*sidebar/is);
   assert.match(baseDesign, /data-contract sample/i);
   assert.match(baseDesign, /consecutive editions/i);
   assert.match(baseDesign, /current live edition/i);
@@ -130,9 +136,19 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
     assert.match(page.css, /@media\(max-width:479px\)/, `${page.id} needs a phone-only single-column breakpoint`);
     assert.doesNotMatch(page.css, /@media\(max-width:559px\)/, `${page.id} must preserve mixed paths at 560px`);
   }
-  assert.match(parsedTemplate.pages[0].html, /front-main.*front-side/);
+  assert.match(parsedTemplate.pages[0].html, /front-mosaic/);
+  assert.match(parsedTemplate.pages[0].css, /repeat\(12,minmax\(0,1fr\)\)/);
+  assert.match(parsedTemplate.pages[0].css, /grid-column:1\/9/);
+  assert.match(parsedTemplate.pages[0].css, /grid-column:9\/13/);
+  assert.match(parsedTemplate.pages[0].css, /grid-column:1\/6/);
+  assert.match(parsedTemplate.pages[0].css, /grid-column:6\/13/);
+  assert.doesNotMatch(parsedTemplate.pages[0].css, /5fr\).*3fr/);
   assert.match(parsedTemplate.pages[0].css, /column-fill:balance/);
-  assert.match(parsedTemplate.pages[1].html, /tech-main.*tech-rail/);
+  assert.match(parsedTemplate.pages[1].html, /technology-mosaic/);
+  assert.match(parsedTemplate.pages[1].css, /grid-column:1\/13/);
+  assert.match(parsedTemplate.pages[1].css, /grid-column:1\/5/);
+  assert.match(parsedTemplate.pages[1].css, /grid-column:5\/13/);
+  assert.doesNotMatch(parsedTemplate.pages[1].css, /2fr\).*1fr/);
   assert.match(baseDesign, /lane endings.*four body lines/is);
   assert.match(baseDesign, /preserve.*original color/is);
   assert.doesNotMatch(template, /grayscale\(/i);

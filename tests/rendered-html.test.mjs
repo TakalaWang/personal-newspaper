@@ -47,12 +47,15 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.match(reader, /sandbox="allow-scripts"/);
   assert.match(reader, /api\/reactions/);
   assert.match(reader, /api\/shares/);
-  assert.match(css, /--surface: oklch\(95% 0\.006 88\)/);
+  assert.match(css, /--surface: oklch\(91\.5% 0\.014 82\)/);
   assert.match(css, /data-theme="salmon"/);
   assert.match(css, /data-theme="modern"/);
+  assert.match(css, /body:has\(\.edition-reader\[data-theme="salmon"\]\)/);
+  assert.match(css, /\.page-turn\s*\{[\s\S]*width:\s*max\(4rem,/);
+  assert.doesNotMatch(css, /width:\s*max\(1rem,\s*calc\(\(100vw - 80rem\)/);
   assert.match(css, /\.theme-dialog/);
   assert.match(reader, /personal-newspaper-theme/);
-  assert.match(reader, /經典新聞紙.*鮭色財經.*現代白報/s);
+  assert.match(reader, /暖灰新聞紙.*深酒紅正文.*深藍正文/s);
   assert.match(reader, /themeCss\(theme\)/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 

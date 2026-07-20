@@ -95,6 +95,7 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.match(baseDesign, /Text columns alone do not count/);
   assert.match(baseDesign, /at least two of/i);
   assert.match(baseDesign, /same-sized.*four-sided/is);
+  assert.match(baseDesign, /at least 64px.*desktop/is);
   assert.match(baseDesign, /Editorial coherence.*density/is);
   assert.match(baseDesign, /At exactly 560px/);
   assert.match(baseDesign, /9\/3 feature.*not.*sidebar/is);

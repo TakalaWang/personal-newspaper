@@ -4,7 +4,7 @@ This is a print grammar, not a fixed template. Picture one reader scanning one c
 
 ## Identity
 
-- The trusted reader owns the selected press palette. It offers natural newsprint with dark red spot ink, salmon financial paper with wine ink, and modern white paper with navy spot ink. All three keep body contrast above WCAG AA and spot color below 10% of the sheet.
+- The trusted reader owns the selected press palette. It offers warm grey newsprint with charcoal body ink and dark red spot ink, saturated salmon financial paper with wine body and spot ink, and cool white paper with navy body and indigo spot ink. Paper, body ink, rules, and spot ink must all change together so no two themes read as near-identical white variants. All three keep body contrast above WCAG AA and spot color below 10% of the sheet.
 - Generated layout rules consume the semantic variables `--paper`, `--ink`, `--muted`, `--hair`, and `--red`. The trusted reader applies their final values after edition CSS, so bundle fallback declarations are never authoritative. `--red` is the historical spot-ink variable and may resolve to black, wine, or green.
 - No gradients, tinted cards, extra accent hues, brass, glass, or decorative shadows inside the sheet.
 - Songti/STSong/PMingLiU-style serif carries headlines and copy. Kaiti/STKaiti is limited to the masthead or one editorial accent. PingFang-style sans carries folios, captions, bylines, labels, and controls.
@@ -13,7 +13,7 @@ This is a print grammar, not a fixed template. Picture one reader scanning one c
 ## Stable reader shell
 
 - Present exactly one complete sheet at a time. The newspaper is the dominant surface; it is not placed beneath a website navbar, section tabs, duplicated masthead, dashboard header, or app card.
-- Move between subject pages with full-height left and right edge targets labelled `上一頁` and `下一頁` plus `ArrowLeft`/`ArrowRight`. Reveal their printed controls on hover or focus; keep a visible compact affordance for touch. Never move page controls below the paper. A compact folio below the sheet may identify section, date, and page count. Never place a tab bar above the masthead.
+- Move between subject pages with full-height left and right edge targets labelled `上一頁` and `下一頁` plus `ArrowLeft`/`ArrowRight`. Each pointer target is at least 64px wide on desktop and grows through the outer gutter on wide screens; it must remain large enough when the sheet nearly fills the viewport. Reveal its printed control on hover or focus; keep a visible compact affordance for touch. Never move page controls below the paper. A compact folio below the sheet may identify section, date, and page count. Never place a tab bar above the masthead.
 - Use one restrained 200–300ms paper-turn transition to explain direction. Animate only transform and opacity, and disable the transition under `prefers-reduced-motion`.
 - Size the sheet to its content so the complete page belongs to the outer document. Do not leave a fixed empty viewport under short pages or create a nested scrolling newspaper under long pages.
 - The trusted reader, not generated page HTML, owns page turning, sharing, dialog behavior, article opening, feedback, and source links.

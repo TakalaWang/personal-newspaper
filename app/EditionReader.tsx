@@ -17,9 +17,9 @@ type Share = {
 };
 
 const THEMES = [
-  { id: "classic", label: "經典新聞紙", description: "自然灰白紙、近黑油墨與暗紅重點" },
-  { id: "salmon", label: "鮭色財經", description: "傳統鮭色新聞紙與深酒紅油墨" },
-  { id: "modern", label: "現代白報", description: "中性白紙、近黑油墨與深藍重點" },
+  { id: "classic", label: "經典新聞紙", description: "暖灰新聞紙、炭黑正文與暗紅套色" },
+  { id: "salmon", label: "鮭色財經", description: "飽和鮭色紙、深酒紅正文與套色" },
+  { id: "modern", label: "現代白報", description: "冷白紙、深藍正文與靛藍規則線" },
 ] as const;
 
 type NewspaperTheme = (typeof THEMES)[number]["id"];
@@ -248,7 +248,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         <footer className="reader-furniture">
           <div className="reader-utilities">
             <label className="theme-picker">
-              <span>紙色</span>
+              <span>報紙主題</span>
               <select value={theme} onChange={(event) => chooseTheme(event.target.value)}>
                 {THEMES.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
               </select>
@@ -279,7 +279,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
           <form method="dialog">
             <p>紙本主題</p>
             <h2 id="theme-dialog-title">先選一份你想每天打開的報紙</h2>
-            <span>只改變紙色與油墨；版面仍由每天的內容決定。之後可在版尾更換。</span>
+            <span>紙色、正文油墨與套色會一起改變；版面仍由每天的內容決定。之後可在版尾更換。</span>
             <div className="theme-options">
               {THEMES.map((option) => (
                 <button data-theme-option={option.id} key={option.id} onClick={() => chooseTheme(option.id)} type="button">
@@ -429,9 +429,9 @@ function readerBridgeCss(): string {
 
 function themeCss(theme: NewspaperTheme): string {
   const palette = {
-    classic: "--paper:oklch(95% .006 88);--ink:oklch(18% .006 70);--muted:oklch(34% .01 70);--red:oklch(33% .075 27);--hair:oklch(52% .012 70)",
-    salmon: "--paper:oklch(90.5% .042 40);--ink:oklch(18% .012 30);--muted:oklch(33% .025 30);--red:oklch(31% .082 20);--hair:oklch(49% .035 30)",
-    modern: "--paper:oklch(98% 0 0);--ink:oklch(16% 0 0);--muted:oklch(32% .008 250);--red:oklch(30% .06 250);--hair:oklch(52% .012 250)",
+    classic: "--paper:oklch(91.5% .014 82);--ink:oklch(19% .018 60);--muted:oklch(35% .026 60);--red:oklch(34% .11 25);--hair:oklch(49% .025 55)",
+    salmon: "--paper:oklch(86.5% .075 38);--ink:oklch(20% .055 18);--muted:oklch(35% .055 18);--red:oklch(30% .11 12);--hair:oklch(47% .06 18)",
+    modern: "--paper:oklch(98.5% .006 250);--ink:oklch(18% .05 255);--muted:oklch(35% .045 255);--red:oklch(32% .105 250);--hair:oklch(50% .055 250)",
   }[theme];
   return `:root{${palette};color:var(--ink);background:var(--paper)}`;
 }

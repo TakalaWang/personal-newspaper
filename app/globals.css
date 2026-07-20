@@ -1,10 +1,10 @@
 :root {
-  --surface: oklch(95% 0.006 88);
-  --desk: oklch(83% 0 0);
-  --ink: oklch(18% 0.006 70);
-  --muted: oklch(34% 0.01 70);
-  --rule: oklch(52% 0.012 70);
-  --press-red: oklch(33% 0.075 27);
+  --surface: oklch(91.5% 0.014 82);
+  --desk: oklch(76% 0.012 75);
+  --ink: oklch(19% 0.018 60);
+  --muted: oklch(35% 0.026 60);
+  --rule: oklch(49% 0.025 55);
+  --press-red: oklch(34% 0.11 25);
   --space-hair: 0.25rem;
   --space-tight: 0.5rem;
   --space-copy: 0.75rem;
@@ -50,20 +50,24 @@ a:focus-visible {
 .edition-reader { width: 100%; }
 
 .edition-reader[data-theme="salmon"] {
-  --surface: oklch(90.5% 0.042 40);
-  --ink: oklch(18% 0.012 30);
-  --muted: oklch(33% 0.025 30);
-  --rule: oklch(49% 0.035 30);
-  --press-red: oklch(31% 0.082 20);
+  --surface: oklch(86.5% 0.075 38);
+  --ink: oklch(20% 0.055 18);
+  --muted: oklch(35% 0.055 18);
+  --rule: oklch(47% 0.06 18);
+  --press-red: oklch(30% 0.11 12);
 }
 
 .edition-reader[data-theme="modern"] {
-  --surface: oklch(98% 0 0);
-  --ink: oklch(16% 0 0);
-  --muted: oklch(32% 0.008 250);
-  --rule: oklch(52% 0.012 250);
-  --press-red: oklch(30% 0.06 250);
+  --surface: oklch(98.5% 0.006 250);
+  --ink: oklch(18% 0.05 255);
+  --muted: oklch(35% 0.045 255);
+  --rule: oklch(50% 0.055 250);
+  --press-red: oklch(32% 0.105 250);
 }
+
+body:has(.edition-reader[data-theme="classic"]) { --desk: oklch(76% 0.012 75); }
+body:has(.edition-reader[data-theme="salmon"]) { --desk: oklch(72% 0.045 28); }
+body:has(.edition-reader[data-theme="modern"]) { --desk: oklch(82% 0.02 250); }
 
 .edition-stage {
   position: relative;
@@ -111,7 +115,7 @@ a:focus-visible {
   z-index: 10;
   inset-block: 0;
   display: flex;
-  width: max(1rem, calc((100vw - 80rem) / 2));
+  width: max(4rem, calc((100vw - 80rem) / 2 + 2rem));
   min-height: 2.75rem;
   flex-direction: column;
   padding: 0;
@@ -428,9 +432,9 @@ a:focus-visible {
   color: var(--theme-swatch-ink);
 }
 
-.theme-options [data-theme-option="classic"] { --theme-swatch-paper: oklch(95% 0.006 88); --theme-swatch-ink: oklch(33% 0.075 27); }
-.theme-options [data-theme-option="salmon"] { --theme-swatch-paper: oklch(90.5% 0.042 40); --theme-swatch-ink: oklch(31% 0.082 20); }
-.theme-options [data-theme-option="modern"] { --theme-swatch-paper: oklch(98% 0 0); --theme-swatch-ink: oklch(30% 0.06 250); }
+.theme-options [data-theme-option="classic"] { --theme-swatch-paper: oklch(91.5% 0.014 82); --theme-swatch-ink: oklch(19% 0.018 60); }
+.theme-options [data-theme-option="salmon"] { --theme-swatch-paper: oklch(86.5% 0.075 38); --theme-swatch-ink: oklch(20% 0.055 18); }
+.theme-options [data-theme-option="modern"] { --theme-swatch-paper: oklch(98.5% 0.006 250); --theme-swatch-ink: oklch(18% 0.05 255); }
 
 .theme-options strong,
 .theme-options small { display: block; }

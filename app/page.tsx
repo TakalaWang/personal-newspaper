@@ -19,7 +19,7 @@ export default async function Home() {
   const edition = editionRows[0];
 
   if (profile && profile.ownerEmail !== user.email) forbidden();
-  if (!edition) return <Onboarding masthead={profile?.masthead ?? "The Personal Daily"} />;
+  if (!edition) return <Onboarding masthead={profile?.masthead ?? "Codex Reporter"} />;
 
   const bundle = await getEditionBundle(edition.bundleKey);
   if (!bundle) {

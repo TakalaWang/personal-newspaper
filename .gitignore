@@ -41,4 +41,4 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
-/.personal-newspaper/
+/.codex-reporter/

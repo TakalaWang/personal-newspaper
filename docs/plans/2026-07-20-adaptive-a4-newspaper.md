@@ -34,4 +34,4 @@
 - Inspect desktop, exactly 560px, and phone layouts in a real browser, including opening articles and page turning.
 - Deploy the reader through the configured Sites project.
 - Bind the redesigned edition to a fresh private context snapshot, publish it as a new immutable revision, and verify live context and interaction.
-- Update the existing `Personal Newspaper daily edition` automation by id, changing only its prompt, and verify exactly one active automation remains.
+- Update the existing `Codex Reporter daily edition` automation by id, changing only its prompt, and verify exactly one active automation remains.

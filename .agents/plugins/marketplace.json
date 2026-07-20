@@ -1,14 +1,14 @@
 {
-  "name": "personal-newspaper",
+  "name": "codex-reporter",
   "interface": {
-    "displayName": "Personal Newspaper"
+    "displayName": "Codex Reporter"
   },
   "plugins": [
     {
-      "name": "personal-newspaper",
+      "name": "codex-reporter",
       "source": {
         "source": "url",
-        "url": "https://github.com/TakalaWang/personal-newspaper.git",
+        "url": "https://github.com/TakalaWang/codex-reporter.git",
         "ref": "main"
       },
       "policy": {

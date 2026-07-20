@@ -6,13 +6,13 @@ const root = new URL("../", import.meta.url);
 
 test("follows the Agent Skills structure and progressive-disclosure contract", async () => {
   const [skill, firstRun, pipeline, contract, baseDesign, evals, template, design] = await Promise.all([
-    readFile(new URL("skills/personal-newspaper/SKILL.md", root), "utf8"),
-    readFile(new URL("skills/personal-newspaper/references/first-run.md", root), "utf8"),
-    readFile(new URL("skills/personal-newspaper/references/pipeline.md", root), "utf8"),
-    readFile(new URL("skills/personal-newspaper/references/edition-contract.md", root), "utf8"),
-    readFile(new URL("skills/personal-newspaper/references/base-design.md", root), "utf8"),
-    readFile(new URL("skills/personal-newspaper/evals/evals.json", root), "utf8"),
-    readFile(new URL("skills/personal-newspaper/assets/edition-template.json", root), "utf8"),
+    readFile(new URL("skills/codex-reporter/SKILL.md", root), "utf8"),
+    readFile(new URL("skills/codex-reporter/references/first-run.md", root), "utf8"),
+    readFile(new URL("skills/codex-reporter/references/pipeline.md", root), "utf8"),
+    readFile(new URL("skills/codex-reporter/references/edition-contract.md", root), "utf8"),
+    readFile(new URL("skills/codex-reporter/references/base-design.md", root), "utf8"),
+    readFile(new URL("skills/codex-reporter/evals/evals.json", root), "utf8"),
+    readFile(new URL("skills/codex-reporter/assets/edition-template.json", root), "utf8"),
     readFile(new URL("DESIGN.md", root), "utf8"),
   ]);
 
@@ -23,7 +23,7 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
     .split("\n")
     .map((line) => line.match(/^([a-zA-Z][\w-]*):/)?.[1])
     .filter(Boolean);
-  assert.equal(name, "personal-newspaper");
+  assert.equal(name, "codex-reporter");
   assert.match(name, /^(?!-)(?!.*--)[a-z0-9-]+(?<!-)$/);
   assert.ok(description.length > 0 && description.length <= 1024);
   assert.ok(description.startsWith("Use when "), "description must expose trigger conditions before workflow details");
@@ -137,7 +137,7 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.doesNotMatch(design, /brass/);
 
   const parsedEvals = JSON.parse(evals);
-  assert.equal(parsedEvals.skill_name, "personal-newspaper");
+  assert.equal(parsedEvals.skill_name, "codex-reporter");
   assert.ok(parsedEvals.evals.length >= 4);
   for (const evaluation of parsedEvals.evals) {
     assert.ok(Number.isSafeInteger(evaluation.id));
@@ -150,7 +150,7 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
   assert.equal("generation" in parsedTemplate, false);
   assert.doesNotMatch(template, /ctx_0{64}/);
   assert.equal(parsedTemplate.language, "en-US", "the public fixture must be the neutral English example");
-  assert.equal(parsedTemplate.masthead, "The Personal Daily");
+  assert.equal(parsedTemplate.masthead, "Codex Reporter");
   assert.equal(parsedTemplate.pages.length, 2, "the smoke fixture must group stories into subject pages");
   const fixtureStoryCounts = Object.groupBy(parsedTemplate.stories, (story) => story.pageId);
   assert.equal(fixtureStoryCounts.front?.length, 5);

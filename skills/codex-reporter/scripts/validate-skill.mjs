@@ -25,7 +25,7 @@ async function main() {
     .split("\n")
     .map((line) => line.match(/^([a-zA-Z][\w-]*):/)?.[1])
     .filter(Boolean);
-  if (name !== "personal-newspaper" || !/^(?!-)(?!.*--)[a-z0-9-]{1,64}(?<!-)$/.test(name)) {
+  if (name !== "codex-reporter" || !/^(?!-)(?!.*--)[a-z0-9-]{1,64}(?<!-)$/.test(name)) {
     throw new Error("Skill name must match its directory and the Agent Skills naming rules");
   }
   if (description.length < 1 || description.length > 1024) throw new Error("Skill description must contain 1–1024 characters");
@@ -51,7 +51,7 @@ async function main() {
       throw new Error(`Eval ${evaluation.id ?? "unknown"} does not match the official skill-creator schema`);
     }
   }
-  console.log("Personal Newspaper skill structure, resources, and eval schema are valid.");
+  console.log("Codex Reporter skill structure, resources, and eval schema are valid.");
 }
 
 function field(frontmatter, name) {

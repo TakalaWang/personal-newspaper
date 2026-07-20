@@ -1,6 +1,6 @@
 {
   "name": "personal-newspaper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Create a personal newspaper website and let Codex publish a verified edition on schedule.",
   "author": {
     "name": "TakalaWang",
@@ -36,6 +36,8 @@
     "brandColor": "#7D1F25",
     "composerIcon": "./app/icon.svg",
     "logo": "./app/icon.svg",
-    "screenshots": []
+    "screenshots": [
+      "./assets/personal-newspaper.png"
+    ]
   }
 }

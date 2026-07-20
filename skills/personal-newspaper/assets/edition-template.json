@@ -230,8 +230,8 @@
       "kicker": "Engineering feature",
       "headline": "The Windows sandbox makes the operating system—not the prompt—the final boundary",
       "dek": "The architecture is a useful answer to a reader signal favoring deep, technical reports about agent infrastructure.",
-      "summaryHtml": "<figure class=\"boundary-figure\"><img src=\"https://images.ctfassets.net/kftzwdyauwt9/56B8qHwAm6RxoAfKTqdadL/d81df6031422dd5495e9a50d8dce8616/Diagram1-10column-desktop-light.svg?fm=png&amp;q=90&amp;w=1600\" alt=\"Diagram of the operating-system boundary around a Codex agent on Windows\"><figcaption>A systems diagram shows the operating-system boundary that limits what an agent can reach. OpenAI illustration; David Wiesen.</figcaption></figure><p data-claim-id=\"claim-1\">OpenAI's Windows sandbox design uses restricted security tokens, dedicated accounts, and firewall policy to constrain an agent while preserving common development tools. The architecture treats prompts as intent and operating-system controls as the enforceable limit.</p><div class=\"byline\">Reader signal: more deep technical reporting</div>",
-      "bodyHtml": "<p data-claim-id=\"claim-1\">On Windows, OpenAI combines limited access tokens, purpose-specific user identities, and network rules so an agent can work with development tools without receiving unrestricted machine access. Instructions describe desired behavior, but the operating system determines which actions are possible.</p><figure><img src=\"https://images.ctfassets.net/kftzwdyauwt9/56B8qHwAm6RxoAfKTqdadL/d81df6031422dd5495e9a50d8dce8616/Diagram1-10column-desktop-light.svg?fm=png&amp;q=90&amp;w=1600\" alt=\"Diagram of the operating-system boundary around a Codex agent on Windows\"><figcaption>A systems diagram shows the operating-system boundary that limits what an agent can reach. OpenAI illustration; David Wiesen.</figcaption></figure><p>The engineering difficulty is compatibility. An environment locked down so tightly that package managers, shells, or build tools fail is secure only in the narrow sense; it cannot support the open-ended repository work the agent is meant to perform.</p><p>The design therefore has to be tested as a product boundary. File access, process creation, credentials, and network routes need explicit behavior that can be reproduced, while escape attempts and ordinary development workflows are exercised together.</p><p>This story receives the widest visual treatment because the reader previously liked a technical report on this exact system boundary. The signal affects subject, depth, and placement; it does not alter the source facts or turn one click into a permanent preference.</p>",
+      "summaryHtml": "<figure class=\"boundary-figure\"><img src=\"https://images.ctfassets.net/kftzwdyauwt9/56B8qHwAm6RxoAfKTqdadL/d81df6031422dd5495e9a50d8dce8616/Diagram1-10column-desktop-light.svg?fm=png&amp;q=90&amp;w=1600\" alt=\"Diagram of the operating-system boundary around a Codex agent on Windows\"><figcaption>A systems diagram shows the operating-system boundary that limits what an agent can reach. OpenAI illustration; David Wiesen.</figcaption></figure><p data-claim-id=\"claim-1\">OpenAI's Windows sandbox design uses restricted security tokens, dedicated accounts, and firewall policy to constrain an agent while preserving common development tools. The architecture treats prompts as intent and operating-system controls as the enforceable limit.</p><p data-claim-id=\"claim-2\">A useful sandbox must prove compatibility and confinement together: ordinary package, shell, build, and network workflows still need to work while escape attempts remain contained. Compatibility testing is therefore part of the security boundary.</p><div class=\"byline\">Reader signal: more deep technical reporting</div>",
+      "bodyHtml": "<p data-claim-id=\"claim-1\">On Windows, OpenAI combines limited access tokens, purpose-specific user identities, and network rules so an agent can work with development tools without receiving unrestricted machine access. Instructions describe desired behavior, but the operating system determines which actions are possible.</p><figure><img src=\"https://images.ctfassets.net/kftzwdyauwt9/56B8qHwAm6RxoAfKTqdadL/d81df6031422dd5495e9a50d8dce8616/Diagram1-10column-desktop-light.svg?fm=png&amp;q=90&amp;w=1600\" alt=\"Diagram of the operating-system boundary around a Codex agent on Windows\"><figcaption>A systems diagram shows the operating-system boundary that limits what an agent can reach. OpenAI illustration; David Wiesen.</figcaption></figure><p data-claim-id=\"claim-2\">The engineering difficulty is compatibility. An environment locked down so tightly that package managers, shells, or build tools fail is secure only in the narrow sense; it cannot support the open-ended repository work the agent is meant to perform.</p><p>The design therefore has to be tested as a product boundary. File access, process creation, credentials, and network routes need explicit behavior that can be reproduced, while escape attempts and ordinary development workflows are exercised together.</p><p>This story receives the widest visual treatment because the reader previously liked a technical report on this exact system boundary. The signal affects subject, depth, and placement; it does not alter the source facts or turn one click into a permanent preference.</p>",
       "label": "fact",
       "sourceIds": [
         "windows-sandbox-source"
@@ -257,6 +257,14 @@
           "sourceIds": [
             "windows-sandbox-source"
           ]
+        },
+        {
+          "id": "claim-2",
+          "summaryClaim": "A useful sandbox must prove compatibility and confinement together: ordinary package, shell, build, and network workflows still need to work while escape attempts remain contained. Compatibility testing is therefore part of the security boundary.",
+          "bodySupport": "The engineering difficulty is compatibility. An environment locked down so tightly that package managers, shells, or build tools fail is secure only in the narrow sense; it cannot support the open-ended repository work the agent is meant to perform.",
+          "sourceIds": [
+            "windows-sandbox-source"
+          ]
         }
       ],
       "images": [
@@ -278,8 +286,8 @@
       "kicker": "Research methods",
       "headline": "A software-agent study treats skills as inspectable research objects",
       "dek": "Buildrix evaluates whether reusable procedural knowledge can improve repository work without hiding the method inside a prompt.",
-      "summaryHtml": "<p data-claim-id=\"claim-1\">The Buildrix paper presents reusable skills as structured procedural knowledge for software agents and evaluates them as explicit artifacts. That makes the method easier to inspect, revise, and compare than an undocumented chain of prompt instructions.</p><div class=\"byline\">Paper review · method before headline score</div>",
-      "bodyHtml": "<p data-claim-id=\"claim-1\">Buildrix represents software-engineering procedures as named, reusable skill artifacts and studies how agents apply them to repository tasks. Because the procedures are explicit, a reviewer can examine what knowledge was supplied instead of attributing every gain to the base model.</p><p>This separation is valuable for evaluation. Model ability, task context, and procedural scaffolding are different variables; bundling them into one long prompt makes it difficult to learn which intervention actually helped.</p><p>A strong follow-up would compare the same tasks with no skill, a generic skill, and a domain-specific skill while holding tools and model settings constant. Failure analysis should also show when a procedure is retrieved but applied at the wrong time.</p><p>The paper is a preprint, so its claims should be read as research evidence rather than settled practice. Its most durable contribution may be the inspectable unit of knowledge, not any single aggregate result.</p>",
+      "summaryHtml": "<p data-claim-id=\"claim-1\">The Buildrix paper presents reusable skills as structured procedural knowledge for software agents and evaluates them as explicit artifacts. That makes the method easier to inspect, revise, and compare than an undocumented chain of prompt instructions.</p><p data-claim-id=\"claim-2\">A useful evaluation should separate model ability from procedural scaffolding by comparing no-skill, generic-skill, and domain-skill runs under the same tools and settings, then report when a retrieved procedure is applied at the wrong moment.</p><div class=\"byline\">Paper review · method before headline score</div>",
+      "bodyHtml": "<p data-claim-id=\"claim-1\">Buildrix represents software-engineering procedures as named, reusable skill artifacts and studies how agents apply them to repository tasks. Because the procedures are explicit, a reviewer can examine what knowledge was supplied instead of attributing every gain to the base model.</p><p>This separation is valuable for evaluation. Model ability, task context, and procedural scaffolding are different variables; bundling them into one long prompt makes it difficult to learn which intervention actually helped.</p><p data-claim-id=\"claim-2\">A strong follow-up would compare the same tasks with no skill, a generic skill, and a domain-specific skill while holding tools and model settings constant. Failure analysis should also show when a procedure is retrieved but applied at the wrong time.</p><p>The paper is a preprint, so its claims should be read as research evidence rather than settled practice. Its most durable contribution may be the inspectable unit of knowledge, not any single aggregate result.</p>",
       "label": "fact",
       "sourceIds": [
         "buildrix-paper"
@@ -307,6 +315,14 @@
           "sourceIds": [
             "buildrix-paper"
           ]
+        },
+        {
+          "id": "claim-2",
+          "summaryClaim": "A useful evaluation should separate model ability from procedural scaffolding by comparing no-skill, generic-skill, and domain-skill runs under the same tools and settings, then report when a retrieved procedure is applied at the wrong moment.",
+          "bodySupport": "A strong follow-up would compare the same tasks with no skill, a generic skill, and a domain-specific skill while holding tools and model settings constant. Failure analysis should also show when a procedure is retrieved but applied at the wrong time.",
+          "sourceIds": [
+            "buildrix-paper"
+          ]
         }
       ],
       "images": []
@@ -317,8 +333,8 @@
       "kicker": "Tooling brief",
       "headline": "GitHub brings its coding agent into JetBrains AI Assistant",
       "dek": "The June release makes delegated repository work available from another major IDE surface.",
-      "summaryHtml": "<p data-claim-id=\"claim-1\">GitHub announced on June 30 that Copilot coding agent is available in JetBrains AI Assistant. The integration lets developers delegate work from the IDE while keeping the agent's repository changes in a reviewable workflow.</p><div class=\"byline\">Product brief · GitHub changelog</div>",
-      "bodyHtml": "<p data-claim-id=\"claim-1\">The June 30 update adds Copilot coding agent to the JetBrains AI Assistant experience, extending GitHub's delegated coding workflow beyond its earlier entry points. The agent works against repository tasks whose changes can be inspected rather than silently editing a local buffer.</p><p>IDE placement matters because it shortens the distance between identifying a task and delegating it. It also raises the importance of clear boundaries: developers need to know which repository, branch, and issue the agent is acting on before work begins.</p><p>A reviewable change set is the crucial product boundary. Agent output should arrive with enough context, tests, and provenance for a human to decide whether it belongs in the codebase.</p><p>The announcement establishes availability, not effectiveness. Teams should still measure cycle time, review burden, and defect escape rate on their own repositories before treating broader access as a productivity result.</p>",
+      "summaryHtml": "<p data-claim-id=\"claim-1\">GitHub announced on June 30 that Copilot coding agent is available in JetBrains AI Assistant. The integration lets developers delegate work from the IDE while keeping the agent's repository changes in a reviewable workflow.</p><p data-claim-id=\"claim-2\">Availability is not an effectiveness result. Teams still need to measure cycle time, review burden, and escaped defects on their own repositories before treating a new IDE entry point as evidence of productivity.</p><div class=\"byline\">Product brief · GitHub changelog</div>",
+      "bodyHtml": "<p data-claim-id=\"claim-1\">The June 30 update adds Copilot coding agent to the JetBrains AI Assistant experience, extending GitHub's delegated coding workflow beyond its earlier entry points. The agent works against repository tasks whose changes can be inspected rather than silently editing a local buffer.</p><p>IDE placement matters because it shortens the distance between identifying a task and delegating it. It also raises the importance of clear boundaries: developers need to know which repository, branch, and issue the agent is acting on before work begins.</p><p>A reviewable change set is the crucial product boundary. Agent output should arrive with enough context, tests, and provenance for a human to decide whether it belongs in the codebase.</p><p data-claim-id=\"claim-2\">The announcement establishes availability, not effectiveness. Teams should still measure cycle time, review burden, and defect escape rate on their own repositories before treating broader access as a productivity result.</p>",
       "label": "fact",
       "sourceIds": [
         "jetbrains-copilot"
@@ -342,6 +358,14 @@
           "id": "claim-1",
           "summaryClaim": "GitHub announced on June 30 that Copilot coding agent is available in JetBrains AI Assistant. The integration lets developers delegate work from the IDE while keeping the agent's repository changes in a reviewable workflow.",
           "bodySupport": "The June 30 update adds Copilot coding agent to the JetBrains AI Assistant experience, extending GitHub's delegated coding workflow beyond its earlier entry points. The agent works against repository tasks whose changes can be inspected rather than silently editing a local buffer.",
+          "sourceIds": [
+            "jetbrains-copilot"
+          ]
+        },
+        {
+          "id": "claim-2",
+          "summaryClaim": "Availability is not an effectiveness result. Teams still need to measure cycle time, review burden, and escaped defects on their own repositories before treating a new IDE entry point as evidence of productivity.",
+          "bodySupport": "The announcement establishes availability, not effectiveness. Teams should still measure cycle time, review burden, and defect escape rate on their own repositories before treating broader access as a productivity result.",
           "sourceIds": [
             "jetbrains-copilot"
           ]

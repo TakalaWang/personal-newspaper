@@ -169,8 +169,8 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         } else if (owner) {
           const source = event.source as Window;
           void react(readerMessage.action, readerMessage.storyId).then((result) => {
-            source.postMessage({ type: "reaction-result", storyId: readerMessage.storyId, action: readerMessage.action, ...result }, "*");
             if (result.ok) syncReactions();
+            source.postMessage({ type: "reaction-result", storyId: readerMessage.storyId, action: readerMessage.action, ...result }, "*");
           });
         }
       } catch {

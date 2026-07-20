@@ -84,6 +84,8 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.match(reader, /data-turn=/);
   assert.match(reader, /onAnimationEnd=/);
   assert.match(reader, /document\.body\.getBoundingClientRect\(\)\.height/);
+  assert.match(reader, /new ResizeObserver\(publishHeight\)\.observe\(document\.body\)/);
+  assert.doesNotMatch(reader, /new ResizeObserver\(publishHeight\)\.observe\(document\.documentElement\)/);
   assert.match(reader, /measure-page/);
   assert.match(reader, /onLoad=/);
   assert.match(reader, /event\.source !== pageFrameRef\.current\?\.contentWindow/);

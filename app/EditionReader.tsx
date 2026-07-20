@@ -531,7 +531,7 @@ function trustedPageResizeBridge(): string {
     window.addEventListener('message', (event) => {
       if (event.source === window.parent && event.data?.type === 'measure-page') publishHeight();
     });
-    new ResizeObserver(publishHeight).observe(document.documentElement);
+    new ResizeObserver(publishHeight).observe(document.body);
     requestAnimationFrame(publishHeight);
   })();</script>`;
 }

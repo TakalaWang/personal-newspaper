@@ -15,6 +15,7 @@ const restoreCli = new URL("../skills/personal-newspaper/scripts/restore-edition
 const contextCli = new URL("../skills/personal-newspaper/scripts/snapshot-context.mjs", import.meta.url);
 const prepareCli = new URL("../skills/personal-newspaper/scripts/prepare-edition.mjs", import.meta.url);
 const validateCli = new URL("../skills/personal-newspaper/scripts/validate-edition.mjs", import.meta.url);
+const profileCli = new URL("../skills/personal-newspaper/scripts/save-profile.mjs", import.meta.url);
 const draft = JSON.parse(await readFile(new URL("../skills/personal-newspaper/assets/edition-template.json", import.meta.url), "utf8"));
 const bundle = {
   ...draft,
@@ -125,6 +126,41 @@ test("captures a private context and prepares an edition with the exact snapshot
       contextRevision: 12,
       reactions: [{ id: 5, action: "less", createdAt: "2026-07-19T01:02:03.000Z" }],
     });
+  } finally {
+    await received.stop();
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("saves the confirmed first-run profile without exposing its credential", async () => {
+  const profile = {
+    ownerEmail: "reader@example.com",
+    masthead: "The Personal Daily",
+    language: "English",
+    timezone: "America/New_York",
+    publicationTime: "07:00",
+    preferences: { interests: ["technology", "culture"], exclusions: [] },
+  };
+  const received = requestOnce((request, response, body) => {
+    assert.equal(request.method, "PUT");
+    assert.equal(request.url, "/api/agent/profile");
+    assert.equal(request.headers.authorization, "Bearer private-token");
+    assert.deepEqual(JSON.parse(body), profile);
+    response.writeHead(200, { "content-type": "application/json" });
+    response.end(JSON.stringify({ profile }));
+  });
+  const directory = await mkdtemp(join(tmpdir(), "personal-newspaper-profile-"));
+  const profilePath = join(directory, "profile.json");
+  await writeFile(profilePath, JSON.stringify(profile));
+  const url = await received.url;
+
+  try {
+    const result = await runScript(profileCli, ["--file", profilePath, "--url", url], {
+      AUTOMATION_TOKEN: "private-token",
+    });
+    assert.equal(result.code, 0, result.stderr);
+    assert.match(result.stdout, /saved.*The Personal Daily/i);
+    assert.doesNotMatch(result.stdout + result.stderr, /private-token/);
   } finally {
     await received.stop();
     await rm(directory, { recursive: true, force: true });

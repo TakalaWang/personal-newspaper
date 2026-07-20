@@ -21,12 +21,17 @@ async function main() {
   if (!frontmatter) throw new Error("SKILL.md must start with YAML frontmatter");
   const name = field(frontmatter, "name");
   const description = field(frontmatter, "description");
-  const compatibility = field(frontmatter, "compatibility");
+  const frontmatterKeys = frontmatter
+    .split("\n")
+    .map((line) => line.match(/^([a-zA-Z][\w-]*):/)?.[1])
+    .filter(Boolean);
   if (name !== "personal-newspaper" || !/^(?!-)(?!.*--)[a-z0-9-]{1,64}(?<!-)$/.test(name)) {
     throw new Error("Skill name must match its directory and the Agent Skills naming rules");
   }
   if (description.length < 1 || description.length > 1024) throw new Error("Skill description must contain 1–1024 characters");
-  if (compatibility.length < 1 || compatibility.length > 500) throw new Error("Skill compatibility must contain 1–500 characters");
+  if (frontmatterKeys.join(",") !== "name,description") {
+    throw new Error("SKILL.md frontmatter must contain only name and description");
+  }
   if (skill.split("\n").length >= 500) throw new Error("SKILL.md must stay under 500 lines");
 
   const links = [...skill.matchAll(/\]\(([^)]+)\)/g)].map((match) => match[1]);

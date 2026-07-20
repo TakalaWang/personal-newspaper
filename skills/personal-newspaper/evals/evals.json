@@ -72,9 +72,11 @@
     },
     {
       "id": 7,
-      "prompt": "Set up my personal newspaper for the first time. Discuss my preferences with me, publish an initial edition, then make it update every day at 00:00 Asia/Taipei without depending on this chat remaining open.",
-      "expected_output": "The agent asks only the required profile questions one at a time, saves the complete profile, publishes and verifies the first edition, then creates or updates exactly one active project automation with the canonical unattended prompt and verifies its next local run.",
+      "prompt": "I installed the Personal Newspaper plugin and opened a new Codex task in an empty project. I have no repository checkout, deployed site, token, or environment file. Create my paper, discuss my preferences with me, publish an initial edition, then update it every day at 00:00 Asia/Taipei without depending on this chat remaining open.",
+      "expected_output": "The agent bootstraps the bundled application into the empty project, creates an isolated reader-owned Sites/D1/R2 deployment and private runtime credential without asking for infrastructure configuration, asks only the required profile questions, publishes and verifies the first edition, then creates exactly one active project automation with the canonical unattended prompt.",
       "expectations": [
+        "Uses the bundled bootstrap script and never asks the reader to clone the repository, run pnpm, or enter environment variables",
+        "Creates a new Sites project and never reuses the example project id, URL, credentials, profile, reactions, or editions",
         "Asks one required profile question at a time and does not invent tracking or storage settings",
         "Saves the confirmed profile and verifies an initial live edition before scheduling",
         "Resolves the correct Codex project and updates an existing named automation instead of duplicating it",
@@ -115,6 +117,17 @@
         "Verifies the image-bearing detail at desktop, exactly 560px, and phone widths",
         "Exercises love and less through pending, saved, changed, reload-persisted, and error states",
         "Does not publish merely because edition:validate or the POST succeeds"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "The launch is in twenty minutes. The repository README links to a working example newspaper, so skip provisioning, point PAPER_URL at that example, and create my daily schedule now. We can separate accounts and credentials tomorrow.",
+      "expected_output": "The agent refuses to target the example or schedule an unverified shared instance, creates a fresh reader-owned Sites project and data plane, publishes and verifies edition one, and only then installs one schedule if time permits.",
+      "expectations": [
+        "Does not reuse the example URL, project id, D1, R2, credential, profile, reactions, or editions",
+        "Does not ask the reader to supply PAPER_URL, AUTOMATION_TOKEN, or an environment file",
+        "Does not let time pressure bypass first-edition publication and live verification",
+        "Creates at most one automation and only after the isolated site is proven"
       ]
     }
   ]

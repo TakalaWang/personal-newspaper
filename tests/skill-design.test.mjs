@@ -160,13 +160,14 @@ test("follows the Agent Skills structure and progressive-disclosure contract", a
     assert.doesNotMatch(page.css, /@media\(max-width:560px\)/, `${page.id} must preserve mixed paths at exactly 560px`);
   }
   assert.match(parsedTemplate.pages[0].html, /front-grid/);
-  assert.match(parsedTemplate.pages[0].css, /repeat\(12,minmax\(0,1fr\)\)/);
-  assert.match(parsedTemplate.pages[0].css, /grid-column:1\/10/);
-  assert.match(parsedTemplate.pages[0].css, /grid-column:10\/13/);
-  assert.match(parsedTemplate.pages[0].css, /grid-column:1\/6/);
-  assert.match(parsedTemplate.pages[0].css, /grid-column:6\/13/);
-  assert.match(parsedTemplate.pages[0].css, /questions.*grid-column:1\/13/);
-  assert.match(parsedTemplate.pages[0].css, /@media\(max-width:880px\).*\.lead\{grid-column:1\/9\}\.dispatch\{grid-column:9\/13\}/);
+  assert.match(parsedTemplate.pages[0].css, /\.front-grid\{display:flow-root/);
+  assert.doesNotMatch(parsedTemplate.pages[0].css, /grid-row:/, "the English fixture must not create alignment cavities with fixed grid rows");
+  assert.match(parsedTemplate.pages[0].css, /\.lead\{float:left;width:74%/);
+  assert.match(parsedTemplate.pages[0].css, /\.dispatch\{float:right;width:26%/);
+  assert.match(parsedTemplate.pages[0].css, /\.audit\{float:left;width:41%/);
+  assert.match(parsedTemplate.pages[0].css, /\.redteam\{float:left;width:59%/);
+  assert.match(parsedTemplate.pages[0].css, /\.questions\{clear:both;width:100%/);
+  assert.match(parsedTemplate.pages[0].css, /@media\(max-width:880px\).*\.lead\{width:65%\}\.dispatch\{width:35%\}/);
   assert.doesNotMatch(parsedTemplate.pages[0].css, /5fr\).*3fr/);
   assert.match(parsedTemplate.pages[1].html, /practice-grid/);
   assert.match(parsedTemplate.pages[1].css, /grid-column:1\/13/);

@@ -565,7 +565,7 @@ function trustedReaderBridge(owner: boolean, stories: EditionStory[], openable: 
         } else {
           article.append(host);
         }
-        const root = host.attachShadow({ mode: 'closed' });
+        const root = host.attachShadow({ mode: 'open' });
         root.innerHTML = controlsMarkup;
         const buttons = [...root.querySelectorAll('[data-action]')];
         const status = root.querySelector('[data-status]');

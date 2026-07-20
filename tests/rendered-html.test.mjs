@@ -103,6 +103,7 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.match(reader, /reader-story-footer/);
   assert.match(reader, /reader-story-note/);
   assert.match(reader, /aria-pressed/);
+  assert.match(reader, /attachShadow\(\{ mode: 'open' \}\)/);
   assert.match(reader, /reaction-result/);
   assert.match(reader, /已儲存/);
   assert.ok(reader.indexOf("if (result.ok) syncReactions()") < reader.indexOf('source.postMessage({ type: "reaction-result"'), "the visible saved result must arrive after cross-frame selection sync");

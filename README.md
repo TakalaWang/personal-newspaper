@@ -20,6 +20,23 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
+## 第一次使用
+
+1. 在 Codex 開啟這個 repository，確認 Sites 已部署，並把同一個 `AUTOMATION_TOKEN` 設在 Sites runtime 與本機 `.env.local`；本機另設 `PAPER_URL` 為正式網址。
+2. 若尚未安裝 Skill，執行 `mkdir -p ~/.codex/skills && ln -s "$PWD/skills/personal-newspaper" ~/.codex/skills/personal-newspaper`，再對 Codex 說：`請使用 personal-newspaper skill，幫我設定個人日報。`
+3. Codex 會逐題確認報頭名稱、語言、時區、每日出版時間、興趣與排除項目；確認後先發布並驗證第一期，成功後才建立唯一的每日排程。
+4. 日後直接點每篇內的「喜歡／不喜歡」。下一次自動出版會讀取這些訊號；已發布期號不會被改寫。
+
+不要把 `.env.local`、context snapshot 或 `AUTOMATION_TOKEN` 提交到 Git。
+
+## 空白流程驗證
+
+以下命令會建立暫存的空白 paper API，從「無 profile、無 edition」開始，依序執行設定、context capture、prepare、validate、publish 與發布後 manifest 驗證，並檢查 Skill 結構。它不會連線正式站、修改 D1/R2 或建立第二個排程。
+
+```bash
+pnpm flow:verify-empty
+```
+
 ## Pipeline commands
 
 Run commands from this directory. Keep `AUTOMATION_TOKEN` secret.

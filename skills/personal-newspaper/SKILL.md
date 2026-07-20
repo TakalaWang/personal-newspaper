@@ -4,7 +4,7 @@ description: Use when a user asks to create, configure, publish, refresh, person
 compatibility: Requires this personal-newspaper repository, pnpm, HTTPS web and browser access, Codex Automation access, PAPER_URL, and a secret AUTOMATION_TOKEN.
 metadata:
   author: personal-newspaper
-  version: "1.2.2"
+  version: "1.2.3"
 ---
 
 # Personal Newspaper
@@ -75,4 +75,4 @@ This is an unattended standalone daily run. Do not depend on any prior session c
 
 ## Skill self-check
 
-After editing this skill, run `pnpm skill:validate`, the official Agent Skills validator, the eval cases in `evals/evals.json`, and the application test suite before deployment.
+After editing this skill, run `pnpm flow:verify-empty`, the official Agent Skills validator, the eval cases in `evals/evals.json`, and the application test suite before deployment.

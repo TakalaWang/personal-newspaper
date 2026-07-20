@@ -17,6 +17,7 @@
     "edition:validate": "node skills/personal-newspaper/scripts/validate-edition.mjs",
     "edition:publish": "node skills/personal-newspaper/scripts/publish-edition.mjs",
     "edition:restore": "node skills/personal-newspaper/scripts/restore-edition.mjs",
+    "flow:verify-empty": "node --import ./tests/cloudflare-loader.mjs --test --test-name-pattern='empty first-run pipeline' tests/publish-edition.test.mjs && pnpm skill:validate",
     "skill:validate": "node skills/personal-newspaper/scripts/validate-skill.mjs",
     "db:generate": "drizzle-kit generate"
   },

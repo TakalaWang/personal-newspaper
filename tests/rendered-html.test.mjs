@@ -57,6 +57,8 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.match(reader, /personal-newspaper-theme/);
   assert.match(reader, /暖灰新聞紙.*深酒紅正文.*深藍正文/s);
   assert.match(reader, /themeCss\(theme\)/);
+  assert.match(reader, /setFrameReady\(true\)/);
+  assert.match(reader, /page\.id.*theme.*frameReady/s);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 
   await assert.rejects(

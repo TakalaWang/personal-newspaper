@@ -36,6 +36,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   const [pageHeight, setPageHeight] = useState<number | null>(null);
   const [theme, setTheme] = useState<NewspaperTheme>("classic");
   const [pageTurn, setPageTurn] = useState<PageTurnDirection | null>(null);
+  const [frameReady, setFrameReady] = useState(false);
   const pageFrameRef = useRef<HTMLIFrameElement>(null);
   const pendingPageHeightRef = useRef<number | null>(null);
   const articleFrameRef = useRef<HTMLIFrameElement>(null);
@@ -43,6 +44,11 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
   const themeDialogRef = useRef<HTMLDialogElement>(null);
   const page = bundle.pages[pageIndex];
   const activeStory = bundle.stories.find((story) => story.id === activeStoryId) ?? null;
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setFrameReady(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   const turnPage = useCallback((direction: -1 | 1) => {
     const nextPageIndex = Math.min(Math.max(pageIndex + direction, 0), bundle.pages.length - 1);
@@ -226,6 +232,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         >
           <iframe
             className="edition-frame"
+            key={`${page.id}:${theme}:${frameReady ? "ready" : "server"}`}
             ref={pageFrameRef}
             sandbox="allow-scripts"
             onLoad={() => pageFrameRef.current?.contentWindow?.postMessage({ type: "measure-page" }, "*")}

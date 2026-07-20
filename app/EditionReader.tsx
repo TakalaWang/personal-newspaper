@@ -36,12 +36,12 @@ type ReaderCopy = {
   feedbackFailed: string;
   shareFailed: string;
   shareCopied: string;
-  shareCreated: string;
+  shareFallback: string;
   shareRevoked: string;
   shareRevokeFailed: string;
   paperTheme: string;
-  creating: string;
-  createShare: string;
+  sharing: string;
+  shareAction: string;
   openShare: string;
   themeTitle: string;
   themeDescription: string;
@@ -243,13 +243,14 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
         setMessage(result.error ?? copy.shareFailed);
         return;
       }
-      setShareUrl(result.url);
       setShares(await loadShares());
       try {
         await navigator.clipboard?.writeText(result.url);
+        setShareUrl(null);
         setMessage(copy.shareCopied);
       } catch {
-        setMessage(copy.shareCreated);
+        setShareUrl(result.url);
+        setMessage(copy.shareFallback);
       }
     } catch {
       setMessage(copy.shareFailed);
@@ -346,7 +347,7 @@ export function EditionReader({ bundle, owner = false }: EditionReaderProps) {
               </select>
             </label>
             <button className="share-action" type="button" onClick={share} disabled={pending === "share"}>
-              {pending === "share" ? copy.creating : copy.createShare}
+              {pending === "share" ? copy.sharing : copy.shareAction}
             </button>
             {shareUrl ? <a className="share-link" href={shareUrl} rel="noreferrer" target="_blank">{copy.openShare} ↗</a> : null}
           </div>
@@ -705,15 +706,15 @@ function readerCopy(language: string): ReaderCopy {
       nextPage: "Next page",
       feedbackSaved: "Saved. The next edition will reflect this signal.",
       feedbackFailed: "Unable to save this response. Please try again.",
-      shareFailed: "Unable to create the edition link.",
+      shareFailed: "Unable to share this edition.",
       shareCopied: "Edition link copied. It opens only this issue.",
-      shareCreated: "Edition link created. Open it from the paper footer.",
+      shareFallback: "Copying is unavailable. Open the share page below.",
       shareRevoked: "Edition link revoked.",
       shareRevokeFailed: "Unable to revoke the edition link.",
       paperTheme: "Paper theme",
-      creating: "Creating…",
-      createShare: "Create an edition link",
-      openShare: "Open the new shared edition",
+      sharing: "Sharing…",
+      shareAction: "Share",
+      openShare: "Open share page",
       themeTitle: "Choose the paper you want to open every day",
       themeDescription: "Paper, body ink, and spot color change together. Each edition still composes its own layout.",
       completeReport: "Full report",
@@ -748,15 +749,15 @@ function readerCopy(language: string): ReaderCopy {
     nextPage: "下一頁",
     feedbackSaved: "已儲存，下一期會依這項回饋調整。",
     feedbackFailed: "無法儲存這項回饋，請再試一次。",
-    shareFailed: "無法建立分享連結。",
+    shareFailed: "無法分享本期報紙。",
     shareCopied: "分享連結已複製；只會開啟本期報紙。",
-    shareCreated: "分享連結已建立；可從版尾開啟本期分享頁。",
+    shareFallback: "無法自動複製；請從下方開啟分享頁。",
     shareRevoked: "分享連結已停止使用。",
     shareRevokeFailed: "無法停止分享連結。",
     paperTheme: "報紙主題",
-    creating: "建立中…",
-    createShare: "建立本期分享連結",
-    openShare: "開啟剛建立的分享頁",
+    sharing: "分享中…",
+    shareAction: "分享",
+    openShare: "開啟分享頁",
     themeTitle: "先選一份你想每天打開的報紙",
     themeDescription: "紙色、正文油墨與套色會一起改變；版面仍由每天的內容決定。之後可在版尾更換。",
     completeReport: "完整報導",

@@ -9,18 +9,22 @@ import { fileURLToPath } from "node:url";
 const root = new URL("../", import.meta.url);
 
 test("ships as a Codex plugin with a credential-free reader quick start", async () => {
-  const [manifestSource, marketplaceSource, readme, skill] = await Promise.all([
+  const [manifestSource, marketplaceSource, readme, skill, screenshot] = await Promise.all([
     readFile(new URL(".codex-plugin/plugin.json", root), "utf8"),
     readFile(new URL(".agents/plugins/marketplace.json", root), "utf8"),
     readFile(new URL("README.md", root), "utf8"),
     readFile(new URL("skills/personal-newspaper/SKILL.md", root), "utf8"),
+    readFile(new URL("assets/personal-newspaper.png", root)),
   ]);
 
   const manifest = JSON.parse(manifestSource);
   assert.equal(manifest.name, "personal-newspaper");
+  assert.equal(manifest.version, "1.0.1");
   assert.equal(manifest.skills, "./skills/");
   assert.equal(manifest.license, "MIT");
+  assert.deepEqual(manifest.interface.screenshots, ["./assets/personal-newspaper.png"]);
   assert.ok(manifest.interface.defaultPrompt.some((prompt) => /create my daily newspaper/i.test(prompt)));
+  assert.deepEqual([...screenshot.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
 
   const marketplace = JSON.parse(marketplaceSource);
   assert.equal(marketplace.plugins[0].name, "personal-newspaper");

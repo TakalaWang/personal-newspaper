@@ -22,6 +22,12 @@ Personal Newspaper is a one-owner publishing system rather than a news feed. Cod
 - **Immutable editions.** A delivered bundle is never silently rewritten. Recovery restores a previously published edition through an explicit compare-and-swap path.
 - **Private by default.** D1 keeps the owner profile, reactions, and edition index; R2 keeps immutable edition bundles. Sharing uses revocable, non-guessable capabilities.
 
+## How Codex and GPT-5.6 are used
+
+Codex with GPT-5.6 was used to design, implement, test, and visually refine the product. In the running workflow it also performs the judgment-heavy editorial work: researching authoritative public sources, separating supported claims from uncertainty, synthesizing each report, selecting the daily story mix, and composing a content-driven layout instead of copying a fixed template.
+
+The repository Skill constrains that model judgment with explicit evidence, image, layout, browser, and recovery gates. Deterministic pnpm commands own context capture, validation, publication, manifest verification, and guarded restoration. The result is one continuous Codex ecosystem loop: the Skill defines the newsroom, GPT-5.6 edits the issue, Sites makes it usable, and Schedule repeats the verified workflow each day.
+
 ## Reader journey
 
 1. Ask Codex to use the bundled `personal-newspaper` skill.

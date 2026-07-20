@@ -27,10 +27,7 @@ export default async function SharedEdition({ params }: { params: Promise<{ toke
 
   return (
     <main className="public-edition">
-      <header className="public-edition-header">
-        <p>{bundle.masthead}</p>
-        <span>{bundle.date}</span>
-      </header>
+      <p className="shared-edition-note">朋友分享的唯讀本期・{bundle.date}</p>
       <EditionReader bundle={bundle} />
     </main>
   );

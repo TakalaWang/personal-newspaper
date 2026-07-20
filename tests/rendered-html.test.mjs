@@ -56,6 +56,8 @@ test("ships the private reader instead of the starter preview", async () => {
   assert.match(css, /\.edition-stage\s*\{[\s\S]*width:\s*min\(64rem,/);
   assert.match(css, /\.page-turn\s*\{[\s\S]*calc\(\(100vw - 64rem\)/);
   assert.match(css, /\.page-turn-control > span\s*\{[\s\S]*border:\s*0;[\s\S]*background:\s*transparent;[\s\S]*box-shadow:\s*none;/);
+  assert.match(reader, /<small>上一頁<\/small>/);
+  assert.match(reader, /<small>下一頁<\/small>/);
   assert.doesNotMatch(css, /\.page-turn-control b/);
   assert.match(css, /\.theme-dialog/);
   assert.match(reader, /personal-newspaper-theme/);
@@ -90,8 +92,16 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.doesNotMatch(reader, /const articleWindow =/);
   assert.doesNotMatch(reader, /publication-index/);
   assert.match(reader, /className="share-action"/);
+  assert.match(reader, /建立本期分享連結/);
+  assert.match(reader, /分享連結已複製；只會開啟本期報紙。/);
+  assert.doesNotMatch(reader, />Active</);
+  assert.doesNotMatch(reader, />Revoke</);
   assert.doesNotMatch(reader, /點選任一新聞區塊開啟完整報導/);
-  assert.doesNotMatch(reader, /第 \{pageIndex \+ 1\}／\{bundle\.pages\.length\} 版/);
+  assert.match(reader, /第 \$\{pageNumber\}／\$\{bundle\.pages\.length\} 頁/);
+  assert.match(reader, /reader-story-footer/);
+  assert.match(reader, /reader-story-note/);
+  assert.match(reader, /:scope > \.byline, :scope > \.source, :scope > \.tomorrow/);
+  assert.doesNotMatch(reader, /reader-controls \{ display: block !important; clear: both !important; margin-top: 12px !important; \}/);
   assert.doesNotMatch(reader, /document\.documentElement\.scrollHeight/);
   assert.doesNotMatch(reader, /useState\(1120\)/);
   assert.doesNotMatch(reader, /className="edition-pages"/);

@@ -1,7 +1,7 @@
 {
   "name": "personal-newspaper",
   "version": "1.0.1",
-  "description": "Create a personal newspaper website and let Codex publish a verified edition on schedule.",
+  "description": "Create The Personal Daily and let Codex research, publish, and personalize it on schedule.",
   "author": {
     "name": "TakalaWang",
     "url": "https://github.com/TakalaWang"
@@ -18,9 +18,9 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Personal Newspaper",
-    "shortDescription": "Your own newspaper, edited and published daily",
-    "longDescription": "Codex interviews one reader, creates a private Sites newspaper, publishes a verified first edition, and schedules future editions that learn from like and dislike feedback.",
+    "displayName": "The Personal Daily",
+    "shortDescription": "Your private newspaper, edited daily by Codex",
+    "longDescription": "Tell Codex what deserves your attention. It creates a private Sites newspaper, publishes a verified first issue, and schedules future issues shaped by explicit Like and Less like this feedback.",
     "developerName": "TakalaWang",
     "category": "Productivity",
     "capabilities": [

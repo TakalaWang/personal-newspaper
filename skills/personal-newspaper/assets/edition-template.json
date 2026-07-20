@@ -100,8 +100,8 @@
       "kicker": "Evaluation",
       "headline": "A benchmark audit found that a clean score can hide a broken task",
       "dek": "OpenAI withdrew an earlier recommendation after a structured review of SWE-bench Pro uncovered widespread defects.",
-      "summaryHtml": "<p data-claim-id=\"claim-1\">OpenAI reported that roughly 30 percent of SWE-bench Pro tasks were broken and retracted its earlier recommendation to use the benchmark. Its agent-assisted audit flagged 200 of 731 tasks, while a five-engineer human review flagged 249.</p><div class=\"byline\">Methods desk · audited benchmark evidence</div>",
-      "bodyHtml": "<p data-claim-id=\"claim-1\">The review identified 200 problematic tasks through an agent-led pass and 249 through the full human process, out of 731 tasks in SWE-bench Pro. OpenAI said the defect rate was high enough to withdraw its prior endorsement of the benchmark.</p><p>Broken tasks can punish correct implementations, reward unrelated changes, or depend on information missing from the prompt and repository state. When enough cases have those flaws, a precise-looking aggregate score stops measuring what teams think it measures.</p><p>The human audit assigned five engineers to each task, an expensive design that also created a comparison point for the automated review. The gap between the two counts shows that automation can accelerate triage without becoming the final judge.</p><p>The broader research lesson is to audit the instrument before optimizing against it. Reproducible task setup, adjudication rules, and defect labels are part of the result, not administrative work around the result.</p>",
+      "summaryHtml": "<p data-claim-id=\"claim-1\">OpenAI reported that roughly 30 percent of SWE-bench Pro tasks were broken and retracted its earlier recommendation to use the benchmark. Its agent-assisted audit flagged 200 of 731 tasks, while a five-engineer human review flagged 249.</p><p data-claim-id=\"claim-2\">The defects were not cosmetic: a broken task can penalize a correct patch, reward unrelated changes, or omit information required to solve it. At benchmark scale, those failures make the aggregate score answer a different question from the one teams intended.</p><div class=\"byline\">Methods desk · audited benchmark evidence</div>",
+      "bodyHtml": "<p data-claim-id=\"claim-1\">The review identified 200 problematic tasks through an agent-led pass and 249 through the full human process, out of 731 tasks in SWE-bench Pro. OpenAI said the defect rate was high enough to withdraw its prior endorsement of the benchmark.</p><p data-claim-id=\"claim-2\">The audit describes task defects that can reject valid work, accept changes outside the intended solution, or leave agents without necessary repository context. Once such cases are common, a leaderboard number no longer isolates coding ability from test construction error.</p><p>The human audit assigned five engineers to each task, an expensive design that also created a comparison point for the automated review. The gap between the two counts shows that automation can accelerate triage without becoming the final judge.</p><p>The broader research lesson is to audit the instrument before optimizing against it. Reproducible task setup, adjudication rules, and defect labels are part of the result, not administrative work around the result.</p>",
       "label": "fact",
       "sourceIds": [
         "swe-bench-audit"
@@ -125,6 +125,14 @@
           "id": "claim-1",
           "summaryClaim": "OpenAI reported that roughly 30 percent of SWE-bench Pro tasks were broken and retracted its earlier recommendation to use the benchmark. Its agent-assisted audit flagged 200 of 731 tasks, while a five-engineer human review flagged 249.",
           "bodySupport": "The review identified 200 problematic tasks through an agent-led pass and 249 through the full human process, out of 731 tasks in SWE-bench Pro. OpenAI said the defect rate was high enough to withdraw its prior endorsement of the benchmark.",
+          "sourceIds": [
+            "swe-bench-audit"
+          ]
+        },
+        {
+          "id": "claim-2",
+          "summaryClaim": "The defects were not cosmetic: a broken task can penalize a correct patch, reward unrelated changes, or omit information required to solve it. At benchmark scale, those failures make the aggregate score answer a different question from the one teams intended.",
+          "bodySupport": "The audit describes task defects that can reject valid work, accept changes outside the intended solution, or leave agents without necessary repository context. Once such cases are common, a leaderboard number no longer isolates coding ability from test construction error.",
           "sourceIds": [
             "swe-bench-audit"
           ]

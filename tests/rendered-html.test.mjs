@@ -102,6 +102,8 @@ test("uses paper-turn navigation with story-level feedback inside each article",
   assert.match(reader, /pageCount:\s*\(current, total\) => `第 \$\{current\}／\$\{total\} 頁`/);
   assert.match(reader, /reader-story-footer/);
   assert.match(reader, /reader-story-note/);
+  assert.match(reader, /\.reader-story-note > \*[^}]*white-space:\s*nowrap/s);
+  assert.match(reader, /\.reader-story-note > \*[^}]*text-overflow:\s*ellipsis/s);
   assert.match(reader, /aria-pressed/);
   assert.match(reader, /attachShadow\(\{ mode: 'open' \}\)/);
   assert.match(reader, /reaction-result/);

@@ -546,7 +546,7 @@ function readerBridgeCss(): string {
     .reader-story:focus-visible { outline: 3px solid var(--red); outline-offset: -3px; }
     .reader-story-footer { display: grid !important; clear: both !important; grid-template-columns: minmax(0, 1fr) auto !important; align-items: stretch !important; gap: 8px !important; min-height: 44px !important; margin-top: 8px !important; border-top: 1px solid var(--ink) !important; border-bottom: 1px solid var(--ink) !important; }
     .reader-story-note { display: flex !important; min-width: 0 !important; align-items: center !important; gap: 4px !important; color: var(--muted) !important; font: 700 .6875rem/1.35 "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif !important; }
-    .reader-story-note > * { min-width: 0 !important; margin: 0 !important; border: 0 !important; padding: 4px 0 !important; color: inherit !important; font: inherit !important; letter-spacing: .02em !important; }
+    .reader-story-note > * { min-width: 0 !important; margin: 0 !important; overflow: hidden !important; border: 0 !important; padding: 4px 0 !important; color: inherit !important; font: inherit !important; letter-spacing: .02em !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
     reader-controls { display: block !important; min-width: max-content !important; margin: 0 !important; align-self: stretch !important; }
     .full-story > reader-controls { margin-top: 12px !important; border-top: 1px solid var(--ink) !important; border-bottom: 1px solid var(--ink) !important; }
     @media (prefers-reduced-motion: reduce) { .reader-story { transition-duration: .01ms; } }`;
